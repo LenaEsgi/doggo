@@ -3,7 +3,7 @@ import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
 import { RobotDogState } from '../../../domain/enums/robot_dog.state.js'
 import { randomUUID } from 'node:crypto'
 
-export default class RobotDog extends BaseModel {
+export default class RobotDogModel extends BaseModel {
   public static table = 'robot_dogs'
 
   @column({ isPrimary: true })
@@ -34,7 +34,7 @@ export default class RobotDog extends BaseModel {
   declare updatedAt: DateTime
 
   @beforeCreate()
-  static assignUuid(robotDog: RobotDog) {
+  static assignUuid(robotDog: RobotDogModel) {
     robotDog.id = randomUUID()
   }
 }
