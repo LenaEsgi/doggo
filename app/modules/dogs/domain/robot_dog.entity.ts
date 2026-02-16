@@ -41,6 +41,10 @@ export class RobotDog {
     return this._batteryLevel
   }
 
+  public get lastHeartbeat(): Date {
+    return this._lastHeartbeat
+  }
+
   // -------------------
   // Business
   // -------------------
