@@ -11,23 +11,25 @@ export class RobotDog {
   private constructor(
     public readonly id: RobotDogId,
     public readonly serialNumber: string,
+    public readonly name: string,
     private _state: RobotDogState,
     private _batteryLevel: number,
     private _lastHeartbeat: Date
   ) {}
 
-  public static create(serialNumber: string, batteryLevel: number): RobotDog {
-    return new RobotDog(RobotDogId.generate(), serialNumber, RobotDogState.IDLE, batteryLevel, new Date())
+  public static create(serialNumber: string, name: string, batteryLevel: number): RobotDog {
+    return new RobotDog(RobotDogId.generate(), serialNumber, name,  RobotDogState.IDLE, batteryLevel, new Date())
   }
 
   public static rehydrate(
     id: string,
     serialNumber: string,
+    name: string,
     state: RobotDogState,
     batteryLevel: number,
     lastHeartbeat: Date
   ): RobotDog {
-    return new RobotDog(RobotDogId.fromString(id), serialNumber, state, batteryLevel, lastHeartbeat)
+    return new RobotDog(RobotDogId.fromString(id), serialNumber, name, state, batteryLevel, lastHeartbeat)
   }
 
   // -------------------
