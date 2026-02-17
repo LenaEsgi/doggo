@@ -40,3 +40,7 @@ export type DisableMfaResult = {
   idToken: string
   refreshToken: string
 }
+
+export type DeleteAccountResult = {
+  email: string
+}

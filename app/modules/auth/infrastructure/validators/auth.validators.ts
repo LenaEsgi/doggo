@@ -63,3 +63,9 @@ export const disableMfaValidator = vine.compile(
     mfaEnrollmentId: vine.string().trim().minLength(1),
   })
 )
+
+export const deleteAccountValidator = vine.compile(
+  vine.object({
+    idToken: vine.string().trim().minLength(1),
+  })
+)

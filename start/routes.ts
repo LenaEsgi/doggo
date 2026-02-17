@@ -9,3 +9,4 @@
 
 import './routes/swagger.js'
 import './routes/authentification.js'
+import './routes/users.js'

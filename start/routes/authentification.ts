@@ -1,6 +1,6 @@
 import router from '@adonisjs/core/services/router'
 
-const AuthController = () => import('../../app/modules/auth/infrastructure/controllers/auth.controller.js')
+const AuthController = () => import('#auth/infrastructure/controllers/auth.controller')
 
 router
   .group(() => {
@@ -12,5 +12,6 @@ router
     router.post('/2fa/verify', [AuthController, 'finalizeTotpSetup'])
     router.post('/2fa/enrollments', [AuthController, 'listMfaEnrollments'])
     router.delete('/2fa', [AuthController, 'disableMfa'])
+    router.delete('/account', [AuthController, 'deleteAccount'])
   })
   .prefix('/auth')

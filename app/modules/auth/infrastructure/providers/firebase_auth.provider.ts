@@ -1,13 +1,14 @@
 import env from '#start/env'
-import type { AuthProvider } from '../../domain/contracts/auth.provider.js'
+import { AuthProvider } from '#auth/domain/contracts/auth.provider'
 import type {
   AuthTokens,
+  DeleteAccountResult,
   DisableMfaResult,
   LoginResult,
   MfaInfo,
   TotpEnrollmentStart,
   TotpFinalizeResult,
-} from '../../domain/types/auth.types.js'
+} from '#auth/domain/types/auth.types'
 
 type FirebaseErrorBody = {
   error?: {
@@ -27,7 +28,7 @@ export class FirebaseHttpError extends Error {
   }
 }
 
-export class FirebaseAuthProvider implements AuthProvider {
+export class FirebaseAuthProvider extends AuthProvider {
   private readonly apiKey = env.get('FIREBASE_API_KEY')
   private readonly projectId = env.get('FIREBASE_PROJECT_ID')
   private readonly issuer = env.get('FIREBASE_TOTP_ISSUER')
@@ -179,6 +180,27 @@ export class FirebaseAuthProvider implements AuthProvider {
     }
   }
 
+  async deleteAccount(idToken: string): Promise<DeleteAccountResult> {
+    const lookup = await this.request<{ users?: Array<{ email?: string }> }>('v1/accounts:lookup', {
+      idToken,
+    })
+
+    const email = lookup.users?.[0]?.email
+    if (!email) {
+      throw new FirebaseHttpError(
+        'Unable to resolve account email before deletion',
+        400,
+        'ACCOUNT_EMAIL_MISSING'
+      )
+    }
+
+    await this.request('v1/accounts:delete', {
+      idToken,
+    })
+
+    return { email }
+  }
+
   async listEnrollments(idToken: string): Promise<MfaInfo[]> {
     const payload = await this.request<{ users?: Array<{ mfaInfo?: MfaInfo[] }> }>(
       'v1/accounts:lookup',
@@ -220,13 +242,16 @@ export class FirebaseAuthProvider implements AuthProvider {
   }
 
   private async request<T = unknown>(path: string, body: Record<string, unknown>): Promise<T> {
-    const response = await fetch(`https://identitytoolkit.googleapis.com/${path}?key=${this.apiKey}`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
+    const response = await fetch(
+      `https://identitytoolkit.googleapis.com/${path}?key=${this.apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }
+    )
 
     if (!response.ok) {
       const errorBody = (await response.json().catch(() => ({}))) as FirebaseErrorBody
@@ -288,5 +313,3 @@ export class FirebaseAuthProvider implements AuthProvider {
     return map[code] ?? 'Firebase authentication request failed'
   }
 }
-
-export const firebaseAuthProvider = new FirebaseAuthProvider()

@@ -1,7 +1,7 @@
-import type { LocalUserRepository } from '../../domain/contracts/local_user.repository.js'
-import UserModel from '../../../users/infrastructure/database/models/user.js'
+import { LocalUserRepository } from '#auth/domain/contracts/local_user.repository'
+import UserModel from '#users/infrastructure/database/models/user'
 
-export class LocalUserRepositoryImplementation implements LocalUserRepository {
+export class LocalUserRepositoryImplementation extends LocalUserRepository {
   async ensureUserProfile(payload: {
     firstname: string
     lastname: string
@@ -17,6 +17,13 @@ export class LocalUserRepositoryImplementation implements LocalUserRepository {
       }
     )
   }
-}
 
-export const localUserRepository = new LocalUserRepositoryImplementation()
+  async deleteByEmail(email: string): Promise<void> {
+    const user = await UserModel.query().where('email', email).first()
+    if (!user) {
+      return
+    }
+
+    await user.delete()
+  }
+}

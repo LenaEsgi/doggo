@@ -1,7 +1,7 @@
-import { User } from '../../../domain/user.entity.js'
-import UserModel from '../models/user.js'
-import { UserRole } from '../../../domain/enums/user.role.js'
-import { UserRepository } from '../../../domain/contracts/user.repository.js'
+import { User } from '#users/domain/user.entity'
+import { UserRole } from '#users/domain/enums/user.role'
+import { UserRepository } from '#users/domain/contracts/user.repository'
+import UserModel from '#users/infrastructure/database/models/user'
 
 export class UserRepositoryImplementation implements UserRepository {
   async findById(id: string): Promise<User | null> {

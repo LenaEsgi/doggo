@@ -1,28 +1,30 @@
 import type {
   AuthTokens,
+  DeleteAccountResult,
   DisableMfaResult,
   LoginResult,
   MfaInfo,
   TotpEnrollmentStart,
   TotpFinalizeResult,
-} from '../types/auth.types.js'
+} from '#auth/domain/types/auth.types'
 
-export interface AuthProvider {
-  register(email: string, password: string): Promise<AuthTokens>
-  login(email: string, password: string): Promise<LoginResult>
-  completeMfaLogin(
+export abstract class AuthProvider {
+  abstract register(email: string, password: string): Promise<AuthTokens>
+  abstract login(email: string, password: string): Promise<LoginResult>
+  abstract completeMfaLogin(
     pendingCredential: string,
     mfaEnrollmentId: string,
     verificationCode: string
   ): Promise<AuthTokens>
-  sendPasswordResetEmail(email: string): Promise<void>
-  startTotpEnrollment(idToken: string): Promise<TotpEnrollmentStart>
-  finalizeTotpEnrollment(
+  abstract sendPasswordResetEmail(email: string): Promise<void>
+  abstract startTotpEnrollment(idToken: string): Promise<TotpEnrollmentStart>
+  abstract finalizeTotpEnrollment(
     idToken: string,
     sessionInfo: string,
     verificationCode: string,
     displayName?: string
   ): Promise<TotpFinalizeResult>
-  listEnrollments(idToken: string): Promise<MfaInfo[]>
-  disableMfa(idToken: string, mfaEnrollmentId: string): Promise<DisableMfaResult>
+  abstract deleteAccount(idToken: string): Promise<DeleteAccountResult>
+  abstract listEnrollments(idToken: string): Promise<MfaInfo[]>
+  abstract disableMfa(idToken: string, mfaEnrollmentId: string): Promise<DisableMfaResult>
 }

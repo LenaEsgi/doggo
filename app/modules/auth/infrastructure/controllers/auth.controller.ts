@@ -1,11 +1,11 @@
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-import { AuthUseCase } from '../../application/use_cases/auth.use_case.js'
+import { AuthService } from '#auth/application/contracts/auth.service'
 import {
-  firebaseAuthProvider,
   FirebaseHttpError,
-} from '../providers/firebase_auth.provider.js'
-import { localUserRepository } from '../repositories/local_user.repository.js'
+} from '#auth/infrastructure/providers/firebase_auth.provider'
 import {
+  deleteAccountValidator,
   disableMfaValidator,
   finalizeTotpValidator,
   listMfaEnrollmentsValidator,
@@ -14,28 +14,19 @@ import {
   passwordResetValidator,
   registerValidator,
   startTotpValidator,
-} from '../validators/auth.validators.js'
+} from '#auth/infrastructure/validators/auth.validators'
+import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer'
 
-const authUseCase = new AuthUseCase(firebaseAuthProvider, localUserRepository)
-
+@inject()
 export default class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
   async register({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(registerValidator)
-      const authUser = await authUseCase.register(payload)
+      const authUser = await this.authService.register(payload)
 
-      return response.created({
-        message: 'Account created successfully',
-        user: {
-          uid: authUser.localId,
-          email: authUser.email,
-        },
-        tokens: {
-          idToken: authUser.idToken,
-          refreshToken: authUser.refreshToken,
-          expiresIn: authUser.expiresIn,
-        },
-      })
+      return response.created(AuthSerializer.registerSuccess(authUser))
     } catch (error) {
       return this.handleError(response, error)
     }
@@ -44,28 +35,8 @@ export default class AuthController {
   async login({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(loginValidator)
-      const result = await authUseCase.login(payload)
-
-      if (result.mfaRequired) {
-        return response.ok({
-          mfaRequired: true,
-          pendingCredential: result.pendingCredential,
-          mfaInfo: result.mfaInfo,
-        })
-      }
-
-      return response.ok({
-        mfaRequired: false,
-        user: {
-          uid: result.localId,
-          email: result.email,
-        },
-        tokens: {
-          idToken: result.idToken,
-          refreshToken: result.refreshToken,
-          expiresIn: result.expiresIn,
-        },
-      })
+      const result = await this.authService.login(payload)
+      return response.ok(AuthSerializer.loginResult(result))
     } catch (error) {
       return this.handleError(response, error)
     }
@@ -74,20 +45,9 @@ export default class AuthController {
   async loginWithTotp({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(mfaLoginValidator)
-      const result = await authUseCase.loginWithTotp(payload)
+      const result = await this.authService.loginWithTotp(payload)
 
-      return response.ok({
-        mfaRequired: false,
-        user: {
-          uid: result.localId,
-          email: result.email,
-        },
-        tokens: {
-          idToken: result.idToken,
-          refreshToken: result.refreshToken,
-          expiresIn: result.expiresIn,
-        },
-      })
+      return response.ok(AuthSerializer.authSuccess(result))
     } catch (error) {
       return this.handleError(response, error)
     }
@@ -96,7 +56,7 @@ export default class AuthController {
   async sendPasswordReset({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(passwordResetValidator)
-      await authUseCase.sendPasswordReset(payload)
+      await this.authService.sendPasswordReset(payload)
 
       return response.ok({
         message: 'Password reset email sent',
@@ -109,7 +69,7 @@ export default class AuthController {
   async startTotpSetup({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(startTotpValidator)
-      const result = await authUseCase.startTotpSetup(payload)
+      const result = await this.authService.startTotpSetup(payload)
 
       return response.ok({
         message: 'Scan the QR URI in Aegis and confirm with a generated code',
@@ -123,7 +83,7 @@ export default class AuthController {
   async finalizeTotpSetup({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(finalizeTotpValidator)
-      const result = await authUseCase.finalizeTotpSetup(payload)
+      const result = await this.authService.finalizeTotpSetup(payload)
 
       return response.ok({
         message: 'Two-factor authentication enabled',
@@ -137,11 +97,9 @@ export default class AuthController {
   async listMfaEnrollments({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(listMfaEnrollmentsValidator)
-      const enrollments = await authUseCase.listMfaEnrollments(payload)
+      const enrollments = await this.authService.listMfaEnrollments(payload)
 
-      return response.ok({
-        enrollments,
-      })
+      return response.ok(AuthSerializer.mfaEnrollments(enrollments))
     } catch (error) {
       return this.handleError(response, error)
     }
@@ -150,11 +108,24 @@ export default class AuthController {
   async disableMfa({ request, response }: HttpContext) {
     try {
       const payload = await request.validateUsing(disableMfaValidator)
-      const result = await authUseCase.disableMfa(payload)
+      const result = await this.authService.disableMfa(payload)
 
       return response.ok({
         message: 'Two-factor authentication disabled',
         tokens: result,
+      })
+    } catch (error) {
+      return this.handleError(response, error)
+    }
+  }
+
+  async deleteAccount({ request, response }: HttpContext) {
+    try {
+      const payload = await request.validateUsing(deleteAccountValidator)
+      await this.authService.deleteAccount(payload)
+
+      return response.ok({
+        message: 'Account deleted successfully',
       })
     } catch (error) {
       return this.handleError(response, error)

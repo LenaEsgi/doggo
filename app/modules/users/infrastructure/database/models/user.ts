@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
 import { randomUUID } from 'node:crypto'
-import { UserRole } from '../../../domain/enums/user.role.js'
+import { UserRole } from '#users/domain/enums/user.role'
 
 export default class UserModel extends BaseModel {
   public static table = 'users'
