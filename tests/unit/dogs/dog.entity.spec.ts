@@ -9,7 +9,7 @@ test.group('Dog Domain', (group) => {
   let dog: RobotDog
 
   group.each.setup(() => {
-    dog = RobotDog.create('1', 'SN-001', 100)
+    dog = RobotDog.create('SN-001', 100)
   })
 
   // ----------------------------

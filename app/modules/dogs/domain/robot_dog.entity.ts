@@ -2,21 +2,22 @@ import { RobotDogState } from './enums/robot_dog.state.js'
 import { InvalidDogStateError } from './exceptions/invalid_dog_state_error.js'
 import { BatteryTooLowError } from './exceptions/battery_too_low_error.js'
 import { InvalidBatteryLevelError } from './exceptions/invalid_battery_level_error.js'
+import { RobotDogId } from './value-objects/robot-dog-id.js'
 
 export class RobotDog {
   private static readonly MIN_BATTERY_FOR_ACTIVITY = 10
   private static readonly HEARTBEAT_TIMEOUT_MS = 30_000
 
   private constructor(
-    public readonly id: string,
+    public readonly id: RobotDogId,
     public readonly serialNumber: string,
     private _state: RobotDogState,
     private _batteryLevel: number,
     private _lastHeartbeat: Date
   ) {}
 
-  public static create(id: string, serialNumber: string, batteryLevel: number): RobotDog {
-    return new RobotDog(id, serialNumber, RobotDogState.IDLE, batteryLevel, new Date())
+  public static create(serialNumber: string, batteryLevel: number): RobotDog {
+    return new RobotDog(RobotDogId.generate(), serialNumber, RobotDogState.IDLE, batteryLevel, new Date())
   }
 
   public static rehydrate(
@@ -26,7 +27,7 @@ export class RobotDog {
     batteryLevel: number,
     lastHeartbeat: Date
   ): RobotDog {
-    return new RobotDog(id, serialNumber, state, batteryLevel, lastHeartbeat)
+    return new RobotDog(RobotDogId.fromString(id), serialNumber, state, batteryLevel, lastHeartbeat)
   }
 
   // -------------------
