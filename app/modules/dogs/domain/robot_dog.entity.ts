@@ -3,6 +3,7 @@ import { InvalidDogStateError } from './exceptions/invalid_dog_state_error.js'
 import { BatteryTooLowError } from './exceptions/battery_too_low_error.js'
 import { InvalidBatteryLevelError } from './exceptions/invalid_battery_level_error.js'
 import { RobotDogId } from './value-objects/robot-dog-id.js'
+import { InvalidRobotDogNameError } from './exceptions/invalid_robot_dog_name.error.js'
 
 export class RobotDog {
   private static readonly MIN_BATTERY_FOR_ACTIVITY = 10
@@ -11,7 +12,7 @@ export class RobotDog {
   private constructor(
     public readonly id: RobotDogId,
     public readonly serialNumber: string,
-    public readonly name: string,
+    public name: string,
     private _state: RobotDogState,
     private _batteryLevel: number,
     private _lastHeartbeat: Date
@@ -130,6 +131,14 @@ export class RobotDog {
     if (diff > RobotDog.HEARTBEAT_TIMEOUT_MS) {
       this._state = RobotDogState.OFFLINE
     }
+  }
+
+  public updateName(name: string): void {
+    if (!name || name.trim().length === 0) {
+      throw new InvalidRobotDogNameError(name)
+    }
+
+    this.name = name
   }
 
   // -------------------
