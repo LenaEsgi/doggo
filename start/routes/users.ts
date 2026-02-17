@@ -1,12 +1,15 @@
 import router from '@adonisjs/core/services/router'
 
-const UsersController = () => import('#users/infrastructure/controllers/users.controller')
+const IndexUserController = () => import('#users/infrastructure/controllers/index.user.controller')
+const ShowUserController = () => import('#users/infrastructure/controllers/show.user.controller')
+const UpdateUserController = () => import('#users/infrastructure/controllers/update.user.controller')
+const DeleteUserController = () => import('#users/infrastructure/controllers/delete.user.controller')
 
 router
   .group(() => {
-    router.get('/', [UsersController, 'index'])
-    router.get('/:id', [UsersController, 'show'])
-    router.patch('/:id', [UsersController, 'update'])
-    router.delete('/:id', [UsersController, 'destroy'])
+    router.get('/', [IndexUserController, 'handle'])
+    router.get('/:id', [ShowUserController, 'handle'])
+    router.patch('/:id', [UpdateUserController, 'handle'])
+    router.delete('/:id', [DeleteUserController, 'handle'])
   })
   .prefix('/users')

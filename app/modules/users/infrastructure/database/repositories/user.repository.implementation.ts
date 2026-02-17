@@ -1,46 +1,58 @@
+import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
+import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
 import { User } from '#users/domain/user.entity'
-import { UserRole } from '#users/domain/enums/user.role'
-import { UserRepository } from '#users/domain/contracts/user.repository'
 import UserModel from '#users/infrastructure/database/models/user'
+import { UserMapper } from '#users/infrastructure/database/mappers/user.mapper'
 
-export class UserRepositoryImplementation implements UserRepository {
+export class UserRepositoryImplementation extends UserReadRepository implements UserWriteRepository {
   async findById(id: string): Promise<User | null> {
-    const user: UserModel = await UserModel.findOrFail(id)
+    const user = await UserModel.find(id)
 
-    return User.rehydrate(
-      user.id,
-      user.email,
-      user.firstname,
-      user.lastname,
-      user.role as UserRole)
+    if (!user) {
+      return null
+    }
+
+    return UserMapper.toEntity(user)
   }
+
   async findAll(): Promise<User[]> {
-    const users: UserModel[] = await UserModel.all()
-
-    return users.map((user) =>
-      User.rehydrate(
-        user.id,
-        user.email,
-        user.firstname,
-        user.lastname,
-        user.role as UserRole,
-      )
-    )
+    const users = await UserModel.query().orderBy('created_at', 'desc')
+    return users.map((user) => UserMapper.toEntity(user))
   }
-  async save(user: User): Promise<void> {
-    await UserModel.updateOrCreate(
+
+  async create(user: User): Promise<User> {
+    const created = await UserModel.create({
+      id: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      role: UserMapper.toPersistenceRole(user.role),
+    })
+
+    return UserMapper.toEntity(created)
+  }
+
+  async update(user: User): Promise<User> {
+    const updated = await UserModel.updateOrCreate(
       { id: user.id },
       {
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
-        role: user.role,
+        role: UserMapper.toPersistenceRole(user.role),
       }
     )
+
+    return UserMapper.toEntity(updated)
   }
 
   async delete(id: string): Promise<void> {
-    const user = await UserModel.findOrFail(id)
+    const user = await UserModel.find(id)
+
+    if (!user) {
+      return
+    }
+
     await user.delete()
   }
 }

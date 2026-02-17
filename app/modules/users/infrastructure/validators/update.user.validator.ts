@@ -1,6 +1,6 @@
 import vine from '@vinejs/vine'
 
-export const userIdParamValidator = vine.compile(
+export const updateUserParamValidator = vine.compile(
   vine.object({
     id: vine.string().uuid(),
   })

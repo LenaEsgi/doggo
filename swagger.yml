@@ -173,6 +173,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
   /users:
+    post:
+      tags:
+        - Users
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreatedResponse'
     get:
       tags:
         - Users
@@ -519,8 +536,6 @@ components:
         - lastname
         - email
         - role
-        - createdAt
-        - updatedAt
       properties:
         id:
           type: string
@@ -540,12 +555,27 @@ components:
           enum:
             - user
             - admin
-        createdAt:
+    CreateUserRequest:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - email
+      properties:
+        firstname:
           type: string
-          format: date-time
-        updatedAt:
+          minLength: 2
+          maxLength: 100
+          example: Jane
+        lastname:
           type: string
-          format: date-time
+          minLength: 2
+          maxLength: 100
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: jane.doe@example.com
     UsersListResponse:
       type: object
       required:
@@ -593,6 +623,17 @@ components:
         message:
           type: string
           example: User updated successfully
+        user:
+          $ref: '#/components/schemas/User'
+    UserCreatedResponse:
+      type: object
+      required:
+        - message
+        - user
+      properties:
+        message:
+          type: string
+          example: Created user
         user:
           $ref: '#/components/schemas/User'
     ErrorResponse:
