@@ -4,6 +4,7 @@ import { RobotDogState } from '../../../app/modules/dogs/domain/enums/robot_dog.
 import { InvalidDogStateError } from '../../../app/modules/dogs/domain/exceptions/invalid_dog_state_error.js'
 import { InvalidBatteryLevelError } from '../../../app/modules/dogs/domain/exceptions/invalid_battery_level_error.js'
 import { BatteryTooLowError } from '../../../app/modules/dogs/domain/exceptions/battery_too_low_error.js'
+import { InvalidRobotDogNameError } from '../../../app/modules/dogs/domain/exceptions/invalid_robot_dog_name.error.js'
 
 test.group('Dog Domain', (group) => {
   let dog: RobotDog
@@ -148,5 +149,18 @@ test.group('Dog Domain', (group) => {
     dog.updateHeartbeat(recent)
     dog.checkHeartbeatTimeout(new Date())
     assert.equal(dog.state, RobotDogState.IDLE)
+  })
+
+  test('updateName should throw if name is empty', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+
+    assert.throws(
+      () => dog.updateName(''), InvalidRobotDogNameError )
+  })
+
+  test('updateName should update name if valid', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.updateName('Bolt')
+    assert.equal(dog.name, 'Bolt')
   })
 })
