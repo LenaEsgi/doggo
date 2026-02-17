@@ -14,6 +14,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
     return RobotDog.rehydrate(
       row.id,
       row.serialNumber,
+      row.name,
       row.state as RobotDogState,
       row.batteryLevel,
       row.lastHeartbeat?.toJSDate() ? row.lastHeartbeat?.toJSDate() : DateTime.now().toJSDate()
@@ -26,6 +27,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       RobotDog.rehydrate(
         row.id,
         row.serialNumber,
+        row.name,
         row.state as RobotDogState,
         row.batteryLevel,
         row.lastHeartbeat?.toJSDate() ? row.lastHeartbeat?.toJSDate() : DateTime.now().toJSDate()
@@ -37,6 +39,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       { id: dog.id.value },
       {
         serialNumber: dog.serialNumber,
+        name: dog.name,
         state: dog.state,
         batteryLevel: dog.batteryLevel,
         lastHeartbeat: DateTime.fromJSDate(dog.lastHeartbeat),
