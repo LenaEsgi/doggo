@@ -3,10 +3,11 @@ import { RobotDog } from '../../../domain/robot_dog.entity.js'
 import RobotDogModel from '../models/robot_dog.js'
 import { RobotDogState } from '../../../domain/enums/robot_dog.state.js'
 import { DateTime } from 'luxon'
+import { RobotDogId } from '../../../domain/value-objects/robot-dog-id.js'
 
 export class RobotDogRepositoryImplementation implements RobotDogRepository {
-  async findById(id: string): Promise<RobotDog | null> {
-    const row = await RobotDogModel.find(id)
+  async findById(id: RobotDogId): Promise<RobotDog | null> {
+    const row = await RobotDogModel.find(id.value)
 
     if (!row) return null
 
@@ -33,7 +34,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
   }
   async save(dog: RobotDog): Promise<void> {
     await RobotDogModel.updateOrCreate(
-      { id: dog.id },
+      { id: dog.id.value },
       {
         serialNumber: dog.serialNumber,
         state: dog.state,
@@ -43,8 +44,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
     )
   }
 
-  async delete(id: string): Promise<void> {
-    const row = await RobotDogModel.findOrFail(id)
+  async delete(id: RobotDogId): Promise<void> {
+    const row = await RobotDogModel.findOrFail(id.value)
     await row.delete()
   }
 }
