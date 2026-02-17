@@ -41,6 +41,7 @@
     "@japa/plugin-adonisjs": "^4.0.0",
     "@japa/runner": "^4.2.0",
     "@swc/core": "1.11.24",
+    "@types/js-yaml": "^4.0.9",
     "@types/luxon": "^3.7.1",
     "@types/node": "^22.15.18",
     "eslint": "^9.26.0",
@@ -56,6 +57,8 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.6.1",
     "@vinejs/vine": "^3.0.1",
+    "adonis-autoswagger": "^3.73.0",
+    "js-yaml": "^4.1.1",
     "luxon": "^3.7.2",
     "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2"

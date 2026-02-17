@@ -1,0 +1,10 @@
+openapi: 3.0.3
+info:
+  title: Doggo application
+  description: |-
+    This API aim to provide feature to manage and control robot dogs
+  version: 1.0.0
+servers:
+  - url: http://localhost:3333
+    description: Local server
+paths:
