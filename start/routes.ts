@@ -8,3 +8,4 @@
 */
 
 import './routes/swagger.js'
+import './routes/authentification.js'
