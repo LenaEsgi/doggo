@@ -6,7 +6,7 @@ export class FakeRobotDogRepository extends RobotDogRepository {
   public storedDogs: RobotDog[] = []
 
   async findById(id: RobotDogId) {
-    return this.storedDogs.find(d => d.id === id) ?? null
+    return this.storedDogs.find(d => d.id.equals(id)) ?? null
   }
 
   async findAll() {
@@ -23,6 +23,6 @@ export class FakeRobotDogRepository extends RobotDogRepository {
   }
 
   async delete(id: RobotDogId) {
-    this.storedDogs = this.storedDogs.filter(d => d.id !== id)
+    this.storedDogs = this.storedDogs.filter(d => !d.id.equals(id))
   }
 }

@@ -1,54 +1,37 @@
 import { test } from '@japa/runner'
-import { RobotDog } from '../../../../../app/modules/dogs/domain/robot_dog.entity.js'
-import { RobotDogRepository } from '../../../../../app/modules/dogs/domain/contracts/robot_dog.repository.js'
-import { RobotDogId } from '../../../../../app/modules/dogs/domain/value-objects/robot-dog-id.js'
+import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
 import {
   DeleteRobotDogUseCase
 } from '../../../../../app/modules/dogs/application/usecases/destroy-robot-dog.use-case.js'
-
+import { RobotDog } from '../../../../../app/modules/dogs/domain/robot_dog.entity.js'
 import { RobotDogNotFoundError } from '../../../../../app/modules/dogs/domain/exceptions/robot-dog-not-found.error.js'
 
-// FakeRepository avec mémoire interne
-class FakeRobotDogRepository implements RobotDogRepository {
-  private dogs: RobotDog[] = []
 
-  async findById(id: RobotDogId) {
-    return this.dogs.find(d => d.id.equals(id)) ?? null
-  }
+test.group('DestroyRobotDogUseCase', (group) => {
+  let fakeRepo: FakeRobotDogRepository
+  let useCase: DeleteRobotDogUseCase
 
-  async findAll() {
-    return this.dogs
-  }
+  group.setup(() => {
+    fakeRepo = new FakeRobotDogRepository()
+    useCase = new DeleteRobotDogUseCase(fakeRepo)
+  })
 
-  async save(dog: RobotDog) {
-    this.dogs.push(dog)
-  }
-
-  async delete(id: RobotDogId) {
-    this.dogs = this.dogs.filter(d => !d.id.equals(id))
-  }
-}
-
-test.group('DeleteRobotDogUseCase', () => {
-  test('should delete robot dog if exists', async ({ assert }) => {
-    const fakeRepo = new FakeRobotDogRepository()
+  test('should delete a robot dog if it exists', async ({ assert }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
-
     await fakeRepo.save(dog)
 
-    const useCase = new DeleteRobotDogUseCase(fakeRepo)
     await useCase.execute({ id: dog.id.value })
 
     const result = await fakeRepo.findById(dog.id)
     assert.isNull(result)
+    assert.lengthOf(fakeRepo.storedDogs, 0)
   })
 
-  test('should throw if robot dog does not exist', async ({ assert }) => {
-    const fakeRepo = new FakeRobotDogRepository()
-    const useCase = new DeleteRobotDogUseCase(fakeRepo)
+  test('should throw RobotDogNotFoundError if dog does not exist', async ({ assert }) => {
+    const nonExistentId = 'non-existent-id'
 
     await assert.rejects(
-      () => useCase.execute({ id: 'non-existent-id' }),
+      () => useCase.execute({ id: nonExistentId }),
       RobotDogNotFoundError
     )
   })
