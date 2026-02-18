@@ -1,41 +1,31 @@
 import { test } from '@japa/runner'
-import { RobotDogRepository } from '../../../../../app/modules/dogs/domain/contracts/robot_dog.repository.js'
-import { RobotDog } from '../../../../../app/modules/dogs/domain/robot_dog.entity.js'
+import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
 import {
   CreateRobotDogUseCase
 } from '../../../../../app/modules/dogs/application/usecases/create-robot-dog.use-case.js'
 
-class FakeRobotDogRepository implements RobotDogRepository {
-  public savedRobotDog: RobotDog | null = null
+test.group('CreateRobotDogUseCase', (group) => {
+  let fakeRepo: FakeRobotDogRepository
+  let useCase: CreateRobotDogUseCase
 
-  async findById() {
-    return null
-  }
+  group.setup(() => {
+    fakeRepo = new FakeRobotDogRepository()
+    useCase = new CreateRobotDogUseCase(fakeRepo)
+  })
 
-  async findAll() {
-    return []
-  }
-
-  async save(dog: RobotDog) {
-    this.savedRobotDog = dog
-  }
-
-  async delete() {}
-}
-
-test.group('CreateRobotDogUseCase', () => {
   test('should create and save a robot dog', async ({ assert }) => {
-    const repository = new FakeRobotDogRepository()
-    const useCase = new CreateRobotDogUseCase(repository)
-
     await useCase.execute({
       serialNumber: 'SN-001',
       name: 'Rex',
       batteryLevel: 80,
     })
 
-    assert.isNotNull(repository.savedRobotDog)
-    assert.equal(repository.savedRobotDog?.serialNumber, 'SN-001')
-    assert.equal(repository.savedRobotDog?.batteryLevel, 80)
+    assert.lengthOf(fakeRepo.storedDogs, 1)
+
+    const savedDog = fakeRepo.storedDogs[0]
+
+    assert.equal(savedDog.serialNumber, 'SN-001')
+    assert.equal(savedDog.name, 'Rex')
+    assert.equal(savedDog.batteryLevel, 80)
   })
 })
