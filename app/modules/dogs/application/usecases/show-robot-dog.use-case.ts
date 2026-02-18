@@ -3,7 +3,9 @@ import { RobotDogId } from '../../domain/value-objects/robot-dog-id.js'
 import { RobotDogOutput } from '../DTO/robot-dog.output.dto.js'
 import { ShowRobotDogDto } from '../DTO/show-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export class ShowRobotDogUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 

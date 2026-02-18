@@ -1,6 +1,8 @@
 import { RobotDogRepository } from '../../domain/contracts/robot_dog.repository.js'
 import { RobotDogOutput } from '../DTO/robot-dog.output.dto.js'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export class ListRobotDogsUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
