@@ -1,16 +1,16 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
 import {
-  CreateRobotDogUseCase
-} from '../../../../../app/modules/dogs/application/usecases/create-robot-dog.use-case.js'
+  CreateRobotDogUseCaseImplementation
+} from '../../../../../app/modules/dogs/application/usecases/create-robot-dog.use-case.implementation.js'
 
 test.group('CreateRobotDogUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
-  let useCase: CreateRobotDogUseCase
+  let useCase: CreateRobotDogUseCaseImplementation
 
   group.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
-    useCase = new CreateRobotDogUseCase(fakeRepo)
+    useCase = new CreateRobotDogUseCaseImplementation(fakeRepo)
   })
 
   test('should create and save a robot dog', async ({ assert }) => {

@@ -1,16 +1,16 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
-import { ListRobotDogsUseCase } from '../../../../../app/modules/dogs/application/usecases/index-robot-dogs.use-case.js'
+import { IndexRobotDogsUseCaseImplementation } from '../../../../../app/modules/dogs/application/usecases/index-robot-dogs.use-case.implementation.js'
 import { RobotDog } from '../../../../../app/modules/dogs/domain/robot_dog.entity.js'
 
 
 test.group('ListRobotDogsUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
-  let useCase: ListRobotDogsUseCase
+  let useCase: IndexRobotDogsUseCaseImplementation
 
   group.each.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
-    useCase = new ListRobotDogsUseCase(fakeRepo)
+    useCase = new IndexRobotDogsUseCaseImplementation(fakeRepo)
   })
 
   test('should return all robot dogs', async ({ assert }) => {

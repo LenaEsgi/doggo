@@ -1,9 +1,10 @@
 import { RobotDogRepository } from '../../domain/contracts/robot_dog.repository.js'
+import { IndexRobotDogsUseCase } from '../contracts/index-robot-dogs.use-case.js'
 import { RobotDogOutput } from '../DTO/robot-dog.output.dto.js'
 import { inject } from '@adonisjs/core'
 
 @inject()
-export class ListRobotDogsUseCase {
+export class IndexRobotDogsUseCaseImplementation implements IndexRobotDogsUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
   async execute(): Promise<RobotDogOutput[]> {

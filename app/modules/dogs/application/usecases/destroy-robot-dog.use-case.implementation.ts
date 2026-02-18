@@ -1,14 +1,15 @@
 import { RobotDogRepository } from '../../domain/contracts/robot_dog.repository.js'
-import { UpdateRobotDogDto } from '../DTO/update-robot-dog.dto.js'
 import { RobotDogId } from '../../domain/value-objects/robot-dog-id.js'
+import { DestroyRobotDogDto } from '../DTO/destroy-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
 import { inject } from '@adonisjs/core'
+import { DestroyRobotDogUseCase } from '../contracts/destroy-robot-dog.use-case.js'
 
 @inject()
-export class UpdateRobotDogUseCase {
+export class DeleteRobotDogUseCaseImplementation implements DestroyRobotDogUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
-  async execute(dto: UpdateRobotDogDto): Promise<void> {
+  async execute(dto: DestroyRobotDogDto): Promise<void> {
     const id = RobotDogId.fromString(dto.id)
 
     const robotDog = await this.robotDogRepository.findById(id)
@@ -17,8 +18,6 @@ export class UpdateRobotDogUseCase {
       throw new RobotDogNotFoundError(dto.id)
     }
 
-    robotDog.updateName(dto.name)
-
-    await this.robotDogRepository.save(robotDog)
+    await this.robotDogRepository.delete(id)
   }
 }

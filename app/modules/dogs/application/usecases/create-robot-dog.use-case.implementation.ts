@@ -2,9 +2,10 @@ import { RobotDogRepository } from '../../domain/contracts/robot_dog.repository.
 import { RobotDog } from '../../domain/robot_dog.entity.js'
 import { CreateRobotDogDto } from '../DTO/create-robot-dog.dto.js'
 import { inject } from '@adonisjs/core'
+import { CreateRobotDogUseCase } from '../contracts/create-robot-dog.use-case.js'
 
 @inject()
-export class CreateRobotDogUseCase {
+export class CreateRobotDogUseCaseImplementation implements CreateRobotDogUseCase {
   constructor(private robotDogRepository: RobotDogRepository) {}
 
   async execute(dto: CreateRobotDogDto) {
