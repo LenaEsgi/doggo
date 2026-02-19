@@ -1,4 +1,6 @@
-export class InvalidBatteryLevelError extends Error {
+import { DomainError } from './domain-error.js'
+
+export class InvalidBatteryLevelError extends DomainError {
   readonly code = 'INVALID_BATTERY_LEVEL'
 
   constructor(level: number) {

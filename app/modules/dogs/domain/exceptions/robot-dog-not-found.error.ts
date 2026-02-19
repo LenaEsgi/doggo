@@ -1,5 +1,6 @@
+import { DomainError } from './domain-error.js'
 
-export class RobotDogNotFoundError extends Error {
+export class RobotDogNotFoundError extends DomainError {
   constructor(id: string) {
     super(`RobotDog with id ${id} not found`)
   }
