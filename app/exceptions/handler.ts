@@ -1,5 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
+import { DomainError } from '../modules/dogs/domain/exceptions/domain-error.js'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -13,6 +14,10 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (error instanceof DomainError) {
+      return ctx.response.status(400).json({ message: error.message })
+    }
+
     return super.handle(error, ctx)
   }
 
