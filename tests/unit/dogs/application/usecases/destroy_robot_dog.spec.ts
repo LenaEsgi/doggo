@@ -28,7 +28,7 @@ test.group('DestroyRobotDogUseCase', (group) => {
   })
 
   test('should throw RobotDogNotFoundError if dog does not exist', async ({ assert }) => {
-    const nonExistentId = 'non-existent-id'
+    const nonExistentId = '56a39d4d-b05d-42fb-a402-6782fc66dc3d'
 
     await assert.rejects(
       () => useCase.execute({ id: nonExistentId }),

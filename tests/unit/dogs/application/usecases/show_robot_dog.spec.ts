@@ -27,7 +27,7 @@ test.group('ShowRobotDogUseCaseImplementation', (group) => {
 
   test('should throw if robot dog not found', async ({ assert }) => {
     await assert.rejects(
-      () => useCase.execute({ id: 'non-existent-id' }),
+      () => useCase.execute({ id: '56a39d4d-b05d-42fb-a402-6782fc66dc3d' }),
       RobotDogNotFoundError
     )
   })

@@ -49,11 +49,11 @@ test.group('DELETE /dogs/:id', (group) => {
 
     app.container.swap(RobotDogRepository, () => new FakeRepository())
 
-    const response = await client.delete('/dogs/non-existent-id')
+    const response = await client.delete('/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
 
     response.assertStatus(404)
     response.assertBodyContains({
-      message: 'RobotDog with id non-existent-id not found'
+      message: 'RobotDog with id 56a39d4d-b05d-42fb-a402-6782fc66dc3d not found'
     })
   })
 })
