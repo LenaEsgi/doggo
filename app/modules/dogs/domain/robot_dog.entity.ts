@@ -5,6 +5,7 @@ import { InvalidBatteryLevelError } from './exceptions/invalid-battery-level-err
 import { RobotDogId } from './value-objects/robot-dog-id.js'
 import { InvalidRobotDogNameError } from './exceptions/invalid-robot-dog-name.error.js'
 import { InvalidRobotDogSerialNumberError } from './exceptions/invalid-robot-dog-serial-number.error.js'
+import { RobotDogKey } from './value-objects/robot-dog-key.js'
 
 export class RobotDog {
   private static readonly MIN_BATTERY_FOR_ACTIVITY = 10
@@ -13,6 +14,7 @@ export class RobotDog {
   private constructor(
     public readonly id: RobotDogId,
     public readonly serialNumber: string,
+    public readonly  key: RobotDogKey,
     public name: string,
     private _state: RobotDogState,
     private _batteryLevel: number,
@@ -32,18 +34,19 @@ export class RobotDog {
       throw new InvalidBatteryLevelError(batteryLevel)
     }
 
-    return new RobotDog(RobotDogId.generate(), serialNumber, name,  RobotDogState.IDLE, batteryLevel, new Date())
+    return new RobotDog(RobotDogId.generate(), serialNumber, RobotDogKey.generate(), name,  RobotDogState.IDLE, batteryLevel, new Date())
   }
 
   public static rehydrate(
     id: string,
     serialNumber: string,
+    key: string,
     name: string,
     state: RobotDogState,
     batteryLevel: number,
     lastHeartbeat: Date
   ): RobotDog {
-    return new RobotDog(RobotDogId.fromString(id), serialNumber, name, state, batteryLevel, lastHeartbeat)
+    return new RobotDog(RobotDogId.fromString(id), serialNumber, RobotDogKey.fromString(key), name, state, batteryLevel, lastHeartbeat)
   }
 
   // -------------------
