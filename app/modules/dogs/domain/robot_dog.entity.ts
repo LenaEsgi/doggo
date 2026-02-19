@@ -1,9 +1,10 @@
 import { RobotDogState } from './enums/robot_dog.state.js'
-import { InvalidDogStateError } from './exceptions/invalid_dog_state_error.js'
-import { BatteryTooLowError } from './exceptions/battery_too_low_error.js'
-import { InvalidBatteryLevelError } from './exceptions/invalid_battery_level_error.js'
+import { InvalidDogStateError } from './exceptions/invalid-dog-state-error.js'
+import { BatteryTooLowError } from './exceptions/battery-too-low-error.js'
+import { InvalidBatteryLevelError } from './exceptions/invalid-battery-level-error.js'
 import { RobotDogId } from './value-objects/robot-dog-id.js'
-import { InvalidRobotDogNameError } from './exceptions/invalid_robot_dog_name.error.js'
+import { InvalidRobotDogNameError } from './exceptions/invalid-robot-dog-name.error.js'
+import { InvalidRobotDogSerialNumberError } from './exceptions/invalid-robot-dog-serial-number.error.js'
 
 export class RobotDog {
   private static readonly MIN_BATTERY_FOR_ACTIVITY = 10
@@ -19,6 +20,18 @@ export class RobotDog {
   ) {}
 
   public static create(serialNumber: string, name: string, batteryLevel: number): RobotDog {
+    if (!serialNumber) {
+      throw new InvalidRobotDogSerialNumberError()
+    }
+
+    if (!name) {
+      throw new InvalidRobotDogNameError(name)
+    }
+
+    if (batteryLevel === undefined || batteryLevel < 0 || batteryLevel > 100) {
+      throw new InvalidBatteryLevelError(batteryLevel)
+    }
+
     return new RobotDog(RobotDogId.generate(), serialNumber, name,  RobotDogState.IDLE, batteryLevel, new Date())
   }
 
