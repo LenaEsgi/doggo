@@ -10,8 +10,9 @@ export class UpdateRobotDogUseCaseImplementation implements UpdateRobotDogUseCas
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
   async execute(dto: UpdateRobotDogDto): Promise<void> {
+    console.log(dto)
     const id = RobotDogId.fromString(dto.id)
-
+    console.log(id)
     const robotDog = await this.robotDogRepository.findById(id)
 
     if (!robotDog) {
