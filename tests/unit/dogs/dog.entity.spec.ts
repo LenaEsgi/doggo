@@ -1,10 +1,10 @@
 import { test } from '@japa/runner'
 import { RobotDog } from '../../../app/modules/dogs/domain/robot_dog.entity.js'
 import { RobotDogState } from '../../../app/modules/dogs/domain/enums/robot_dog.state.js'
-import { InvalidDogStateError } from '../../../app/modules/dogs/domain/exceptions/invalid_dog_state_error.js'
-import { InvalidBatteryLevelError } from '../../../app/modules/dogs/domain/exceptions/invalid_battery_level_error.js'
-import { BatteryTooLowError } from '../../../app/modules/dogs/domain/exceptions/battery_too_low_error.js'
-import { InvalidRobotDogNameError } from '../../../app/modules/dogs/domain/exceptions/invalid_robot_dog_name.error.js'
+import { InvalidDogStateError } from '../../../app/modules/dogs/domain/exceptions/invalid-dog-state-error.js'
+import { InvalidBatteryLevelError } from '../../../app/modules/dogs/domain/exceptions/invalid-battery-level-error.js'
+import { BatteryTooLowError } from '../../../app/modules/dogs/domain/exceptions/battery-too-low-error.js'
+import { InvalidRobotDogNameError } from '../../../app/modules/dogs/domain/exceptions/invalid-robot-dog-name.error.js'
 
 test.group('Dog Domain', (group) => {
   let dog: RobotDog
