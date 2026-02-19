@@ -9,13 +9,13 @@ export class CreateRobotDogUseCaseImplementation implements CreateRobotDogUseCas
   constructor(private robotDogRepository: RobotDogRepository) {}
 
   async execute(dto: CreateRobotDogDto) {
-
+    console.log(dto)
     const robotDog = RobotDog.create(
       dto.serialNumber,
       dto.name,
       dto.batteryLevel
     )
-
+  console.log(robotDog)
     await this.robotDogRepository.save(robotDog)
   }
 }

@@ -1,15 +1,16 @@
 import { inject } from '@adonisjs/core'
-import { CreateRobotDogUseCase } from '../../../application/usecases/create-robot-dog.use-case.implementation.js'
 import { HttpContext } from '@adonisjs/core/http'
+import { CreateRobotDogUseCase } from '../../../application/contracts/create-robot-dog.use-case.js'
+import {CreateRobotDogValidator} from "../validators/create_robot_dog_validator.js";
 
-inject()
+@inject()
 export default class CreateRobotDogController {
-  constructor(private createUseCase: CreateRobotDogUseCase) {}
+  constructor(private readonly createUseCase: CreateRobotDogUseCase) {}
 
-  public async handle({ request, response }: HttpContext) {
-    const dto = request.only(['serialNumber', 'name', 'batteryLevel'])
+  async handle({ request, response }: HttpContext) {
+    const validatedData = await request.validateUsing(CreateRobotDogValidator)
 
-    await this.createUseCase.execute(dto)
+    await this.createUseCase.execute(validatedData)
 
     return response.status(201).json({ message: 'RobotDog created' })
   }
