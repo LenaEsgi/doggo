@@ -6,7 +6,7 @@ import { inject } from '@adonisjs/core'
 import { DestroyRobotDogUseCase } from '../contracts/destroy-robot-dog.use-case.js'
 
 @inject()
-export class DeleteRobotDogUseCaseImplementation implements DestroyRobotDogUseCase {
+export class DestroyRobotDogUseCaseImplementation implements DestroyRobotDogUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
   async execute(dto: DestroyRobotDogDto): Promise<void> {

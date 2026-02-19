@@ -3,6 +3,10 @@ import { RobotDogRepository } from '../app/modules/dogs/domain/contracts/robot_d
 import { CreateRobotDogUseCase } from '../app/modules/dogs/application/contracts/create-robot-dog.use-case.js'
 import { IndexRobotDogsUseCase } from '../app/modules/dogs/application/contracts/index-robot-dogs.use-case.js'
 import { ShowRobotDogUseCase } from '../app/modules/dogs/application/contracts/show-robot-dog.use-case.js'
+import {
+  DestroyRobotDogUseCaseImplementation
+} from '../app/modules/dogs/application/usecases/destroy-robot-dog.use-case.implementation.js'
+import { DestroyRobotDogUseCase } from '../app/modules/dogs/application/contracts/destroy-robot-dog.use-case.js'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -35,6 +39,11 @@ export default class AppProvider {
     const { ShowRobotDogUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/show-robot-dog.use-case.implementation.js')
     this.app.container.bind(ShowRobotDogUseCase, () => {
       return this.app.container.make(ShowRobotDogUseCaseImplementation)
+    })
+
+    const { DestroyRobotDogUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/destroy-robot-dog.use-case.implementation.js')
+    this.app.container.bind(DestroyRobotDogUseCase, () => {
+      return this.app.container.make(DestroyRobotDogUseCaseImplementation)
     })
   }
 
