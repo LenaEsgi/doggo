@@ -1,5 +1,13 @@
 import { ApplicationService } from '@adonisjs/core/types'
-import { AuthService } from '#auth/application/contracts/auth.service'
+import { DeleteAccountAuthService } from '#auth/application/contracts/delete.account.auth.service'
+import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.auth.service'
+import { FinalizeTotpSetupAuthService } from '#auth/application/contracts/finalize.totp.setup.auth.service'
+import { ListMfaEnrollmentsAuthService } from '#auth/application/contracts/list.mfa.enrollments.auth.service'
+import { LoginAuthService } from '#auth/application/contracts/login.auth.service'
+import { LoginWithTotpAuthService } from '#auth/application/contracts/login.with.totp.auth.service'
+import { PasswordResetAuthService } from '#auth/application/contracts/password.reset.auth.service'
+import { RegisterAuthService } from '#auth/application/contracts/register.auth.service'
+import { StartTotpSetupAuthService } from '#auth/application/contracts/start.totp.setup.auth.service'
 import { AuthProvider } from '#auth/domain/contracts/auth.provider'
 import { LocalUserRepository } from '#auth/domain/contracts/local_user.repository'
 import { CreateUserService } from '#users/application/contracts/create.user.service'
@@ -17,8 +25,23 @@ export default class AppProvider {
    * Register bindings to the container
    */
   public async register() {
-    const { AuthServiceImplementation } =
-      await import('#auth/application/services/auth.service.implementation')
+    const { DeleteAccountAuth } = await import('#auth/application/services/delete.account.auth.service')
+    const { DisableMfaAuth } = await import('#auth/application/services/disable.mfa.auth.service')
+    const { FinalizeTotpSetupAuth } = await import(
+      '#auth/application/services/finalize.totp.setup.auth.service'
+    )
+    const { ListMfaEnrollmentsAuth } = await import(
+      '#auth/application/services/list.mfa.enrollments.auth.service'
+    )
+    const { LoginAuth } = await import('#auth/application/services/login.auth.service')
+    const { LoginWithTotpAuth } = await import(
+      '#auth/application/services/login.with.totp.auth.service'
+    )
+    const { PasswordResetAuth } = await import('#auth/application/services/password.reset.auth.service')
+    const { RegisterAuth } = await import('#auth/application/services/register.auth.service')
+    const { StartTotpSetupAuth } = await import(
+      '#auth/application/services/start.totp.setup.auth.service'
+    )
     const { FirebaseAuthProvider } =
       await import('#auth/infrastructure/providers/firebase_auth.provider')
     const { LocalUserRepositoryImplementation } =
@@ -46,8 +69,40 @@ export default class AppProvider {
       return this.app.container.make(LocalUserRepositoryImplementation)
     })
 
-    this.app.container.bind(AuthService, () => {
-      return this.app.container.make(AuthServiceImplementation)
+    this.app.container.bind(RegisterAuthService, () => {
+      return this.app.container.make(RegisterAuth)
+    })
+
+    this.app.container.bind(LoginAuthService, () => {
+      return this.app.container.make(LoginAuth)
+    })
+
+    this.app.container.bind(LoginWithTotpAuthService, () => {
+      return this.app.container.make(LoginWithTotpAuth)
+    })
+
+    this.app.container.bind(PasswordResetAuthService, () => {
+      return this.app.container.make(PasswordResetAuth)
+    })
+
+    this.app.container.bind(StartTotpSetupAuthService, () => {
+      return this.app.container.make(StartTotpSetupAuth)
+    })
+
+    this.app.container.bind(FinalizeTotpSetupAuthService, () => {
+      return this.app.container.make(FinalizeTotpSetupAuth)
+    })
+
+    this.app.container.bind(ListMfaEnrollmentsAuthService, () => {
+      return this.app.container.make(ListMfaEnrollmentsAuth)
+    })
+
+    this.app.container.bind(DisableMfaAuthService, () => {
+      return this.app.container.make(DisableMfaAuth)
+    })
+
+    this.app.container.bind(DeleteAccountAuthService, () => {
+      return this.app.container.make(DeleteAccountAuth)
     })
 
     this.app.container.bind(CreateUserService, () => {
