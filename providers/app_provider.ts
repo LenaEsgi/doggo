@@ -2,6 +2,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 import { RobotDogRepository } from '../app/modules/dogs/domain/contracts/robot_dog.repository.js'
 import { CreateRobotDogUseCase } from '../app/modules/dogs/application/contracts/create-robot-dog.use-case.js'
 import { IndexRobotDogsUseCase } from '../app/modules/dogs/application/contracts/index-robot-dogs.use-case.js'
+import { ShowRobotDogUseCase } from '../app/modules/dogs/application/contracts/show-robot-dog.use-case.js'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -29,6 +30,11 @@ export default class AppProvider {
     const { IndexRobotDogsUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/index-robot-dogs.use-case.implementation.js')
     this.app.container.bind(IndexRobotDogsUseCase, () => {
       return this.app.container.make(IndexRobotDogsUseCaseImplementation)
+    })
+
+    const { ShowRobotDogUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/show-robot-dog.use-case.implementation.js')
+    this.app.container.bind(ShowRobotDogUseCase, () => {
+      return this.app.container.make(ShowRobotDogUseCaseImplementation)
     })
   }
 

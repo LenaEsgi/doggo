@@ -14,6 +14,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
     return RobotDog.rehydrate(
       row.id,
       row.serialNumber,
+      row.key,
       row.name,
       row.state as RobotDogState,
       row.batteryLevel,
@@ -27,6 +28,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       RobotDog.rehydrate(
         row.id,
         row.serialNumber,
+        row.key,
         row.name,
         row.state as RobotDogState,
         row.batteryLevel,
@@ -39,6 +41,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       { id: dog.id.value },
       {
         serialNumber: dog.serialNumber,
+        key: dog.key.value,
         name: dog.name,
         state: dog.state,
         batteryLevel: dog.batteryLevel,
