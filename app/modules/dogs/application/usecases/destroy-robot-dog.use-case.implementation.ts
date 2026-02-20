@@ -4,20 +4,26 @@ import { DestroyRobotDogDto } from '../DTO/destroy-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
 import { inject } from '@adonisjs/core'
 import { DestroyRobotDogUseCase } from '../contracts/destroy-robot-dog.use-case.js'
+import logger from "@adonisjs/core/services/logger";
 
 @inject()
 export class DestroyRobotDogUseCaseImplementation implements DestroyRobotDogUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
   async execute(dto: DestroyRobotDogDto): Promise<void> {
+    logger.info({ robotDogId: dto.id }, 'DestroyRobotDogUseCase started')
+
     const id = RobotDogId.fromString(dto.id)
 
     const robotDog = await this.robotDogRepository.findById(id)
 
     if (!robotDog) {
+      logger.warn({ robotDogId: dto.id }, 'RobotDog not found')
       throw new RobotDogNotFoundError(dto.id)
     }
 
     await this.robotDogRepository.delete(id)
+
+    logger.info({ robotDogId: dto.id }, 'DestroyRobotDogUseCase completed successfully')
   }
 }

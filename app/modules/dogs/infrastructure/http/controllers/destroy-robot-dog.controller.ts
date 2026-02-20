@@ -7,19 +7,25 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class DeleteRobotDogController {
   constructor(private deleteRobotDog: DestroyRobotDogUseCase) {}
 
-  public async handle({ params, response }: HttpContext) {
+  public async handle({ params, response, logger }: HttpContext) {
+    logger.info({ robotDogId: params.id }, 'DeleteRobotDogController called')
+
     try {
-      await this.deleteRobotDog.execute({
-        id: params.id,
-      })
+      await this.deleteRobotDog.execute({ id: params.id })
+
+      logger.info({ robotDogId: params.id }, 'RobotDog successfully deleted')
 
       return response.status(204)
     } catch (error) {
       if (error instanceof RobotDogNotFoundError) {
+        logger.warn({ robotDogId: params.id }, 'Attempted to delete non-existent RobotDog')
+
         return response.status(404).json({
           message: error.message,
         })
       }
+
+      logger.error({ robotDogId: params.id, error }, 'Unexpected error while deleting RobotDog')
 
       throw error
     }
