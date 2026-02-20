@@ -7,9 +7,13 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class ShowRobotDogController {
   constructor(private showRobotDog: ShowRobotDogUseCase) {}
 
-  public async handle({ params, response }: HttpContext) {
+  public async handle({ params, response, logger }: HttpContext) {
+    logger.info({ robotDogId: params.id }, 'ShowRobotDogController called')
+
     try {
       const robot = await this.showRobotDog.execute({ id: params.id })
+
+      logger.info({ robotDogId: params.id }, 'ShowRobotDogController completed successfully')
 
       return response.status(200).json({
         id: robot.id,
@@ -21,8 +25,12 @@ export default class ShowRobotDogController {
       })
     } catch (err) {
       if (err instanceof RobotDogNotFoundError) {
+        logger.warn({ robotDogId: params.id }, 'RobotDog not found')
+
         return response.status(404).json({ message: err.message })
       }
+
+      logger.error({ robotDogId: params.id, error: err }, 'Unexpected error in ShowRobotDogController')
 
       throw err
     }
