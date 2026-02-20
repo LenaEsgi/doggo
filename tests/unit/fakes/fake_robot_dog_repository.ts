@@ -25,4 +25,8 @@ export class FakeRobotDogRepository extends RobotDogRepository {
   async delete(id: RobotDogId) {
     this.storedDogs = this.storedDogs.filter(d => !d.id.equals(id))
   }
+
+  async findBySerialNumber(serialNumber: string) {
+    return this.storedDogs.find(d => d.serialNumber === serialNumber) ?? null
+  }
 }
