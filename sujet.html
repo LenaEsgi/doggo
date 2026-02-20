@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>pa</title>
+  <style>
+
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style type="text/css">
+
+html {
+font-size: 62.5%;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+body {
+font-size: 1.8rem;
+line-height: 1.618;
+max-width: 45em;
+margin: auto;
+color: #4a4a4a;
+background-color: #f9f9f9;
+padding: 13px;
+}
+@media (max-width: 684px) {
+body {
+font-size: 1.53rem;
+}
+}
+@media (max-width: 382px) {
+body {
+font-size: 1.35rem;
+}
+}
+h1, h2, h3, h4, h5, h6 {
+line-height: 1.1;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+font-weight: 700;
+margin-top: 3rem;
+margin-bottom: 1.5rem;
+overflow-wrap: break-word;
+word-wrap: break-word;
+-ms-word-break: break-all;
+word-break: break-word;
+}
+h1 {
+font-size: 2.35em;
+}
+h2 {
+font-size: 2em;
+}
+h3 {
+font-size: 1.75em;
+}
+h4 {
+font-size: 1.5em;
+}
+h5 {
+font-size: 1.25em;
+}
+h6 {
+font-size: 1em;
+}
+p {
+margin-top: 0px;
+margin-bottom: 2.5rem;
+}
+small, sub, sup {
+font-size: 75%;
+}
+hr {
+border-color: #1d7484;
+}
+a {
+text-decoration: none;
+color: #1d7484;
+}
+a:visited {
+color: #144f5a;
+}
+a:hover {
+color: #982c61;
+border-bottom: 2px solid #4a4a4a;
+}
+ul {
+padding-left: 1.4em;
+margin-top: 0px;
+margin-bottom: 2.5rem;
+}
+li {
+margin-bottom: 0.4em;
+}
+blockquote {
+margin-left: 0px;
+margin-right: 0px;
+padding-left: 1em;
+padding-top: 0.8em;
+padding-bottom: 0.8em;
+padding-right: 0.8em;
+border-left: 5px solid #1d7484;
+margin-bottom: 2.5rem;
+background-color: #f1f1f1;
+}
+blockquote p {
+margin-bottom: 0;
+}
+img, video {
+height: auto;
+max-width: 100%;
+margin-top: 0px;
+margin-bottom: 2.5rem;
+}
+
+pre {
+background-color: #f1f1f1;
+display: block;
+padding: 1em;
+overflow-x: auto;
+margin-top: 0px;
+margin-bottom: 2.5rem;
+font-size: 0.9em;
+}
+code, kbd, samp {
+font-size: 0.9em;
+padding: 0 0.5em;
+background-color: #f1f1f1;
+white-space: pre-wrap;
+}
+pre > code {
+padding: 0;
+background-color: transparent;
+white-space: pre;
+font-size: 1em;
+}
+
+table {
+text-align: justify;
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 2rem;
+}
+td, th {
+padding: 0.5em;
+border-bottom: 1px solid #f1f1f1;
+}
+
+input, textarea {
+border: 1px solid #4a4a4a;
+}
+input:focus, textarea:focus {
+border: 1px solid #1d7484;
+}
+textarea {
+width: 100%;
+}
+.button, button,
+input[type=submit],
+input[type=reset],
+input[type=button],
+input[type=file]::file-selector-button {
+display: inline-block;
+padding: 5px 10px;
+text-align: center;
+text-decoration: none;
+white-space: nowrap;
+background-color: #1d7484;
+color: #f9f9f9;
+border-radius: 1px;
+border: 1px solid #1d7484;
+cursor: pointer;
+box-sizing: border-box;
+}
+.button:hover, button:hover,
+input[type=submit]:hover,
+input[type=reset]:hover,
+input[type=button]:hover,
+input[type=file]::file-selector-button:hover {
+background-color: #982c61;
+color: #f9f9f9;
+outline: 0;
+}
+.button[disabled], button[disabled],
+input[type=submit][disabled],
+input[type=reset][disabled],
+input[type=button][disabled],
+input[type=file][disabled] {
+cursor: default;
+opacity: 0.5;
+}
+.button:focus-visible, button:focus-visible,
+input[type=submit]:focus-visible,
+input[type=reset]:focus-visible,
+input[type=button]:focus-visible,
+input[type=file]:focus-visible {
+outline-style: solid;
+outline-width: 2px;
+}
+textarea, select, input {
+color: #4a4a4a;
+padding: 6px 10px; 
+margin-bottom: 10px;
+background-color: #f1f1f1;
+border: 1px solid #f1f1f1;
+border-radius: 4px;
+box-shadow: none;
+box-sizing: border-box;
+}
+textarea:focus, select:focus, input:focus {
+border: 1px solid #1d7484;
+outline: 0;
+}
+input[type=checkbox]:focus {
+outline: 1px dotted #1d7484;
+}
+label, legend, fieldset {
+display: block;
+margin-bottom: 0.5rem;
+font-weight: 600;
+}</style>
+</head>
+<body>
+<h1 id="contraintes-et-éléments-évalués">Contraintes et éléments
+évalués</h1>
+<h2 id="le-choix-du-domaine-métier">Le choix du domaine métier</h2>
+<p>Le choix du domaine métier est libre tant qu’il permet de respecter
+les contraintes du projet.</p>
+<p>Il n’est pas nécéssaire d’avoir un domaine qui requiert du code
+“complexe” ou l’utilisation d’algorithmes.</p>
+<p>Le domaine choisi doit être fourni et comprendre plusieurs entités
+métiers qui auront chacune leur cycle de vie ainsi que des endpoint
+exposés sur votre API.</p>
+<p>Le domaine choisi doit permettre l’inclusion d’au moins un traitement
+asynchrone (Il n’y a pas besoin que ce soit très complexe, il peut
+simplement s’agir d’un traitement de fichier spécifique à votre
+domaine)</p>
+<h2 id="larchitecture-globale-attendue">1. L’architecture globale
+attendue</h2>
+<h3 id="une-interface-utilisateur">Une interface utilisateur</h3>
+<p>Votre application doit être accessible via une interface utilisateur.
+Le choix de la technologie est libre. Il peut s’agir d’une application
+web, d’une application mobile ou bien d’un client lourd.</p>
+<h3 id="un-backend">Un backend</h3>
+<p>Votre application doit contenir au moins un service de type “Backend”
+qui va être responsable de la persistance de vos données et de la
+coordination des opérations métier. Votre backend devra exposer une API
+(REST de préférence, mais il est possible de faire du gRPC par exemple
+si vous le souhaitez)</p>
+<p>Le backend devra être appelé uniquement par votre frontend.</p>
+<p>Votre Backend ne doit en aucun cas faire confiance à votre frontend.
+Vous devrez valider les tokens reçus à chaque appel (ou mettre en place
+un middleware qui se charge de cette partie)</p>
+<p>La technologie est libre là aussi mais il est imposé d’avoir des
+annotations de types et une évaluation statique de votre typage.
+Choisissez donc un langage qui supporte ces contraintes.</p>
+<p>Quelques précisions :</p>
+<ul>
+<li>Le JS même si vous utilisez de la JSDoc pour documenter vos
+fonctions n’est pas accepté. Préférez le Typescript.</li>
+<li>Si vous utilisez du Typescript, il est recommandé d’éviter le type
+“any” (sauf en cas de force majeure ou pour du mock lors de tests
+unitaires). Préférez l’utilisation du type “unknown” avec du <a href="https://www.typescriptlang.org/fr/docs/handbook/2/narrowing.html">rétrécissement</a>
+lorsque c’est applicable.</li>
+<li>Python permet l’utilisation d’annotations de type optionnelles et
+l’ajout de <a href="https://github.com/python/mypy">MyPy</a> peut les
+rendre obligatoire. Cette combinaison est acceptée pour ce projet si
+vous souhaitez utiliser du Python.</li>
+</ul>
+<h3 id="un-service-diam-identity-access-management">Un service d’IAM
+(Identity &amp; Access management)</h3>
+<p>Votre architecture devra inclure un système d’IAM moderne. Il est
+conseillé de mettre en place un système robuste existant tel que
+Keycloak, Firebase, Cognito ou autre plutôt que de le développer vous
+même.</p>
+<p>Ce système sera atteignable par le frontend pour gérer la connexion à
+votre application et l’obtention de tokens pour prouver votre
+identité.</p>
+<p>Votre backend pourra atteindre ce service pour faire des appels à
+leur API d’administration pour vérifier la validité d’un token, envoyer
+des mails, modifier des données utilisateurs ou autre.</p>
+<p>Votre système d’IAM doit à minima gérer via ses propres écrans :</p>
+<ul>
+<li>La création d’un compte</li>
+<li>La connexion</li>
+<li>Le reset du mot de passe</li>
+<li>La mise en place d’une authentification forte (Je vous recommande
+d’utiliser l’application Aegis pour gérer les codes 2FA sur votre
+téléphone)</li>
+<li>La suppression de l’authentification forte</li>
+</ul>
+<p>Le design des écran ne sera PAS évalué. Vous pouvez utiliser les
+écrans par défaut même si le thème ne correspond pas au design de votre
+interface utilisateur.</p>
+<h3 id="un-service-de-type-worker">Un service de type Worker</h3>
+<p>Votre application devra contenir au moins un service de type Worker,
+qui effectuera des tâches asynchrones telles que l’envoie de mail / SMS,
+l’upload de fichier ou le traitement d’image, ainsi que toutes tâches
+liées à votre domaine métier.</p>
+<p>Votre Worker doit inclure au moins une tâche spécifique à votre
+domaine (Génération de PDF, validation et analyse d’un fichier upload
+par un utilisateur)</p>
+<p>Votre Worker et votre Backend devront communiquer par un système de
+Queue (SQS, Pub/Sub, Kafka, RabbitMQ). Vous devrez mettre en place deux
+queues. Une pour gérer les demandes (Backend -&gt; Worker) et une pour
+les réponses (Worker -&gt; Backend). Le Worker ne doit PAS appeler de
+manière synchrone votre Backend.</p>
+<p>Votre Worker peut gérer plusieurs tâches différentes, il n’est pas
+nécéssaire d’avoir un worker par tâche. Il est possible d’en rajouter si
+vous le souhaitez, mais ce n’est pas obligatoire.</p>
+<p>Votre Worker devra être complètement isolé de votre Backend. Il ne
+doit pas avoir accès à la base de données que gère votre Backend (Si
+votre besoin le justifie, avoir un accès en lecture seule au maximum) ni
+aux modèles existants. Il doit recevoir les informations dont il a
+besoin pour son traitement en entrée et fournir une réponse (Même en cas
+d’échec) au Backend via une autre Queue. Votre Backend est responsable
+de la gestion de la base de données.</p>
+<p>Votre Worker sera responsable de la politique de retry. Pour chaque
+tâche, vous devrez déterminer la criticité et la bonne politique de
+retry à appliquer.</p>
+<p>Vous aurez des points en plus si le Worker est développé en Rust.</p>
+<h2 id="larchitecture-logicielle">2. L’architecture logicielle</h2>
+<p>L’architecture pour votre projet n’est pas imposée, mais elle sera
+évaluée selon certaines contraintes que vous devrez respecter au
+maximum.</p>
+<h3 id="utilisation-dadr-architecture-decision-record">Utilisation d’ADR
+(Architecture Decision Record)</h3>
+<p>Il est attendu que vous rédigiez des ADR qui devront justifier vos
+décisions d’architecture logicielle (entre autre). Vos ADR doivent être
+datés et versionnés dans les différents repository git de vos projets.
+Le template est libre mais je vous recommande un template simplifié qui
+ne vous demandera pas trop de rédaction. Le but est qu’il soit facile de
+rédiger un ADR sinon personne n’adoptera ce système dans votre
+équipe.</p>
+<p>Voici une liste des situations dans lesquelles un ADR est attendu
+:</p>
+<ul>
+<li>Un changement dans un modèle</li>
+<li>L’ajout d’une dépendance externe</li>
+<li>Un choix d’architecture</li>
+</ul>
+<p>Vous êtes libre d’ajouter des ADR dans d’autres situations si vous le
+souhaitez.</p>
+<h3 id="test-unitaires">Test unitaires</h3>
+<p>Il est attendu que votre code ait des tests unitaires, surtout sur
+les parties critiques comme votre domaine métier. Vos tests unitaires
+seront un gage de qualité de votre architecture. Vous devez penser votre
+code pour qu’il soit facilement testable.</p>
+<h3 id="isolation-des-dépendances-externes">Isolation des dépendances
+externes</h3>
+<p>Vos projets devront suivre une architecture capable d’isoler au
+maximum vos dépendances externes (Même dans votre interface
+utilisateur). Vous devrez faire usage d’une architecture qui isolera
+votre domaine au maximum de toutes dépendances externes. Vous avez le
+droit d’utiliser des dépendances externes dans votre domaine si vous le
+justifiez par un ADR. Quelques exemples courants en TypeScript peuvent
+être Neverthrow ou Immutable qui sont des dépendances avec des
+interfaces très stables et aucunes peer-dependencies.</p>
+<h3 id="gestion-derreur">Gestion d’erreur</h3>
+<p>Vos projets devront mettre en place une gestion d’erreur appropriée.
+Pour votre backend, vous devrez séparer les erreurs métier des erreurs
+techniques. Ne renvoyez pas de code d’erreur HTTP dans votre métier par
+exemple.</p>
+<h3 id="observabilité">Observabilité</h3>
+<p>Votre Backend et votre Worker doivent produire des logs qui
+permettent de suivre l’exécution du code et de vos traitement
+asynchrones de bout en bout. Pour cela, vous pourrez utiliser des id de
+corrélation. Vous pouvez aller plus loin et mettre en place un système
+de traces et de métriques mais ce n’est pas obligatoire (OpenTelemetry +
+Prometheus + Grafana par exemple)</p>
+<h2 id="le-devops">3. Le DevOps</h2>
+<h3 id="utilisation-dun-gestionnaire-de-version">Utilisation d’un
+gestionnaire de version</h3>
+<p>Votre projet devra utiliser un logiciel de gestion de versions tel
+que Git. Vous devrez mettre en place un flow de développement documenté
+que vous devrez respecter (gitflow, trunk-based, gitlab-flow etc).</p>
+<h3 id="présence-dune-pipeline-dintégration-et-de-livraison-continue">Présence
+d’une pipeline d’intégration et de livraison continue</h3>
+<p>Vous devrez mettre en place une pipeline d’intégration et de
+livraison continue. Cette pipeline devra complémenter votre workflow git
+et devra donc être implémentée tôt dans votre projet.(du moins une
+première version basique) Voici les attentes sur vos différentes
+pipelines :</p>
+<ul>
+<li>Avoir une pipeline automatique qui se lance à chaque commit de la
+branche main</li>
+<li>Cette pipeline doit avoir au minimum les étapes suivantes :
+<ul>
+<li>Des test unitaires</li>
+<li>Une vérification par un linter</li>
+<li>Un build du projet</li>
+<li>Une mise en ligne du livrable (Sur Docker Hub par exemple)</li>
+</ul></li>
+</ul>
+<p>Vous êtes libres de rajouter d’autres étapes ou pipelines selon vos
+besoin.</p>
+<h3 id="présence-dune-pipeline-de-déploiement-en-production">Présence
+d’une pipeline de déploiement en production</h3>
+<p>Le déploiement sur votre infrastructure cloud sera considéré comme
+une mise en production. Il est attendu que vous ayez à disposition une
+pipeline manuelle ou automatique qui permette de mettre à jour un projet
+sur votre environnement cloud. Le déploiement des ressources IAC n’est
+pas obligatoirement inclus dans cette étape.</p>
+<h3 id="utilisation-de-conteneurs">Utilisation de conteneurs</h3>
+<p>Vos livrables seront sous la forme de conteneurs. Vous pouvez
+utiliser <a href="https://hub.docker.com/">https://hub.docker.com/</a>
+pour mettre en ligne vos livrables ou bien des registres privés tels que
+les registres privés Gitlab. Vos conteneurs doivent impérativement être
+mis en ligne sur un registre. La qualité de votre Dockerfile sera aussi
+évaluée selon certain critères:</p>
+<ul>
+<li>Optimisation de la taille de l’image</li>
+<li>Fiabilité de l’image (Qui en est l’auteur, est-elle maintenue)</li>
+<li>Capacité à justifier le choix du tag de l’image</li>
+<li>Optimisation des étapes pour maximiser le cache Docker</li>
+<li>Utilisation d’un build de production au sein de l’image (pas de npm
+run dev par exemple)</li>
+</ul>
+<h3 id="déploiement-sur-un-cloud">Déploiement sur un Cloud</h3>
+<p>Votre projet devra être déployé sur un cloud et accessible via HTTPS
+sur un nom de domaine. Je suis en mesure de vous fournir des sous
+domaines si besoin pour vos projets pour vous éviter d’en acheter un.
+Vous pouvez utiliser Kubernetes mais je ne le recommande pas car cela
+vous entrainerai des coûts. Je vous conseille d’utiliser les ressources
+gratuites sur Google Cloud (Cloud Run et Pub/Sub) ou bien AWS (SQS +
+Lambda).</p>
+<h3 id="utilisation-de-liac">Utilisation de l’IAC</h3>
+<p>Vos ressources Cloud devront être déployées automatiquement via des
+scripts d’IAC. Dans l’idéal, vous devrez avoir un repository Git
+contenant toutes vos ressources Cloud. Vos scripts IAC devront être en
+mesure de supporter plusieurs environnements (dev / Prod) même s’il
+n’est pas demandé de déployer plusieurs environnement dans ce projet
+pour vous éviter au maximum d’engendrer des coûts.</p>
+<h2 id="gestion-des-breaking-changes">4. Gestion des breaking
+changes</h2>
+<p>Votre projet doit être en mesure de gérer le déploiement de breaking
+changes sans impacter votre interface utilisateur. Vous devez considérer
+que votre frontend et votre backend sont développés par deux équipes
+différentes qui n’auront pas forcément le même rythme ni les mêmes
+priorités. Votre Backend doit être en mesure de déployer une breaking
+change sans que cela n’impacte le frontend. Voici quelques exemples
+d’options pour gérer ces cas :</p>
+<ul>
+<li>Mettre en place un système de versionning pour votre API</li>
+<li>Mettre en place un système de versionning sur vos schémas
+d’entrées</li>
+<li>Mettre en place un système de feature flags qui vous permettra
+d’activer une breaking change une fois que le frontend est à jour</li>
+</ul>
+<p>Vous devrez mettre en place une procédure et la documenter dans un
+fichier qui sera versionné avec le reste de votre projet.</p>
+<p>Pour le rendu final, votre backend devra contenir au moins une route
+contenant une breaking change. Vous devrez être en mesure de démontrer
+en direct que votre frontend peut utiliser l’une ou l’autre des versions
+selon votre système. Si vous avez choisi de versionner votre schéma
+d’API par exemple, vous pourrez déployer une version du frontend
+utilisant la première version du schéma, puis, déployer une deuxième
+version plus récente qui utilisera la nouvelle. La seule contrainte est
+que votre backend ne devra PAS être redéployé.</p>
+</body>
+</html>

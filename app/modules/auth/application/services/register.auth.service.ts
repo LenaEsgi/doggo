@@ -1,0 +1,26 @@
+import { inject } from '@adonisjs/core'
+import { RegisterAuthService } from '#auth/application/contracts/register.auth.service'
+import type { RegisterDto } from '#auth/application/dto/register.dto'
+import { AuthProvider } from '#auth/domain/contracts/auth.provider'
+import { LocalUserRepository } from '#auth/domain/contracts/local_user.repository'
+import type { AuthTokens } from '#auth/domain/types/auth.types'
+
+@inject()
+export class RegisterAuth implements RegisterAuthService {
+  constructor(
+    private readonly authProvider: AuthProvider,
+    private readonly localUserRepository: LocalUserRepository
+  ) {}
+
+  async register(payload: RegisterDto): Promise<AuthTokens> {
+    const authUser = await this.authProvider.register(payload.email, payload.password)
+
+    await this.localUserRepository.ensureUserProfile({
+      firstname: payload.firstname,
+      lastname: payload.lastname,
+      email: payload.email,
+    })
+
+    return authUser
+  }
+}
