@@ -8,3 +8,4 @@
 */
 
 import './routes/swagger.js'
+import '../app/modules/dogs/infrastructure/http/routes.js'

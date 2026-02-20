@@ -1,0 +1,8 @@
+export enum RobotDogState {
+  IDLE = 'IDLE',
+  IN_SESSION = 'IN_SESSION',
+  IN_MISSION = 'IN_MISSION',
+  OFFLINE = 'OFFLINE',
+  ERROR = 'ERROR',
+  CHARGING = 'CHARGING',
+}
