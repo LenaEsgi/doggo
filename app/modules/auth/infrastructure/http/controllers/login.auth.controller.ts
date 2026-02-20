@@ -3,7 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { LoginAuthService } from '#auth/application/contracts/login.auth.service'
 import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer'
-import { loginAuthValidator } from '#auth/infrastructure/validators/login.auth.validator'
+import { loginAuthValidator } from '#auth/infrastructure/http/validators/login.auth.validator'
 
 @inject()
 export default class LoginAuthController {

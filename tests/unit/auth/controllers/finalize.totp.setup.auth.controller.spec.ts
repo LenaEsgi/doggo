@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import FinalizeTotpSetupAuthController from '#auth/infrastructure/controllers/finalize.totp.setup.auth.controller'
 import { FinalizeTotpSetupAuthService } from '#auth/application/contracts/finalize.totp.setup.auth.service'
 import type { FinalizeTotpSetupDto } from '#auth/application/dto/finalize_totp_setup.dto'
 import type { TotpFinalizeResult } from '#auth/domain/types/auth.types'
+import FinalizeTotpSetupAuthController from '#auth/infrastructure/http/controllers/finalize.totp.setup.auth.controller'
 
 class FakeFinalizeTotpSetupAuthService extends FinalizeTotpSetupAuthService {
   async finalizeTotpSetup(_payload: FinalizeTotpSetupDto): Promise<TotpFinalizeResult> {

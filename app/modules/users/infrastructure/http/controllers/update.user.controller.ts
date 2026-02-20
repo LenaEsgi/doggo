@@ -3,9 +3,9 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { UpdateUserService } from '#users/application/contracts/update.user.service'
 import { UserSerializer } from '#users/infrastructure/serializers/user.serializer'
 import {
-  updateUserValidator,
   updateUserParamValidator,
-} from '#users/infrastructure/validators/update.user.validator'
+  updateUserValidator,
+} from '#users/infrastructure/http/validators/update.user.validator'
 
 @inject()
 export default class UpdateUserController {

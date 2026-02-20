@@ -1,21 +1,21 @@
 import router from '@adonisjs/core/services/router'
 
-const RegisterAuthController = () => import('#auth/infrastructure/controllers/register.auth.controller')
-const LoginAuthController = () => import('#auth/infrastructure/controllers/login.auth.controller')
+const RegisterAuthController = () => import('../../app/modules/auth/infrastructure/http/controllers/register.auth.controller')
+const LoginAuthController = () => import('../../app/modules/auth/infrastructure/http/controllers/login.auth.controller')
 const LoginWithTotpAuthController = () =>
-  import('#auth/infrastructure/controllers/login.with.totp.auth.controller')
+  import('../../app/modules/auth/infrastructure/http/controllers/login.with.totp.auth.controller')
 const PasswordResetAuthController = () =>
-  import('#auth/infrastructure/controllers/password.reset.auth.controller')
+  import('../../app/modules/auth/infrastructure/http/controllers/password.reset.auth.controller')
 const StartTotpSetupAuthController = () =>
-  import('#auth/infrastructure/controllers/start.totp.setup.auth.controller')
+  import('../../app/modules/auth/infrastructure/http/controllers/start.totp.setup.auth.controller')
 const FinalizeTotpSetupAuthController = () =>
-  import('#auth/infrastructure/controllers/finalize.totp.setup.auth.controller')
+  import('../../app/modules/auth/infrastructure/http/controllers/finalize.totp.setup.auth.controller')
 const ListMfaEnrollmentsAuthController = () =>
-  import('#auth/infrastructure/controllers/list.mfa.enrollments.auth.controller')
+  import('../../app/modules/auth/infrastructure/http/controllers/list.mfa.enrollments.auth.controller')
 const DisableMfaAuthController = () =>
-  import('#auth/infrastructure/controllers/disable.mfa.auth.controller')
+  import('../../app/modules/auth/infrastructure/http/controllers/disable.mfa.auth.controller')
 const DeleteAccountAuthController = () =>
-  import('#auth/infrastructure/controllers/delete.account.auth.controller')
+  import('../../app/modules/auth/infrastructure/http/controllers/delete.account.auth.controller')
 
 router
   .group(() => {

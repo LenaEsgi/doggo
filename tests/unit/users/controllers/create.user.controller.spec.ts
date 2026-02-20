@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import CreateUserController from '#users/infrastructure/controllers/create.user.controller'
 import { CreateUserService } from '#users/application/contracts/create.user.service'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
+import CreateUserController from '#users/infrastructure/http/controllers/create.user.controller'
 
 class FakeCreateUserService extends CreateUserService {
   async create() {

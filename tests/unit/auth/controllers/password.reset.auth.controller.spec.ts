@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
-import PasswordResetAuthController from '#auth/infrastructure/controllers/password.reset.auth.controller'
 import { PasswordResetAuthService } from '#auth/application/contracts/password.reset.auth.service'
 import type { PasswordResetDto } from '#auth/application/dto/password_reset.dto'
+import PasswordResetAuthController from '#auth/infrastructure/http/controllers/password.reset.auth.controller'
 
 class FakePasswordResetAuthService extends PasswordResetAuthService {
   async sendPasswordReset(_payload: PasswordResetDto): Promise<void> {}

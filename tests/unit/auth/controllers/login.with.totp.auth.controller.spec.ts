@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import LoginWithTotpAuthController from '#auth/infrastructure/controllers/login.with.totp.auth.controller'
 import { LoginWithTotpAuthService } from '#auth/application/contracts/login.with.totp.auth.service'
 import type { LoginWithTotpDto } from '#auth/application/dto/login_with_totp.dto'
 import type { AuthTokens } from '#auth/domain/types/auth.types'
+import LoginWithTotpAuthController from '#auth/infrastructure/http/controllers/login.with.totp.auth.controller'
 
 class FakeLoginWithTotpAuthService extends LoginWithTotpAuthService {
   async loginWithTotp(_payload: LoginWithTotpDto): Promise<AuthTokens> {

@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import ShowUserController from '#users/infrastructure/controllers/show.user.controller'
 import { ShowUserService } from '#users/application/contracts/show.user.service'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
+import ShowUserController from '#users/infrastructure/http/controllers/show.user.controller'
 
 class FakeShowUserService extends ShowUserService {
   constructor(private readonly user: User | null) {

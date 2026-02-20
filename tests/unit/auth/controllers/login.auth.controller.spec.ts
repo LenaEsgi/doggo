@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import LoginAuthController from '#auth/infrastructure/controllers/login.auth.controller'
 import { LoginAuthService } from '#auth/application/contracts/login.auth.service'
 import type { LoginDto } from '#auth/application/dto/login.dto'
 import type { LoginResult } from '#auth/domain/types/auth.types'
+import LoginAuthController from '#auth/infrastructure/http/controllers/login.auth.controller'
 
 class FakeLoginAuthService extends LoginAuthService {
   async login(_payload: LoginDto): Promise<LoginResult> {

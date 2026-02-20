@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import IndexUserController from '#users/infrastructure/controllers/index.user.controller'
 import { IndexUserService } from '#users/application/contracts/index.user.service'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
+import IndexUserController from '#users/infrastructure/http/controllers/index.user.controller'
 
 class FakeIndexUserService extends IndexUserService {
   async index() {

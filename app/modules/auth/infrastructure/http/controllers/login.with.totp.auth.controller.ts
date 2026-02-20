@@ -3,7 +3,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { LoginWithTotpAuthService } from '#auth/application/contracts/login.with.totp.auth.service'
 import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer'
-import { loginWithTotpAuthValidator } from '#auth/infrastructure/validators/login.with.totp.auth.validator'
+import { loginWithTotpAuthValidator } from '#auth/infrastructure/http/validators/login.with.totp.auth.validator'
+
 
 @inject()
 export default class LoginWithTotpAuthController {

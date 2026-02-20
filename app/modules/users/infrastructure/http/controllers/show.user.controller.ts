@@ -2,7 +2,7 @@ import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ShowUserService } from '#users/application/contracts/show.user.service'
 import { UserSerializer } from '#users/infrastructure/serializers/user.serializer'
-import { showUserParamValidator } from '#users/infrastructure/validators/show.user.validator'
+import { showUserParamValidator } from '#users/infrastructure/http/validators/show.user.validator'
 
 @inject()
 export default class ShowUserController {

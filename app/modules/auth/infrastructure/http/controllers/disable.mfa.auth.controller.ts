@@ -2,7 +2,8 @@ import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.auth.service'
 import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
-import { disableMfaAuthValidator } from '#auth/infrastructure/validators/disable.mfa.auth.validator'
+import { disableMfaAuthValidator } from '#auth/infrastructure/http/validators/disable.mfa.auth.validator'
+
 
 @inject()
 export default class DisableMfaAuthController {

@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import StartTotpSetupAuthController from '#auth/infrastructure/controllers/start.totp.setup.auth.controller'
 import { StartTotpSetupAuthService } from '#auth/application/contracts/start.totp.setup.auth.service'
 import type { StartTotpSetupDto } from '#auth/application/dto/start_totp_setup.dto'
 import type { TotpEnrollmentStart } from '#auth/domain/types/auth.types'
+import StartTotpSetupAuthController from '#auth/infrastructure/http/controllers/start.totp.setup.auth.controller'
 
 class FakeStartTotpSetupAuthService extends StartTotpSetupAuthService {
   async startTotpSetup(_payload: StartTotpSetupDto): Promise<TotpEnrollmentStart> {

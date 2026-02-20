@@ -17,14 +17,14 @@ import { ShowUserService } from '#users/application/contracts/show.user.service'
 import { UpdateUserService } from '#users/application/contracts/update.user.service'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
-
-import type { ApplicationService } from '@adonisjs/core/types'
 import { RobotDogRepository } from '../app/modules/dogs/domain/contracts/robot_dog.repository.js'
 import { CreateRobotDogUseCase } from '../app/modules/dogs/application/contracts/create-robot-dog.use-case.js'
 import { IndexRobotDogsUseCase } from '../app/modules/dogs/application/contracts/index-robot-dogs.use-case.js'
 import { ShowRobotDogUseCase } from '../app/modules/dogs/application/contracts/show-robot-dog.use-case.js'
 import { DestroyRobotDogUseCase } from '../app/modules/dogs/application/contracts/destroy-robot-dog.use-case.js'
 import { UpdateRobotDogUseCase } from '../app/modules/dogs/application/contracts/update-robot-dog.use-case.js'
+import { RobotDogRepositoryImplementation } from '#app/modules/dogs/infrastructure/database/repositories/robot_dog.repository.implementation'
+import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local_user.repository'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -33,27 +33,23 @@ export default class AppProvider {
    * Register bindings to the container
    */
   public async register() {
-    const { DeleteAccountAuth } = await import('#auth/application/services/delete.account.auth.service')
+    const { DeleteAccountAuth } =
+      await import('#auth/application/services/delete.account.auth.service')
     const { DisableMfaAuth } = await import('#auth/application/services/disable.mfa.auth.service')
-    const { FinalizeTotpSetupAuth } = await import(
-      '#auth/application/services/finalize.totp.setup.auth.service'
-    )
-    const { ListMfaEnrollmentsAuth } = await import(
-      '#auth/application/services/list.mfa.enrollments.auth.service'
-    )
+    const { FinalizeTotpSetupAuth } =
+      await import('#auth/application/services/finalize.totp.setup.auth.service')
+    const { ListMfaEnrollmentsAuth } =
+      await import('#auth/application/services/list.mfa.enrollments.auth.service')
     const { LoginAuth } = await import('#auth/application/services/login.auth.service')
-    const { LoginWithTotpAuth } = await import(
-      '#auth/application/services/login.with.totp.auth.service'
-    )
-    const { PasswordResetAuth } = await import('#auth/application/services/password.reset.auth.service')
+    const { LoginWithTotpAuth } =
+      await import('#auth/application/services/login.with.totp.auth.service')
+    const { PasswordResetAuth } =
+      await import('#auth/application/services/password.reset.auth.service')
     const { RegisterAuth } = await import('#auth/application/services/register.auth.service')
-    const { StartTotpSetupAuth } = await import(
-      '#auth/application/services/start.totp.setup.auth.service'
-    )
+    const { StartTotpSetupAuth } =
+      await import('#auth/application/services/start.totp.setup.auth.service')
     const { FirebaseAuthProvider } =
       await import('#auth/infrastructure/providers/firebase_auth.provider')
-    const { LocalUserRepositoryImplementation } =
-      await import('#auth/infrastructure/repositories/local_user.repository')
     const { CreateUser } = await import('#users/application/services/create.user.service')
     const { DeleteUser } = await import('#users/application/services/delete.user.service')
     const { IndexUser } = await import('#users/application/services/index.user.service')
@@ -76,50 +72,60 @@ export default class AppProvider {
     this.app.container.bind(LocalUserRepository, () => {
       return this.app.container.make(LocalUserRepositoryImplementation)
     })
-  /**
-   * The container bindings have booted
-   */
+    /**
+     * The container bindings have booted
+     */
     this.app.container.bind(RegisterAuthService, () => {
       return this.app.container.make(RegisterAuth)
+    })
     this.app.container.bind(RobotDogRepository, () => {
       return this.app.container.make(RobotDogRepositoryImplementation)
     })
 
     this.app.container.bind(LoginAuthService, () => {
       return this.app.container.make(LoginAuth)
-    const { CreateRobotDogUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/create-robot-dog.use-case.implementation.js')
+    })
+    const { CreateRobotDogUseCaseImplementation } =
+      await import('../app/modules/dogs/application/usecases/create-robot-dog.use-case.implementation.js')
     this.app.container.bind(CreateRobotDogUseCase, () => {
       return this.app.container.make(CreateRobotDogUseCaseImplementation)
     })
 
     this.app.container.bind(LoginWithTotpAuthService, () => {
       return this.app.container.make(LoginWithTotpAuth)
-    const { IndexRobotDogsUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/index-robot-dogs.use-case.implementation.js')
+    })
+    const { IndexRobotDogsUseCaseImplementation } =
+      await import('../app/modules/dogs/application/usecases/index-robot-dogs.use-case.implementation.js')
     this.app.container.bind(IndexRobotDogsUseCase, () => {
       return this.app.container.make(IndexRobotDogsUseCaseImplementation)
     })
 
     this.app.container.bind(PasswordResetAuthService, () => {
       return this.app.container.make(PasswordResetAuth)
-    const { ShowRobotDogUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/show-robot-dog.use-case.implementation.js')
+    })
+    const { ShowRobotDogUseCaseImplementation } =
+      await import('../app/modules/dogs/application/usecases/show-robot-dog.use-case.implementation.js')
     this.app.container.bind(ShowRobotDogUseCase, () => {
       return this.app.container.make(ShowRobotDogUseCaseImplementation)
     })
 
     this.app.container.bind(StartTotpSetupAuthService, () => {
       return this.app.container.make(StartTotpSetupAuth)
-    const { DestroyRobotDogUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/destroy-robot-dog.use-case.implementation.js')
+    })
+    const { DestroyRobotDogUseCaseImplementation } =
+      await import('../app/modules/dogs/application/usecases/destroy-robot-dog.use-case.implementation.js')
     this.app.container.bind(DestroyRobotDogUseCase, () => {
       return this.app.container.make(DestroyRobotDogUseCaseImplementation)
     })
 
     this.app.container.bind(FinalizeTotpSetupAuthService, () => {
       return this.app.container.make(FinalizeTotpSetupAuth)
-    const { UpdateRobotDogUseCaseImplementation } = await import('../app/modules/dogs/application/usecases/update-robot-dog.use-case.implementation.js')
+    })
+    const { UpdateRobotDogUseCaseImplementation } =
+      await import('../app/modules/dogs/application/usecases/update-robot-dog.use-case.implementation.js')
     this.app.container.bind(UpdateRobotDogUseCase, () => {
       return this.app.container.make(UpdateRobotDogUseCaseImplementation)
     })
-  }
 
     this.app.container.bind(ListMfaEnrollmentsAuthService, () => {
       return this.app.container.make(ListMfaEnrollmentsAuth)
@@ -152,6 +158,5 @@ export default class AppProvider {
     this.app.container.bind(DeleteUserService, () => {
       return this.app.container.make(DeleteUser)
     })
-  }
   }
 }

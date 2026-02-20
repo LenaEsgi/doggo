@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
-import DeleteUserController from '#users/infrastructure/controllers/delete.user.controller'
 import { DeleteUserService } from '#users/application/contracts/delete.user.service'
+import DeleteUserController from '#users/infrastructure/http/controllers/delete.user.controller'
 
 class FakeDeleteUserService extends DeleteUserService {
   constructor(private readonly result: boolean) {

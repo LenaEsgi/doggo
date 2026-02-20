@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DeleteUserService } from '#users/application/contracts/delete.user.service'
-import { deleteUserParamValidator } from '#users/infrastructure/validators/delete.user.validator'
+import { deleteUserParamValidator } from '#users/infrastructure/http/validators/delete.user.validator'
 
 @inject()
 export default class DeleteUserController {
