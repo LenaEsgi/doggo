@@ -54,4 +54,23 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
     const row = await RobotDogModel.findOrFail(id.value)
     await row.delete()
   }
+
+  async findBySerialNumber(serialNumber: string): Promise<RobotDog | null> {
+    const row = await RobotDogModel
+      .query()
+      .where('serialNumber', serialNumber)
+      .first()
+
+    if (!row) return null
+
+    return RobotDog.rehydrate(
+      row.id,
+      row.serialNumber,
+      row.key,
+      row.name,
+      row.state as RobotDogState,
+      row.batteryLevel,
+      row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+    )
+  }
 }
