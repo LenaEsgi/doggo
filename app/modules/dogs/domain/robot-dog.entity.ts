@@ -1,4 +1,4 @@
-import { RobotDogState } from './enums/robot_dog.state.js'
+import { RobotDogState } from './enums/robot-dog.state.js'
 import { InvalidDogStateError } from './exceptions/invalid-dog-state-error.js'
 import { BatteryTooLowError } from './exceptions/battery-too-low-error.js'
 import { InvalidBatteryLevelError } from './exceptions/invalid-battery-level-error.js'

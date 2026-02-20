@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
-import { RobotDogState } from '../../../domain/enums/robot_dog.state.js'
+import { RobotDogState } from '../../../domain/enums/robot-dog.state.js'
 import { randomUUID } from 'node:crypto'
 
 export default class RobotDogModel extends BaseModel {

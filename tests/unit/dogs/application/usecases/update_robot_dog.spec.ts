@@ -3,7 +3,7 @@ import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_reposit
 import {
   UpdateRobotDogUseCaseImplementation
 } from '../../../../../app/modules/dogs/application/usecases/update-robot-dog.use-case.implementation.js'
-import { RobotDog } from '../../../../../app/modules/dogs/domain/robot_dog.entity.js'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogNotFoundError } from '../../../../../app/modules/dogs/domain/exceptions/robot-dog-not-found.error.js'
 
 test.group('UpdateRobotDogUseCaseImplementation', (group) => {

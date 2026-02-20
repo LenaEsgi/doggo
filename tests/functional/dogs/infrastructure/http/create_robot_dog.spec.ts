@@ -1,5 +1,5 @@
 import { test } from '@japa/runner'
-import { RobotDogRepository } from '../../../../../app/modules/dogs/domain/contracts/robot_dog.repository.js'
+import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
 import app from '@adonisjs/core/services/app'
 

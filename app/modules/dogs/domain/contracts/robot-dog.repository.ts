@@ -1,4 +1,4 @@
-import { RobotDog } from '../robot_dog.entity.js'
+import { RobotDog } from '../robot-dog.entity.js'
 import { RobotDogId } from '../value-objects/robot-dog-id.js'
 
 export abstract class RobotDogRepository {

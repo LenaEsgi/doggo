@@ -1,4 +1,4 @@
-import { RobotDogRepository } from '../../domain/contracts/robot_dog.repository.js'
+import { RobotDogRepository } from '../../domain/contracts/robot-dog.repository.js'
 import { RobotDogId } from '../../domain/value-objects/robot-dog-id.js'
 import { RobotDogOutput } from '../DTO/robot-dog.output.dto.js'
 import { ShowRobotDogDto } from '../DTO/show-robot-dog.dto.js'

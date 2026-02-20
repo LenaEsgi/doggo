@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
-import { RobotDog } from '../../../app/modules/dogs/domain/robot_dog.entity.js'
-import { RobotDogState } from '../../../app/modules/dogs/domain/enums/robot_dog.state.js'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { InvalidDogStateError } from '../../../app/modules/dogs/domain/exceptions/invalid-dog-state-error.js'
 import { InvalidBatteryLevelError } from '../../../app/modules/dogs/domain/exceptions/invalid-battery-level-error.js'
 import { BatteryTooLowError } from '../../../app/modules/dogs/domain/exceptions/battery-too-low-error.js'

@@ -1,5 +1,5 @@
-import { RobotDog } from '../../../app/modules/dogs/domain/robot_dog.entity.js'
-import { RobotDogRepository } from '../../../app/modules/dogs/domain/contracts/robot_dog.repository.js'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '../../../app/modules/dogs/domain/value-objects/robot-dog-id.js'
 
 export class FakeRobotDogRepository extends RobotDogRepository {

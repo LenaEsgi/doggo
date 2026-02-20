@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import app from '@adonisjs/core/services/app'
-import { RobotDogRepository } from '../../../../../app/modules/dogs/domain/contracts/robot_dog.repository.js'
-import { RobotDog } from '../../../../../app/modules/dogs/domain/robot_dog.entity.js'
+import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
 
 test.group('GET /dogs/:id', () => {
 

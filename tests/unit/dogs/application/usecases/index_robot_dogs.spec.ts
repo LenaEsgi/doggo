@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
 import { IndexRobotDogsUseCaseImplementation } from '../../../../../app/modules/dogs/application/usecases/index-robot-dogs.use-case.implementation.js'
-import { RobotDog } from '../../../../../app/modules/dogs/domain/robot_dog.entity.js'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
 
 
 test.group('ListRobotDogsUseCase', (group) => {

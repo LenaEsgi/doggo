@@ -1,7 +1,7 @@
-import { RobotDogRepository } from '../../../domain/contracts/robot_dog.repository.js'
-import { RobotDog } from '../../../domain/robot_dog.entity.js'
-import RobotDogModel from '../models/robot_dog.js'
-import { RobotDogState } from '../../../domain/enums/robot_dog.state.js'
+import { RobotDogRepository } from '../../../domain/contracts/robot-dog.repository.js'
+import { RobotDog } from '../../../domain/robot-dog.entity.js'
+import RobotDogModel from '../models/robot-dog.js'
+import { RobotDogState } from '../../../domain/enums/robot-dog.state.js'
 import { DateTime } from 'luxon'
 import { RobotDogId } from '../../../domain/value-objects/robot-dog-id.js'
 

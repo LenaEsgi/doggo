@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
-import { RobotDog } from '../../../../app/modules/dogs/domain/robot_dog.entity.js'
-import { RobotDogState } from '../../../../app/modules/dogs/domain/enums/robot_dog.state.js'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 
 import { InvalidRobotDogNameError } from '../../../../app/modules/dogs/domain/exceptions/invalid-robot-dog-name.error.js'
 import { InvalidRobotDogSerialNumberError } from '../../../../app/modules/dogs/domain/exceptions/invalid-robot-dog-serial-number.error.js'
