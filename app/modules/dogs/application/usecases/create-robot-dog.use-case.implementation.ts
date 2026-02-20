@@ -6,6 +6,7 @@ import { CreateRobotDogUseCase } from '../contracts/create-robot-dog.use-case.js
 import {
   RobotDogSerialNumberAlreadyExistsError
 } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
+import logger from '@adonisjs/core/services/logger'
 
 @inject()
 export class CreateRobotDogUseCaseImplementation implements CreateRobotDogUseCase {
@@ -13,18 +14,45 @@ export class CreateRobotDogUseCaseImplementation implements CreateRobotDogUseCas
 
   async execute(dto: CreateRobotDogDto) {
 
-    const existing = await this.robotDogRepository
-      .findBySerialNumber(dto.serialNumber)
+    logger.info('CreateRobotDogUseCase started', {
+      serialNumber: dto.serialNumber,
+      name: dto.name,
+    })
 
-    if (existing) {
-      throw new RobotDogSerialNumberAlreadyExistsError(dto.serialNumber)
+    try {
+      const existing = await this.robotDogRepository
+        .findBySerialNumber(dto.serialNumber)
+
+      if (existing) {
+        logger.warn('Serial number already exists', {
+          serialNumber: dto.serialNumber,
+        })
+
+        throw new RobotDogSerialNumberAlreadyExistsError(dto.serialNumber)
+      }
+
+      const robotDog = RobotDog.create(
+        dto.serialNumber,
+        dto.name,
+        dto.batteryLevel
+      )
+
+      await this.robotDogRepository.save(robotDog)
+
+      logger.info('Robot dog successfully created', {
+        id: robotDog.id.value,
+        serialNumber: robotDog.serialNumber,
+      })
+
+    } catch (error) {
+      if (!(error instanceof RobotDogSerialNumberAlreadyExistsError)) {
+        logger.error('Unexpected error during robot dog creation', {
+          serialNumber: dto.serialNumber,
+          error,
+        })
+      }
+
+      throw error
     }
-
-    const robotDog = RobotDog.create(
-      dto.serialNumber,
-      dto.name,
-      dto.batteryLevel
-    )
-    await this.robotDogRepository.save(robotDog)
   }
 }
