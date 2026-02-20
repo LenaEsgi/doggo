@@ -3,12 +3,16 @@ import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_reposit
 import {
   CreateRobotDogUseCaseImplementation
 } from '../../../../../app/modules/dogs/application/usecases/create-robot-dog.use-case.implementation.js'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import {
+  RobotDogSerialNumberAlreadyExistsError
+} from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
 
 test.group('CreateRobotDogUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
   let useCase: CreateRobotDogUseCaseImplementation
 
-  group.setup(() => {
+  group.each.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
     useCase = new CreateRobotDogUseCaseImplementation(fakeRepo)
   })
@@ -27,5 +31,22 @@ test.group('CreateRobotDogUseCase', (group) => {
     assert.equal(savedDog.serialNumber, 'SN-001')
     assert.equal(savedDog.name, 'Rex')
     assert.equal(savedDog.batteryLevel, 80)
+  })
+
+  test('should throw if serial number already exists', async ({ assert }) => {
+    const existingDog = RobotDog.create('SN-001', 'Existing', 90)
+    await fakeRepo.save(existingDog)
+
+    await assert.rejects(
+      () =>
+        useCase.execute({
+          serialNumber: 'SN-001',
+          name: 'AnotherDog',
+          batteryLevel: 70,
+        }),
+      RobotDogSerialNumberAlreadyExistsError
+    )
+
+    assert.lengthOf(fakeRepo.storedDogs, 1)
   })
 })
