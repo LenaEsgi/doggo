@@ -4,6 +4,8 @@ import RobotDogModel from '../models/robot-dog.js'
 import { RobotDogState } from '../../../domain/enums/robot-dog.state.js'
 import { DateTime } from 'luxon'
 import { RobotDogId } from '../../../domain/value-objects/robot-dog-id.js'
+import {FindAllOptions} from "#dogs/domain/contracts/find-all-options";
+import {PaginatedResult} from "#app/modules/share/DTO/paginated-result.dto";
 
 export class RobotDogRepositoryImplementation implements RobotDogRepository {
   async findById(id: RobotDogId): Promise<RobotDog | null> {
@@ -21,21 +23,33 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       row.lastHeartbeat?.toJSDate() ? row.lastHeartbeat?.toJSDate() : DateTime.now().toJSDate()
     )
   }
-  async findAll(): Promise<RobotDog[]> {
-    const rows = await RobotDogModel.all()
+  async findAll({ page = 1, limit = 20 }: FindAllOptions = {}): Promise<PaginatedResult<RobotDog>> {
+    const paginated = await RobotDogModel.query().paginate(page, limit)
 
-    return rows.map((row) =>
-      RobotDog.rehydrate(
-        row.id,
-        row.serialNumber,
-        row.key,
-        row.name,
-        row.state as RobotDogState,
-        row.batteryLevel,
-        row.lastHeartbeat?.toJSDate() ? row.lastHeartbeat?.toJSDate() : DateTime.now().toJSDate()
-      )
+    const data = paginated.all().map(row =>
+        RobotDog.rehydrate(
+            row.id,
+            row.serialNumber,
+            row.key,
+            row.name,
+            row.state as RobotDogState,
+            row.batteryLevel,
+            row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+        )
     )
+
+    return {
+      data,
+      meta: {
+        total: paginated.total,
+        perPage: paginated.perPage,
+        currentPage: paginated.currentPage,
+        firstPage: paginated.firstPage,
+        lastPage: paginated.lastPage,
+      }
+    }
   }
+
   async save(dog: RobotDog): Promise<void> {
     await RobotDogModel.updateOrCreate(
       { id: dog.id.value },

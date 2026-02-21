@@ -1,27 +1,22 @@
 import { inject } from '@adonisjs/core'
 import { IndexRobotDogsUseCase } from '../../../application/contracts/index-robot-dogs.use-case.js'
 import { HttpContext } from '@adonisjs/core/http'
+import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
 @inject()
 export default class ListRobotDogsController {
   constructor(private listRobotDogs: IndexRobotDogsUseCase) {}
 
-  public async handle({ response, logger }: HttpContext) {
+  public async handle({ response, request, logger }: HttpContext) {
     logger.info({}, 'ListRobotDogsController called')
 
-    const robots = await this.listRobotDogs.execute()
+    const params: PaginationDto = {
+      page: Number(request.input('page', 1)),
+      limit: Number(request.input('limit', 20)),
+    }
 
-    logger.info({ count: robots.length }, 'ListRobotDogsController completed successfully')
+    const robots = await this.listRobotDogs.execute(params)
 
-    return response.status(200).json(
-      robots.map((dog) => ({
-        id: dog.id,
-        serialNumber: dog.serialNumber,
-        name: dog.name,
-        state: dog.state,
-        batteryLevel: dog.batteryLevel,
-        lastHeartbeat: dog.lastHeartbeat,
-      }))
-    )
+    return response.status(200).json(robots)
   }
 }
