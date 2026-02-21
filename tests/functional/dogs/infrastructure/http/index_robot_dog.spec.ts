@@ -8,10 +8,10 @@ test.group('GET /dogs', (group) => {
 
   group.each.setup(() => testUtils.db().truncate())
 
-  test('should return all robot dogs', async ({ client, assert }) => {
+  test('should return paginated robot dogs', async ({ client, assert }) => {
     await RobotDogModel.create({
       serialNumber: 'SN-001',
-      key: 'ABCDEFGHIJKLMN1234',
+      key: 'ABCDEFGHIJKLMNOPQR',
       name: 'Rex',
       state: RobotDogState.IDLE,
       batteryLevel: 80,
@@ -20,29 +20,39 @@ test.group('GET /dogs', (group) => {
 
     await RobotDogModel.create({
       serialNumber: 'SN-002',
-      key: 'ZYXWVUTSRQPONML567',
+      key: 'QRSTUVWXYZABCDEFG1',
       name: 'Bolt',
       state: RobotDogState.IDLE,
       batteryLevel: 70,
       lastHeartbeat: DateTime.now(),
     })
 
-    const response = await client.get('/dogs')
+    const response = await client.get('/dogs?page=1&limit=10')
     response.assertStatus(200)
 
     const body = response.body()
-    assert.lengthOf(body, 2)
+
+    assert.lengthOf(body.data, 2)
+
     assert.includeMembers(
-      body.map((d: { serialNumber: any }) => d.serialNumber),
+      body.data.map((d: { serialNumber: string }) => d.serialNumber),
       ['SN-001', 'SN-002']
     )
+
+    assert.equal(body.meta.total, 2)
+    assert.equal(body.meta.currentPage, 1)
+    assert.equal(body.meta.lastPage, 1)
+    assert.equal(body.meta.perPage, 10)
   })
 
-  test('should return empty array if no robot dogs', async ({ client, assert }) => {
-    const response = await client.get('/dogs')
+  test('should return empty pagination if no robot dogs', async ({ client, assert }) => {
+    const response = await client.get('/dogs?page=1&limit=10')
     response.assertStatus(200)
 
     const body = response.body()
-    assert.lengthOf(body, 0)
+
+    assert.lengthOf(body.data, 0)
+    assert.equal(body.meta.total, 0)
+    assert.equal(body.meta.currentPage, 1)
   })
 })
