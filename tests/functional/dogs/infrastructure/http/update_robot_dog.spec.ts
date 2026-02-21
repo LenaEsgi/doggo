@@ -1,60 +1,35 @@
 import { test } from '@japa/runner'
-import app from '@adonisjs/core/services/app'
-import { RobotDog } from '#dogs/domain/robot-dog.entity'
-import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
+import testUtils from '@adonisjs/core/services/test_utils'
+import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
+import { DateTime } from 'luxon'
 
 test.group('PUT /dogs/:id', (group) => {
 
-  group.teardown(() => {
-    app.container.restore(RobotDogRepository)
-  })
+  group.each.setup(() => testUtils.db().truncate())
 
   test('should update robot dog name and return 204', async ({ client, assert }) => {
-
-    const dog = RobotDog.create('SN-UPD-001', 'OldName', 80)
-
-    class FakeRepository extends RobotDogRepository {
-      private dogs = [dog]
-
-      async findById(id: any) {
-        return this.dogs.find(d => d.id.equals(id)) ?? null
-      }
-
-      async save(updatedDog: any) {
-        const index = this.dogs.findIndex(d => d.id.equals(updatedDog.id))
-        if (index >= 0) {
-          this.dogs[index] = updatedDog
-        }
-      }
-
-      async delete() {}
-      async findAll() { return this.dogs }
-    }
-
-    const fakeRepo = new FakeRepository()
-    app.container.swap(RobotDogRepository, () => fakeRepo)
+    const dog = await RobotDogModel.create({
+      serialNumber: 'SN-UPD-001',
+      key: 'ZYXWVUTSRQPONML567',
+      name: 'OldName',
+      state: RobotDogState.IDLE,
+      batteryLevel: 80,
+      lastHeartbeat: DateTime.now(),
+    })
 
     const response = await client
-      .put(`/dogs/${dog.id.value}`)
+      .put(`/dogs/${dog.id}`)
       .json({ name: 'NewName' })
 
     response.assertStatus(204)
 
-    const updated = await fakeRepo.findById(dog.id)
-    assert.equal(updated?.name, 'NewName')
+    const updated = await RobotDogModel.find(dog.id)
+    assert.exists(updated)
+    assert.equal(updated!.name, 'NewName')
   })
 
   test('should return 404 if robot dog does not exist', async ({ client }) => {
-
-    class FakeRepository extends RobotDogRepository {
-      async findById() { return null }
-      async save() {}
-      async delete() {}
-      async findAll() { return [] }
-    }
-
-    app.container.swap(RobotDogRepository, () => new FakeRepository())
-
     const response = await client
       .put('/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
       .json({ name: 'NewName' })

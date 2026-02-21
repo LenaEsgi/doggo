@@ -1,14 +1,8 @@
 import { test } from '@japa/runner'
-import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
-import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
-import app from '@adonisjs/core/services/app'
+import testUtils from '@adonisjs/core/services/test_utils'
 
 test.group('POST /dogs', (group) => {
-  group.setup(() => {
-    app.container.swap(RobotDogRepository, () => {
-      return new FakeRobotDogRepository()
-    })
-  })
+  group.each.setup(() => testUtils.db().truncate())
 
   test('should create a new robot dog', async ({ client }) => {
     const response = await client

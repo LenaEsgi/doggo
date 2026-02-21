@@ -1,52 +1,44 @@
 import { test } from '@japa/runner'
-import app from '@adonisjs/core/services/app'
-import { RobotDog } from '#dogs/domain/robot-dog.entity'
-import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
+import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
+import { DateTime } from 'luxon'
+import testUtils from '@adonisjs/core/services/test_utils'
 
-test.group('GET /dogs', () => {
+test.group('GET /dogs', (group) => {
+
+  group.each.setup(() => testUtils.db().truncate())
 
   test('should return all robot dogs', async ({ client, assert }) => {
+    await RobotDogModel.create({
+      serialNumber: 'SN-001',
+      key: 'ABCDEFGHIJKLMN1234',
+      name: 'Rex',
+      state: RobotDogState.IDLE,
+      batteryLevel: 80,
+      lastHeartbeat: DateTime.now(),
+    })
 
-    class FakeRepo extends RobotDogRepository {
-      public dogs = [
-        RobotDog.create('SN-001', 'Rex', 80),
-        RobotDog.create('SN-002', 'Bolt', 70),
-      ]
-
-      async findAll() {
-        return this.dogs
-      }
-
-      async findById(id: any) {
-        return this.dogs.find(d => d.id.equals(id)) ?? null
-      }
-
-      async save() {}
-      async delete() {}
-    }
-
-    app.container.swap(RobotDogRepository, () => new FakeRepo())
+    await RobotDogModel.create({
+      serialNumber: 'SN-002',
+      key: 'ZYXWVUTSRQPONML567',
+      name: 'Bolt',
+      state: RobotDogState.IDLE,
+      batteryLevel: 70,
+      lastHeartbeat: DateTime.now(),
+    })
 
     const response = await client.get('/dogs')
     response.assertStatus(200)
 
     const body = response.body()
     assert.lengthOf(body, 2)
-    assert.equal(body[0].serialNumber, 'SN-001')
-    assert.equal(body[1].serialNumber, 'SN-002')
+    assert.includeMembers(
+      body.map((d: { serialNumber: any }) => d.serialNumber),
+      ['SN-001', 'SN-002']
+    )
   })
 
   test('should return empty array if no robot dogs', async ({ client, assert }) => {
-
-    class EmptyRepo extends RobotDogRepository {
-      async findAll() { return [] }
-      async findById(_: any) { return null }
-      async save() {}
-      async delete() {}
-    }
-
-    app.container.swap(RobotDogRepository, () => new EmptyRepo())
-
     const response = await client.get('/dogs')
     response.assertStatus(200)
 
