@@ -1,5 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { FirebaseHttpError } from '#auth/infrastructure/providers/firebase_auth.provider'
+import { FirebaseHttpError } from '#auth/infrastructure/providers/firebase_auth.base'
 
 export function handleAuthError(response: HttpContext['response'], error: unknown) {
   if (error instanceof FirebaseHttpError) {

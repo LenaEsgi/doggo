@@ -1,14 +1,14 @@
 import { inject } from '@adonisjs/core'
 import { RegisterAuthService } from '#auth/application/contracts/register.auth.service'
 import type { RegisterDto } from '#auth/application/dto/register.dto'
-import { AuthProvider } from '#auth/domain/contracts/auth.provider'
+import { RegisterAuthProvider } from '#auth/domain/contracts/register.auth.provider'
 import { LocalUserRepository } from '#auth/domain/contracts/local_user.repository'
-import type { AuthTokens } from '#auth/domain/types/auth.types'
+import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 
 @inject()
 export class RegisterAuth implements RegisterAuthService {
   constructor(
-    private readonly authProvider: AuthProvider,
+    private readonly authProvider: RegisterAuthProvider,
     private readonly localUserRepository: LocalUserRepository
   ) {}
 
