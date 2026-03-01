@@ -1,6 +1,13 @@
 import { defineConfig } from '@adonisjs/core/app'
+import { indexEntities } from '@adonisjs/core'
 
 export default defineConfig({
+  hooks: {
+    init: [
+        // Always needed
+        indexEntities()
+      ]
+  },
   /*
   |--------------------------------------------------------------------------
   | Experimental flags
@@ -71,12 +78,12 @@ export default defineConfig({
   tests: {
     suites: [
       {
-        files: ['tests/unit/**/*.spec(.ts|.js)'],
+        files: ['tests/unit/**/*.spec.{ts,js}'],
         name: 'unit',
         timeout: 2000,
       },
       {
-        files: ['tests/functional/**/*.spec(.ts|.js)'],
+        files: ['tests/unit/**/*.spec.{ts,js}'],
         name: 'functional',
         timeout: 30000,
       },
