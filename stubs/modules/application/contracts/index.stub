@@ -1,0 +1,26 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+
+{{#var className = 'Index' + modelName + 'UseCase'}}
+{{#var outputClassName = modelName + 'OutputDto'}}
+
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_', '-')}}
+{{#var resourceFileName = 'index-' + kebabName + '.use-case.ts'}}
+
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'application/contracts', resourceFileName)
+  })
+}}}
+
+import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { {{ outputClassName }} } from '../dto/{{ kebabName }}.output.dto.js'
+
+export abstract class {{ className }} {
+  abstract execute(
+    params: PaginationDto
+  ): Promise<PaginatedResult<{{ outputClassName }}>>
+}

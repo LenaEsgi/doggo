@@ -1,0 +1,16 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'application/dto', 'create-' + kebabName + '.dto.ts')
+  })
+}}}
+
+export class Create{{ modelName }}Dto {
+  constructor(
+    // TODO: define properties
+  ) {}
+}

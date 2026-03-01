@@ -1,0 +1,23 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var className = modelName + 'Repository'}}
+{{#var modelReference = string.camelCase(modelName)}}
+{{#var resourceFileNameEntity = string(modelName).snakeCase().toString().replaceAll('_', '-')}}
+{{#var resourceFileName = resourceFileNameEntity + '.repository.ts'}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'domain/contracts', resourceFileName)
+  })
+}}}
+import {{ entity.name }} from '../{{ resourceFileNameEntity }}.entity.js'
+import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+
+export abstract class {{className}} {
+  abstract findById(): Promise<{{ entity.name }} | null>
+  abstract index(options?: PaginationDto): Promise<PaginatedResult<{{ entity.name }}>>
+  abstract save(dog: {{ entity.name }}): Promise<void>
+  abstract delete(): Promise<void>
+}

@@ -1,0 +1,30 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
+{{#var className = 'Create' + modelName + 'UseCaseImplementation'}}
+{{#var contractClassName = 'Create' + modelName + 'UseCase'}}
+{{#var dtoClassName = 'Create' + modelName + 'Dto'}}
+{{#var repoClassName = modelName + 'Repository'}}
+
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'application/usecases', 'create-' + kebabName + '.use-case.implementation.ts')
+  })
+}}}
+
+import { {{ repoClassName }} } from '../../domain/contracts/{{ kebabName }}.repository.js'
+import { {{ dtoClassName }} } from '../dto/create-{{ kebabName }}.dto.js'
+import { inject } from '@adonisjs/core'
+import { {{ contractClassName }} } from '../contracts/create-{{ kebabName }}.use-case.js'
+import logger from '@adonisjs/core/services/logger'
+
+@inject()
+export class {{ className }} implements {{ contractClassName }} {
+  constructor(private {{ string.camelCase(repoClassName) }}: {{ repoClassName }}) {}
+
+  async execute(dto: {{ dtoClassName }}) {
+    logger.info('{{ contractClassName }} started', { dto })
+  }
+}

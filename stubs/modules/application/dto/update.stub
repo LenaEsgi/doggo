@@ -1,0 +1,17 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'application/dto', 'update-' + kebabName + '.dto.ts')
+  })
+}}}
+
+export class Update{{ modelName }}Dto {
+  constructor(
+    public readonly id: string,
+    // TODO: updatable properties
+  ) {}
+}

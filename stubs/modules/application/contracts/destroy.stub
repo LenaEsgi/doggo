@@ -1,0 +1,23 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+
+{{#var className = 'Destroy' + modelName + 'UseCase'}}
+{{#var dtoClassName = 'Destroy' + modelName + 'Dto'}}
+
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_', '-')}}
+{{#var dtoFileName = 'destroy-' + kebabName + '.dto.js'}}
+{{#var resourceFileName = 'destroy-' + kebabName + '.use-case.ts'}}
+
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'application/contracts', resourceFileName)
+  })
+}}}
+
+import { {{ dtoClassName }} } from '../dto/{{ dtoFileName }}'
+
+export abstract class {{ className }} {
+  abstract execute(dto: {{ dtoClassName }}): Promise<void>
+}

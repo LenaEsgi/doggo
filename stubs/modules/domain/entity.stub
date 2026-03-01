@@ -1,0 +1,26 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var modelReference = string.camelCase(modelName)}}
+{{#var resourceFileName = string(modelName).snakeCase().toString().replaceAll('_', '-') + '.entity.ts'}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'domain', resourceFileName)
+  })
+}}}
+
+export default class {{ modelName }} {
+
+  private constructor() {}
+
+  public static create() {
+
+    return new {{ modelName }}()
+  }
+
+  public static rehydrate() {
+
+    return new {{ modelName }}()
+  }
+}
