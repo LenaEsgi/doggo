@@ -1,6 +1,8 @@
 
 export class CreateMissionDto {
   constructor(
-    // TODO: define properties
+    public readonly name: string,
+    public readonly robotDogId: string,
+    public readonly userId: string,
   ) {}
 }

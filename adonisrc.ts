@@ -23,6 +23,9 @@ export default defineConfig({
     shutdownInReverseOrder: true,
   },
 
+  directories: {
+    controllers: '*/http/controllers'
+  },
   /*
   |--------------------------------------------------------------------------
   | Commands

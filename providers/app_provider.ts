@@ -25,6 +25,16 @@ import { DestroyRobotDogUseCase } from '../app/modules/dogs/application/contract
 import { UpdateRobotDogUseCase } from '../app/modules/dogs/application/contracts/update-robot-dog.use-case.js'
 import { RobotDogRepositoryImplementation } from '#dogs/infrastructure/database/repositories/robot-dog.repository.implementation'
 import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local_user.repository'
+import { CreateMissionUseCase } from '#app/modules/missions/application/contracts/create-mission.use-case'
+import {
+  CreateMissionUseCaseImplementation
+} from '#app/modules/missions/application/usecases/create-mission.use-case.implementation'
+import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
+import {
+  RobotDogGatewayImplementation
+} from '#app/modules/missions/infrastructure/gateways/robot-dog.gateway.implementation'
+import { UserGateway } from '#app/modules/missions/application/contracts/user.gateway'
+import { UserGatewayImplementation } from '#app/modules/missions/infrastructure/gateways/user.gateway.implementation'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -157,6 +167,20 @@ export default class AppProvider {
 
     this.app.container.bind(DeleteUserService, () => {
       return this.app.container.make(DeleteUser)
+    })
+
+
+    // MISSIONS
+    this.app.container.bind(CreateMissionUseCase, () => {
+      return this.app.container.make(CreateMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(RobotDogGateway, () => {
+      return this.app.container.make(RobotDogGatewayImplementation)
+    })
+
+    this.app.container.bind(UserGateway, () => {
+      return this.app.container.make(UserGatewayImplementation)
     })
   }
 }
