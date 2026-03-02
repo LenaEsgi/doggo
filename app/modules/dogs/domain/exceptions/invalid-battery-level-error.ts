@@ -1,4 +1,4 @@
-import { DomainError } from './domain-error.js'
+import { DomainError } from '../../../share/exceptions/domain-error.js'
 
 export class InvalidBatteryLevelError extends DomainError {
   readonly code = 'INVALID_BATTERY_LEVEL'

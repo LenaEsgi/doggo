@@ -1,6 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
-import { DomainError } from '../modules/dogs/domain/exceptions/domain-error.js'
+import { DomainError } from '../modules/share/exceptions/domain-error.js'
 import { RobotDogNotFoundError } from '../modules/dogs/domain/exceptions/robot-dog-not-found.error.js'
 import {
   RobotDogSerialNumberAlreadyExistsError
