@@ -15,7 +15,7 @@ export default class MissionStep {
     private _status: MissionStepStatus
   ) {}
 
-  public static create(action: string, sequenceOrder: number, parameters: string) {
+  static create(action: string, sequenceOrder: number, parameters: string) {
     if (sequenceOrder <= 0) {
       throw new InvalidMissionStepOrderError(sequenceOrder)
     }
@@ -23,7 +23,7 @@ export default class MissionStep {
     return new MissionStep(MissionStepId.generate(), action, sequenceOrder, parameters, MissionStepStatus.PENDING)
   }
 
-  public static rehydrate(id: string, action: string, sequenceOrder: number, parameters: string, status: MissionStepStatus) {
+  static rehydrate(id: string, action: string, sequenceOrder: number, parameters: string, status: MissionStepStatus) {
     return new MissionStep(MissionStepId.fromString(id), action, sequenceOrder, parameters, status)
   }
 
@@ -31,7 +31,11 @@ export default class MissionStep {
   // Business
   // -------------------
 
-  public markAsInPending() {
+  public changeOrder(newOrder: number) {
+    this._sequenceOrder = newOrder
+  }
+
+  markAsInPending() {
     if (this._status === MissionStepStatus.PENDING) {
       throw new InvalidMissionStepTransitionError()
     }
@@ -39,7 +43,7 @@ export default class MissionStep {
     this._status = MissionStepStatus.PENDING
   }
 
-  public complete() {
+  complete() {
     if (this._status !== MissionStepStatus.PENDING) {
       throw new InvalidMissionStepTransitionError()
     }
@@ -47,7 +51,7 @@ export default class MissionStep {
     this._status = MissionStepStatus.COMPLETED
   }
 
-  public failed() {
+  failed() {
     if (this._status !== MissionStepStatus.PENDING) {
       throw new InvalidMissionStepTransitionError()
     }
