@@ -1,4 +1,6 @@
-import type { AuthTokens, LoginResult, MfaInfo } from '#auth/domain/types/auth.types'
+import type { AuthTokens } from '#auth/domain/types/auth.tokens'
+import type { LoginResult } from '#auth/domain/types/login.result'
+import type { MfaInfo } from '#auth/domain/types/mfa.info'
 
 export class AuthSerializer {
   static authSuccess(tokens: AuthTokens) {

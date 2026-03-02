@@ -8,3 +8,643 @@ servers:
   - url: http://localhost:3333
     description: Local server
 paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Create an account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login with email/password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login result (with or without MFA challenge)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthSuccessResponse'
+                  - $ref: '#/components/schemas/MfaChallengeResponse'
+  /auth/login/2fa:
+    post:
+      tags:
+        - Authentication
+      summary: Complete login with TOTP code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaLoginRequest'
+      responses:
+        '200':
+          description: Login completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+  /auth/password-reset:
+    post:
+      tags:
+        - Authentication
+      summary: Send password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: Reset email sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /auth/2fa/setup:
+    post:
+      tags:
+        - Authentication
+      summary: Start TOTP enrollment setup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdTokenRequest'
+      responses:
+        '200':
+          description: TOTP setup data (including otpauth URI)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotpSetupResponse'
+  /auth/2fa/verify:
+    post:
+      tags:
+        - Authentication
+      summary: Finalize TOTP enrollment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TotpVerifyRequest'
+      responses:
+        '200':
+          description: Two-factor enabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotpVerifyResponse'
+  /auth/2fa/enrollments:
+    post:
+      tags:
+        - Authentication
+      summary: List current MFA enrollments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdTokenRequest'
+      responses:
+        '200':
+          description: Enrollment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentsResponse'
+  /auth/2fa:
+    delete:
+      tags:
+        - Authentication
+      summary: Disable one MFA enrollment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableMfaRequest'
+      responses:
+        '200':
+          description: Two-factor disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotpVerifyResponse'
+  /auth/account:
+    delete:
+      tags:
+        - Authentication
+      summary: Delete current account (Firebase + local DB)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdTokenRequest'
+      responses:
+        '200':
+          description: Account deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreatedResponse'
+    get:
+      tags:
+        - Users
+      summary: List users
+      responses:
+        '200':
+          description: Users list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersListResponse'
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get one user by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      tags:
+        - Users
+      summary: Update a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdatedResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - email
+        - password
+      properties:
+        firstname:
+          type: string
+          example: John
+        lastname:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: robotdogprojetannuel@yopmail.com
+        password:
+          type: string
+          minLength: 8
+          example: SuperPassword123
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: robotdogprojetannuel@yopmail.com
+        password:
+          type: string
+          minLength: 8
+          example: SuperPassword123
+    MfaLoginRequest:
+      type: object
+      required:
+        - pendingCredential
+        - mfaEnrollmentId
+        - verificationCode
+      properties:
+        pendingCredential:
+          type: string
+          example: MFA_PENDING_CREDENTIAL
+        mfaEnrollmentId:
+          type: string
+          example: enrollment-id
+        verificationCode:
+          type: string
+          example: '123456'
+    PasswordResetRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: robotdogprojetannuel@yopmail.com
+    IdTokenRequest:
+      type: object
+      required:
+        - idToken
+      properties:
+        idToken:
+          type: string
+          example: eyJhbGciOi...
+    TotpVerifyRequest:
+      type: object
+      required:
+        - idToken
+        - sessionInfo
+        - verificationCode
+      properties:
+        idToken:
+          type: string
+          example: eyJhbGciOi...
+        sessionInfo:
+          type: string
+          example: SESSION_INFO
+        verificationCode:
+          type: string
+          example: '123456'
+        displayName:
+          type: string
+          example: Aegis
+    DisableMfaRequest:
+      type: object
+      required:
+        - idToken
+        - mfaEnrollmentId
+      properties:
+        idToken:
+          type: string
+          example: eyJhbGciOi...
+        mfaEnrollmentId:
+          type: string
+          example: enrollment-id
+    AuthTokens:
+      type: object
+      required:
+        - idToken
+        - refreshToken
+        - expiresIn
+      properties:
+        idToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: string
+          example: '3600'
+    AuthUser:
+      type: object
+      required:
+        - uid
+        - email
+      properties:
+        uid:
+          type: string
+        email:
+          type: string
+          format: email
+    AuthSuccessResponse:
+      type: object
+      required:
+        - mfaRequired
+        - user
+        - tokens
+      properties:
+        message:
+          type: string
+          example: Account created successfully
+        mfaRequired:
+          type: boolean
+          example: false
+        user:
+          $ref: '#/components/schemas/AuthUser'
+        tokens:
+          $ref: '#/components/schemas/AuthTokens'
+    MfaEnrollment:
+      type: object
+      required:
+        - mfaEnrollmentId
+      properties:
+        mfaEnrollmentId:
+          type: string
+        displayName:
+          type: string
+        enrolledAt:
+          type: string
+        totpInfo:
+          type: object
+          additionalProperties: true
+    MfaChallengeResponse:
+      type: object
+      required:
+        - mfaRequired
+        - pendingCredential
+        - mfaInfo
+      properties:
+        mfaRequired:
+          type: boolean
+          example: true
+        pendingCredential:
+          type: string
+        mfaInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/MfaEnrollment'
+    MessageResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Password reset email sent
+    TotpSetup:
+      type: object
+      required:
+        - sessionInfo
+        - sharedSecret
+        - verificationCodeLength
+        - hashingAlgorithm
+        - periodSec
+        - otpauthUri
+      properties:
+        sessionInfo:
+          type: string
+        sharedSecret:
+          type: string
+        verificationCodeLength:
+          type: integer
+          example: 6
+        hashingAlgorithm:
+          type: string
+          example: SHA1
+        periodSec:
+          type: integer
+          example: 30
+        otpauthUri:
+          type: string
+    TotpSetupResponse:
+      type: object
+      required:
+        - message
+        - setup
+      properties:
+        message:
+          type: string
+          example: Scan the QR URI in Aegis and confirm with a generated code
+        setup:
+          $ref: '#/components/schemas/TotpSetup'
+    TotpVerifyResponse:
+      type: object
+      required:
+        - message
+        - tokens
+      properties:
+        message:
+          type: string
+        tokens:
+          type: object
+          required:
+            - idToken
+            - refreshToken
+          properties:
+            idToken:
+              type: string
+            refreshToken:
+              type: string
+            mfaEnrollmentId:
+              type: string
+    EnrollmentsResponse:
+      type: object
+      required:
+        - enrollments
+      properties:
+        enrollments:
+          type: array
+          items:
+            $ref: '#/components/schemas/MfaEnrollment'
+    User:
+      type: object
+      required:
+        - id
+        - firstname
+        - lastname
+        - email
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstname:
+          type: string
+          example: John
+        lastname:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: robotdogprojetannuel@yopmail.com
+        role:
+          type: string
+          enum:
+            - user
+            - admin
+    CreateUserRequest:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - email
+      properties:
+        firstname:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Jane
+        lastname:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: jane.doe@example.com
+    UsersListResponse:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    UserResponse:
+      type: object
+      required:
+        - user
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+    UpdateUserRequest:
+      type: object
+      properties:
+        firstname:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Jane
+        lastname:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: jane.doe@example.com
+        role:
+          type: string
+          enum:
+            - user
+            - admin
+    UserUpdatedResponse:
+      type: object
+      required:
+        - message
+        - user
+      properties:
+        message:
+          type: string
+          example: User updated successfully
+        user:
+          $ref: '#/components/schemas/User'
+    UserCreatedResponse:
+      type: object
+      required:
+        - message
+        - user
+      properties:
+        message:
+          type: string
+          example: Created user
+        user:
+          $ref: '#/components/schemas/User'
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: USER_NOT_FOUND
+        message:
+          type: string
+          example: User not found

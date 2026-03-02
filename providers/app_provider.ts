@@ -8,7 +8,15 @@ import { LoginWithTotpAuthService } from '#auth/application/contracts/login.with
 import { PasswordResetAuthService } from '#auth/application/contracts/password.reset.auth.service'
 import { RegisterAuthService } from '#auth/application/contracts/register.auth.service'
 import { StartTotpSetupAuthService } from '#auth/application/contracts/start.totp.setup.auth.service'
-import { AuthProvider } from '#auth/domain/contracts/auth.provider'
+import { DeleteAccountAuthProvider } from '#auth/domain/contracts/delete.account.auth.provider'
+import { DisableMfaAuthProvider } from '#auth/domain/contracts/disable.mfa.auth.provider'
+import { FinalizeTotpSetupAuthProvider } from '#auth/domain/contracts/finalize.totp.setup.auth.provider'
+import { ListMfaEnrollmentsAuthProvider } from '#auth/domain/contracts/list.mfa.enrollments.auth.provider'
+import { LoginAuthProvider } from '#auth/domain/contracts/login.auth.provider'
+import { LoginWithTotpAuthProvider } from '#auth/domain/contracts/login.with.totp.auth.provider'
+import { PasswordResetAuthProvider } from '#auth/domain/contracts/password.reset.auth.provider'
+import { RegisterAuthProvider } from '#auth/domain/contracts/register.auth.provider'
+import { StartTotpSetupAuthProvider } from '#auth/domain/contracts/start.totp.setup.auth.provider'
 import { LocalUserRepository } from '#auth/domain/contracts/local_user.repository'
 import { CreateUserService } from '#users/application/contracts/create.user.service'
 import { DeleteUserService } from '#users/application/contracts/delete.user.service'
@@ -48,8 +56,24 @@ export default class AppProvider {
     const { RegisterAuth } = await import('#auth/application/services/register.auth.service')
     const { StartTotpSetupAuth } =
       await import('#auth/application/services/start.totp.setup.auth.service')
-    const { FirebaseAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_auth.provider')
+    const { FirebaseRegisterAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_register_auth.provider')
+    const { FirebaseLoginAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_login_auth.provider')
+    const { FirebaseLoginWithTotpAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_login_with_totp_auth.provider')
+    const { FirebasePasswordResetAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_password_reset_auth.provider')
+    const { FirebaseStartTotpSetupAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_start_totp_setup_auth.provider')
+    const { FirebaseFinalizeTotpSetupAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_finalize_totp_setup_auth.provider')
+    const { FirebaseListMfaEnrollmentsAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_list_mfa_enrollments_auth.provider')
+    const { FirebaseDisableMfaAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_disable_mfa_auth.provider')
+    const { FirebaseDeleteAccountAuthProvider } =
+      await import('#auth/infrastructure/providers/firebase_delete_account_auth.provider')
     const { CreateUser } = await import('#users/application/services/create.user.service')
     const { DeleteUser } = await import('#users/application/services/delete.user.service')
     const { IndexUser } = await import('#users/application/services/index.user.service')
@@ -57,8 +81,32 @@ export default class AppProvider {
     const { UpdateUser } = await import('#users/application/services/update.user.service')
     const { UserRepositoryImplementation } =
       await import('#users/infrastructure/database/repositories/user.repository.implementation')
-    this.app.container.bind(AuthProvider, () => {
-      return this.app.container.make(FirebaseAuthProvider)
+    this.app.container.bind(RegisterAuthProvider, () => {
+      return this.app.container.make(FirebaseRegisterAuthProvider)
+    })
+    this.app.container.bind(LoginAuthProvider, () => {
+      return this.app.container.make(FirebaseLoginAuthProvider)
+    })
+    this.app.container.bind(LoginWithTotpAuthProvider, () => {
+      return this.app.container.make(FirebaseLoginWithTotpAuthProvider)
+    })
+    this.app.container.bind(PasswordResetAuthProvider, () => {
+      return this.app.container.make(FirebasePasswordResetAuthProvider)
+    })
+    this.app.container.bind(StartTotpSetupAuthProvider, () => {
+      return this.app.container.make(FirebaseStartTotpSetupAuthProvider)
+    })
+    this.app.container.bind(FinalizeTotpSetupAuthProvider, () => {
+      return this.app.container.make(FirebaseFinalizeTotpSetupAuthProvider)
+    })
+    this.app.container.bind(ListMfaEnrollmentsAuthProvider, () => {
+      return this.app.container.make(FirebaseListMfaEnrollmentsAuthProvider)
+    })
+    this.app.container.bind(DisableMfaAuthProvider, () => {
+      return this.app.container.make(FirebaseDisableMfaAuthProvider)
+    })
+    this.app.container.bind(DeleteAccountAuthProvider, () => {
+      return this.app.container.make(FirebaseDeleteAccountAuthProvider)
     })
 
     this.app.container.bind(UserReadRepository, () => {
