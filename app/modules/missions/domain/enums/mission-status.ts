@@ -1,0 +1,8 @@
+export enum MissionStatus {
+  STAND_BY = 'STAND_BY',
+  PLANNED = 'PLANNED',
+  RUNNING = 'RUNNING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+  INTERRUPTED = 'INTERRUPTED',
+}

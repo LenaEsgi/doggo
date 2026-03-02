@@ -26,3 +26,9 @@ yarn-error.log
 
 # firebase file
 config/firebase/serviceAccountKey.json
+/logs/app.log
+/.adonisjs/server/events.ts
+/.adonisjs/server/listeners.ts
+/.adonisjs/server/routes.d.ts
+/database/schema.ts
+/.adonisjs/server/controllers.ts
