@@ -35,6 +35,10 @@ import {
 } from '#app/modules/missions/infrastructure/gateways/robot-dog.gateway.implementation'
 import { UserGateway } from '#app/modules/missions/application/contracts/user.gateway'
 import { UserGatewayImplementation } from '#app/modules/missions/infrastructure/gateways/user.gateway.implementation'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
+import {
+  MissionRepositoryImplementation
+} from '#app/modules/missions/infrastructure/database/repositories/mission.repository.implementation'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -173,6 +177,10 @@ export default class AppProvider {
     // MISSIONS
     this.app.container.bind(CreateMissionUseCase, () => {
       return this.app.container.make(CreateMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(MissionRepository, () => {
+      return this.app.container.make(MissionRepositoryImplementation)
     })
 
     this.app.container.bind(RobotDogGateway, () => {

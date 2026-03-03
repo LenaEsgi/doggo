@@ -14,23 +14,46 @@ import {
 } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 import { RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
+import { name } from '@speed-highlight/core/languages/xml.js'
+import { s } from '@faker-js/faker/dist/airline-Dz1uGqgJ.js'
 
 export default class Mission {
+
   private constructor(
     private _id: MissionId,
     private _name: string,
-    private _robotDogId: RobotDogId,
+    private _robotDogIds: RobotDogId[],
     private _userId: string,
     private _status: MissionStatus,
     private _missionSteps: MissionStep[]
   ) {}
 
-  public static create(name: string, robotDogId: RobotDogId, userId: string) {
-    return new Mission(MissionId.generate(), name, robotDogId, userId, MissionStatus.STAND_BY, new Array<MissionStep>())
+  public static create(name: string, userId: string) {
+    return new Mission(
+      MissionId.generate(),
+      name,
+      [],
+      userId,
+      MissionStatus.STAND_BY,
+      []
+    )
   }
 
-  public static rehydrate(id: string, name: string, robotDogId: RobotDogId, userId: string, status: MissionStatus) {
-    return new Mission(MissionId.fromString(id), name, robotDogId, userId,  status, new Array<MissionStep>())
+  public static rehydrate(
+    id: string,
+    name: string,
+    userId: string,
+    status: MissionStatus,
+    robotDogIds?: RobotDogId[]
+  ) {
+    return new Mission(
+      MissionId.fromString(id),
+      name,
+      robotDogIds ?? [],
+      userId,
+      status,
+      []
+    )
   }
 
   // -------------------
@@ -142,5 +165,29 @@ export default class Mission {
       .forEach((step, index) => {
         step.changeOrder(index + 1)
       })
+  }
+
+  get id(): MissionId {
+    return this._id
+  }
+
+  get name(): string {
+    return this._name
+  }
+
+  get robotDogId(): RobotDogId[] {
+    return this._robotDogId
+  }
+
+  get userId(): string {
+    return this._userId
+  }
+
+  get status(): MissionStatus {
+    return this._status
+  }
+
+  get missionSteps(): MissionStep[] {
+    return this._missionSteps
   }
 }

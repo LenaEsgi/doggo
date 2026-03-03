@@ -38,7 +38,7 @@ export class CreateMissionUseCaseImplementation implements CreateMissionUseCase 
     }
 
 
-    const mission = Mission.create(dto.name, robotDog.id, dto.userId)
+    const mission = Mission.create(dto.name, dto.userId)
     await this.missionRepository.save(mission)
   }
 }
