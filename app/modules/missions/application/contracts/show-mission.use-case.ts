@@ -1,9 +1,7 @@
-
-import { ShowMissionDto } from '../dto/show-mission.dto.js'
-import { MissionOutputDto } from '../dto/mission.output.dto.js'
+import Mission from '#app/modules/missions/domain/entities/mission.entity'
 
 export abstract class ShowMissionUseCase {
   abstract execute(
-    id: ShowMissionDto
-  ): Promise<MissionOutputDto>
+    id: string
+  ): Promise<Mission>
 }

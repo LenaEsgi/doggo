@@ -39,6 +39,14 @@ import { MissionRepository } from '#app/modules/missions/domain/contracts/missio
 import {
   MissionRepositoryImplementation
 } from '#app/modules/missions/infrastructure/database/repositories/mission.repository.implementation'
+import { ShowMissionUseCase } from '#app/modules/missions/application/contracts/show-mission.use-case'
+import {
+  ShowMissionUseCaseImplementation
+} from '#app/modules/missions/application/usecases/show-mission.use-case.implementation'
+import { IndexMissionUseCase } from '#app/modules/missions/application/contracts/index-mission.use-case'
+import {
+  IndexMissionUseCaseImplementation
+} from '#app/modules/missions/application/usecases/index-mission.use-case.implementation'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -177,6 +185,14 @@ export default class AppProvider {
     // MISSIONS
     this.app.container.bind(CreateMissionUseCase, () => {
       return this.app.container.make(CreateMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(ShowMissionUseCase, () => {
+      return this.app.container.make(ShowMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(IndexMissionUseCase, () => {
+      return this.app.container.make(IndexMissionUseCaseImplementation)
     })
 
     this.app.container.bind(MissionRepository, () => {

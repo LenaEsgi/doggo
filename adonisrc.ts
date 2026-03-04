@@ -5,8 +5,11 @@ export default defineConfig({
   hooks: {
     init: [
         // Always needed
-        indexEntities()
-      ]
+        indexEntities({
+          transformers: {enabled: true}
+        })
+
+    ]
   },
   /*
   |--------------------------------------------------------------------------
@@ -56,7 +59,8 @@ export default defineConfig({
     () => import('@adonisjs/core/providers/vinejs_provider'),
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
-    () => import('#providers/app_provider')
+    () => import('#providers/app_provider'),
+    () => import('#providers/api_provider'),
   ],
 
   /*
