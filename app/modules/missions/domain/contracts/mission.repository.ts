@@ -7,5 +7,5 @@ export abstract class MissionRepository {
   abstract findById(id: MissionId): Promise<Mission | null>
   abstract index(options?: PaginationDto): Promise<PaginatedResult<Mission>>
   abstract save(mission: Mission): Promise<void>
-  abstract delete(): Promise<void>
+  abstract delete(missionId: MissionId): Promise<void>
 }

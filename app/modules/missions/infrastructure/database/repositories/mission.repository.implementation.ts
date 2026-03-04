@@ -48,15 +48,18 @@ export class MissionRepositoryImplementation implements MissionRepository {
 
   async save(mission: Mission): Promise<void> {
 
-    await MissionModel.create({
-      id: mission.id.value,
-      name: mission.name,
-      userId: mission.userId,
-      status: mission.status
-    })
+    await MissionModel.updateOrCreate(
+      { id: mission.id.value },
+      {
+        name: mission.name,
+        userId: mission.userId,
+        status: mission.status,
+      }
+    )
   }
 
-  delete(): Promise<void> {
-    return Promise.resolve(undefined)
+  async delete(missionId: MissionId): Promise<void> {
+    const row = await MissionModel.findOrFail(missionId.value)
+    await row.delete()
   }
 }

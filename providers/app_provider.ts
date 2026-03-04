@@ -47,6 +47,10 @@ import { IndexMissionUseCase } from '#app/modules/missions/application/contracts
 import {
   IndexMissionUseCaseImplementation
 } from '#app/modules/missions/application/usecases/index-mission.use-case.implementation'
+import { UpdateMissionUseCase } from '#app/modules/missions/application/contracts/update-mission.use-case'
+import {
+  UpdateMissionUseCaseImplementation
+} from '#app/modules/missions/application/usecases/update-mission.use-case.implementation'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -193,6 +197,10 @@ export default class AppProvider {
 
     this.app.container.bind(IndexMissionUseCase, () => {
       return this.app.container.make(IndexMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(UpdateMissionUseCase, () => {
+      return this.app.container.make(UpdateMissionUseCaseImplementation)
     })
 
     this.app.container.bind(MissionRepository, () => {

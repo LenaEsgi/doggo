@@ -14,10 +14,13 @@ import {
 } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 import { RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
-import { name } from '@speed-highlight/core/languages/xml.js'
-import { s } from '@faker-js/faker/dist/airline-Dz1uGqgJ.js'
+import {
+  MissionNameCannotBeEmptyError
+} from '#app/modules/missions/domain/exceptions/invalid-mission-name-cannot-be-empty.error'
+import { MissionNameTooLongError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-too-long.error'
 
 export default class Mission {
+  private static MAX_NAME_LENGTH = 100
 
   private constructor(
     private _id: MissionId,
@@ -59,6 +62,18 @@ export default class Mission {
   // -------------------
   // Business
   // -------------------
+
+  rename(newName: string) {
+    if (!newName || !newName.trim()) {
+      throw new MissionNameCannotBeEmptyError()
+    }
+
+    if (newName.length > Mission.MAX_NAME_LENGTH) {
+      throw new MissionNameTooLongError(Mission.MAX_NAME_LENGTH)
+    }
+
+    this._name = newName.trim()
+  }
 
   public startMission() {
     if (this._status === MissionStatus.RUNNING) {
@@ -175,8 +190,8 @@ export default class Mission {
     return this._name
   }
 
-  get robotDogId(): RobotDogId[] {
-    return this._robotDogId
+  get robotDogIds(): RobotDogId[] {
+    return this._robotDogIds
   }
 
   get userId(): string {
