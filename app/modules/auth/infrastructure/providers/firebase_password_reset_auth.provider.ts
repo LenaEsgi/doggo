@@ -1,4 +1,4 @@
-import { PasswordResetAuthProvider } from '#auth/domain/contracts/password.reset.auth.provider'
+import { type PasswordResetAuthProvider } from '#auth/domain/contracts/password.reset.auth.provider'
 import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase_auth.base'
 
 export class FirebasePasswordResetAuthProvider

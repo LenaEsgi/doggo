@@ -1,14 +1,14 @@
-import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import { type RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
-import { RobotDogId } from '../../../app/modules/dogs/domain/value-objects/robot-dog-id.js'
-import { FindAllOptions } from '#dogs/domain/contracts/find-all-options'
-import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { type RobotDogId } from '../../../app/modules/dogs/domain/value-objects/robot-dog-id.js'
+import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
+import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
 export class FakeRobotDogRepository extends RobotDogRepository {
   public storedDogs: RobotDog[] = []
 
   async findById(id: RobotDogId) {
-    return this.storedDogs.find(d => d.id.equals(id)) ?? null
+    return this.storedDogs.find((d) => d.id.equals(id)) ?? null
   }
 
   async findAll(options?: FindAllOptions): Promise<PaginatedResult<RobotDog>> {
@@ -36,7 +36,7 @@ export class FakeRobotDogRepository extends RobotDogRepository {
   }
 
   async save(dog: RobotDog) {
-    const existingIndex = this.storedDogs.findIndex(d => d.id === dog.id)
+    const existingIndex = this.storedDogs.findIndex((d) => d.id === dog.id)
     if (existingIndex >= 0) {
       this.storedDogs[existingIndex] = dog
     } else {
@@ -45,10 +45,10 @@ export class FakeRobotDogRepository extends RobotDogRepository {
   }
 
   async delete(id: RobotDogId) {
-    this.storedDogs = this.storedDogs.filter(d => !d.id.equals(id))
+    this.storedDogs = this.storedDogs.filter((d) => !d.id.equals(id))
   }
 
   async findBySerialNumber(serialNumber: string) {
-    return this.storedDogs.find(d => d.serialNumber === serialNumber) ?? null
+    return this.storedDogs.find((d) => d.serialNumber === serialNumber) ?? null
   }
 }

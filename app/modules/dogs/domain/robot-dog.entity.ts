@@ -14,7 +14,7 @@ export class RobotDog {
   private constructor(
     public readonly id: RobotDogId,
     public readonly serialNumber: string,
-    public readonly  key: RobotDogKey,
+    public readonly key: RobotDogKey,
     public name: string,
     private _state: RobotDogState,
     private _batteryLevel: number,
@@ -34,7 +34,15 @@ export class RobotDog {
       throw new InvalidBatteryLevelError(batteryLevel)
     }
 
-    return new RobotDog(RobotDogId.generate(), serialNumber, RobotDogKey.generate(), name,  RobotDogState.IDLE, batteryLevel, new Date())
+    return new RobotDog(
+      RobotDogId.generate(),
+      serialNumber,
+      RobotDogKey.generate(),
+      name,
+      RobotDogState.IDLE,
+      batteryLevel,
+      new Date()
+    )
   }
 
   public static rehydrate(
@@ -46,7 +54,15 @@ export class RobotDog {
     batteryLevel: number,
     lastHeartbeat: Date
   ): RobotDog {
-    return new RobotDog(RobotDogId.fromString(id), serialNumber, RobotDogKey.fromString(key), name, state, batteryLevel, lastHeartbeat)
+    return new RobotDog(
+      RobotDogId.fromString(id),
+      serialNumber,
+      RobotDogKey.fromString(key),
+      name,
+      state,
+      batteryLevel,
+      lastHeartbeat
+    )
   }
 
   // -------------------

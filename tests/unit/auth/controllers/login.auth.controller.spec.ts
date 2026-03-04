@@ -22,7 +22,9 @@ test('LoginAuthController returns login payload', async ({ assert }) => {
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({
-    request: { validateUsing: async () => ({ email: 'john@example.com', password: 'SuperPassword123' }) },
+    request: {
+      validateUsing: async () => ({ email: 'john@example.com', password: 'SuperPassword123' }),
+    },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
   } as any)
 

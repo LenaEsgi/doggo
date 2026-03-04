@@ -5,7 +5,6 @@ import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 
 test.group('PUT /dogs/:id', (group) => {
-
   group.each.setup(() => testUtils.db().truncate())
 
   test('should update robot dog name and return 204', async ({ client, assert }) => {
@@ -18,9 +17,7 @@ test.group('PUT /dogs/:id', (group) => {
       lastHeartbeat: DateTime.now(),
     })
 
-    const response = await client
-      .put(`/dogs/${dog.id}`)
-      .json({ name: 'NewName' })
+    const response = await client.put(`/dogs/${dog.id}`).json({ name: 'NewName' })
 
     response.assertStatus(204)
 
@@ -36,7 +33,7 @@ test.group('PUT /dogs/:id', (group) => {
 
     response.assertStatus(404)
     response.assertBodyContains({
-      message: 'RobotDog with id 56a39d4d-b05d-42fb-a402-6782fc66dc3d not found'
+      message: 'RobotDog with id 56a39d4d-b05d-42fb-a402-6782fc66dc3d not found',
     })
   })
 })

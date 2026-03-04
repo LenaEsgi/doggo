@@ -14,15 +14,13 @@ function generateRandomKey(length = 18) {
   return result
 }
 
-export const RobotDogFactory = Factory
-  .define(RobotDogModel, ({ faker }) => {
-    return {
-      serial_number: `SN-${faker.number.int({ min: 100000, max: 9999999999999 })}`,
-      key: generateRandomKey(),
-      name: faker.animal.petName(),
-      state: RobotDogState.IDLE,
-      battery_level: faker.number.int({ min: 10, max: 100 }),
-      last_heartbeat: DateTime.fromJSDate(faker.date.recent()),
-    }
-  })
-  .build()
+export const RobotDogFactory = Factory.define(RobotDogModel, ({ faker }) => {
+  return {
+    serial_number: `SN-${faker.number.int({ min: 100000, max: 9999999999999 })}`,
+    key: generateRandomKey(),
+    name: faker.animal.petName(),
+    state: RobotDogState.IDLE,
+    battery_level: faker.number.int({ min: 10, max: 100 }),
+    last_heartbeat: DateTime.fromJSDate(faker.date.recent()),
+  }
+}).build()

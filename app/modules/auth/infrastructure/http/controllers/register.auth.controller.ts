@@ -5,7 +5,6 @@ import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer'
 import { registerAuthValidator } from '#auth/infrastructure/http/validators/register.auth.validator'
 
-
 @inject()
 export default class RegisterAuthController {
   constructor(private readonly authService: RegisterAuthService) {}

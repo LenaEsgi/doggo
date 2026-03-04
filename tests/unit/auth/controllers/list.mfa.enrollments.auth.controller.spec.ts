@@ -2,8 +2,7 @@ import { test } from '@japa/runner'
 import { ListMfaEnrollmentsAuthService } from '#auth/application/contracts/list.mfa.enrollments.auth.service'
 import type { ListMfaEnrollmentsDto } from '#auth/application/dto/list_mfa_enrollments.dto'
 import type { MfaInfo } from '#auth/domain/types/auth.types'
-import ListMfaEnrollmentsAuthController
-  from '#auth/infrastructure/http/controllers/list.mfa.enrollments.auth.controller'
+import ListMfaEnrollmentsAuthController from '#auth/infrastructure/http/controllers/list.mfa.enrollments.auth.controller'
 
 class FakeListMfaEnrollmentsAuthService extends ListMfaEnrollmentsAuthService {
   async listMfaEnrollments(_payload: ListMfaEnrollmentsDto): Promise<MfaInfo[]> {

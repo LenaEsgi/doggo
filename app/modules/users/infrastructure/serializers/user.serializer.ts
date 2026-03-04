@@ -1,4 +1,4 @@
-import { User } from '#users/domain/user.entity'
+import { type User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 
 export class UserSerializer {

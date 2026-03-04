@@ -4,7 +4,6 @@ import { PasswordResetAuthService } from '#auth/application/contracts/password.r
 import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { passwordResetAuthValidator } from '#auth/infrastructure/http/validators/password.reset.auth.validator'
 
-
 @inject()
 export default class PasswordResetAuthController {
   constructor(private readonly authService: PasswordResetAuthService) {}

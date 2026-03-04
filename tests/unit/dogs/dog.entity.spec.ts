@@ -1,10 +1,10 @@
 import { test } from '@japa/runner'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
-import { InvalidDogStateError } from '../../../app/modules/dogs/domain/exceptions/invalid-dog-state-error.js'
-import { InvalidBatteryLevelError } from '../../../app/modules/dogs/domain/exceptions/invalid-battery-level-error.js'
-import { BatteryTooLowError } from '../../../app/modules/dogs/domain/exceptions/battery-too-low-error.js'
-import { InvalidRobotDogNameError } from '../../../app/modules/dogs/domain/exceptions/invalid-robot-dog-name.error.js'
+import { InvalidDogStateError } from '#dogs/domain/exceptions/invalid-dog-state-error'
+import { InvalidBatteryLevelError } from '#dogs/domain/exceptions/invalid-battery-level-error'
+import { BatteryTooLowError } from '#dogs/domain/exceptions/battery-too-low-error'
+import { InvalidRobotDogNameError } from '#dogs/domain/exceptions/invalid-robot-dog-name.error'
 
 test.group('Dog Domain', (group) => {
   let dog: RobotDog
@@ -152,14 +152,13 @@ test.group('Dog Domain', (group) => {
   })
 
   test('updateName should throw if name is empty', ({ assert }) => {
-    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog = RobotDog.create('SN-001', 'Rex', 80)
 
-    assert.throws(
-      () => dog.updateName(''), InvalidRobotDogNameError )
+    assert.throws(() => dog.updateName(''), InvalidRobotDogNameError)
   })
 
   test('updateName should update name if valid', ({ assert }) => {
-    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog = RobotDog.create('SN-001', 'Rex', 80)
     dog.updateName('Bolt')
     assert.equal(dog.name, 'Bolt')
   })

@@ -24,6 +24,9 @@ export class UpdateRobotDogUseCaseImplementation implements UpdateRobotDogUseCas
     robotDog.updateName(dto.name)
     await this.robotDogRepository.save(robotDog)
 
-    logger.info({ robotDogId: dto.id, updatedName: dto.name }, 'UpdateRobotDogUseCase completed successfully')
+    logger.info(
+      { robotDogId: dto.id, updatedName: dto.name },
+      'UpdateRobotDogUseCase completed successfully'
+    )
   }
 }

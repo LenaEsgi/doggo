@@ -1,10 +1,16 @@
-import { LoginAuthProvider } from '#auth/domain/contracts/login.auth.provider'
+import { type LoginAuthProvider } from '#auth/domain/contracts/login.auth.provider'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import type { LoginResult } from '#auth/domain/types/login.result'
 import type { MfaInfo } from '#auth/domain/types/mfa.info'
-import { FirebaseAuthProviderBase, FirebaseHttpError } from '#auth/infrastructure/providers/firebase_auth.base'
+import {
+  FirebaseAuthProviderBase,
+  FirebaseHttpError,
+} from '#auth/infrastructure/providers/firebase_auth.base'
 
-export class FirebaseLoginAuthProvider extends FirebaseAuthProviderBase implements LoginAuthProvider {
+export class FirebaseLoginAuthProvider
+  extends FirebaseAuthProviderBase
+  implements LoginAuthProvider
+{
   async login(email: string, password: string): Promise<LoginResult> {
     try {
       const payload = await this.request<AuthTokens>('v1/accounts:signInWithPassword', {

@@ -8,7 +8,10 @@ test.group('RobotDogKey', () => {
   })
 
   test('should throw if key from string is not 18 chars', ({ assert }) => {
-    assert.throws(() => RobotDogKey.fromString('short'), 'RobotDogKey must be exactly 18 characters')
+    assert.throws(
+      () => RobotDogKey.fromString('short'),
+      'RobotDogKey must be exactly 18 characters'
+    )
   })
 
   test('should equals return true for identical keys', ({ assert }) => {

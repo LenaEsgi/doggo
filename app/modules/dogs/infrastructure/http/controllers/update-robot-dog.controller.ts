@@ -22,7 +22,10 @@ export default class UpdateRobotDogController {
     try {
       await this.updateRobotDog.execute(dto)
 
-      logger.info({ robotDogId: dto.id, updatedName: dto.name }, 'UpdateRobotDogController completed successfully')
+      logger.info(
+        { robotDogId: dto.id, updatedName: dto.name },
+        'UpdateRobotDogController completed successfully'
+      )
 
       return response.noContent()
     } catch (err) {
@@ -32,7 +35,10 @@ export default class UpdateRobotDogController {
         return response.notFound({ message: err.message })
       }
 
-      logger.error({ robotDogId: dto.id, error: err }, 'Unexpected error in UpdateRobotDogController')
+      logger.error(
+        { robotDogId: dto.id, error: err },
+        'Unexpected error in UpdateRobotDogController'
+      )
 
       return response.internalServerError({ message: 'Something went wrong' })
     }

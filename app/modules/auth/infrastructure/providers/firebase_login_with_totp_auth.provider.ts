@@ -1,6 +1,9 @@
-import { LoginWithTotpAuthProvider } from '#auth/domain/contracts/login.with.totp.auth.provider'
+import { type LoginWithTotpAuthProvider } from '#auth/domain/contracts/login.with.totp.auth.provider'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
-import { FirebaseAuthProviderBase, FirebaseHttpError } from '#auth/infrastructure/providers/firebase_auth.base'
+import {
+  FirebaseAuthProviderBase,
+  FirebaseHttpError,
+} from '#auth/infrastructure/providers/firebase_auth.base'
 
 export class FirebaseLoginWithTotpAuthProvider
   extends FirebaseAuthProviderBase

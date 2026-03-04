@@ -5,7 +5,6 @@ import { DateTime } from 'luxon'
 import testUtils from '@adonisjs/core/services/test_utils'
 
 test.group('GET /dogs', (group) => {
-
   group.each.setup(() => testUtils.db().truncate())
 
   test('should return paginated robot dogs', async ({ client, assert }) => {

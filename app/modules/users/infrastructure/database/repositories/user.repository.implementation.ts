@@ -1,10 +1,13 @@
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
-import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
-import { User } from '#users/domain/user.entity'
+import { type UserWriteRepository } from '#users/domain/contracts/user.write.repository'
+import { type User } from '#users/domain/user.entity'
 import UserModel from '#users/infrastructure/database/models/user'
 import { UserMapper } from '#users/infrastructure/database/mappers/user.mapper'
 
-export class UserRepositoryImplementation extends UserReadRepository implements UserWriteRepository {
+export class UserRepositoryImplementation
+  extends UserReadRepository
+  implements UserWriteRepository
+{
   async findById(id: string): Promise<User | null> {
     const user = await UserModel.find(id)
 

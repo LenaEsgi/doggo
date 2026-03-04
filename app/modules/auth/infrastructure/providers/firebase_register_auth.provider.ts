@@ -1,4 +1,4 @@
-import { RegisterAuthProvider } from '#auth/domain/contracts/register.auth.provider'
+import { type RegisterAuthProvider } from '#auth/domain/contracts/register.auth.provider'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase_auth.base'
 

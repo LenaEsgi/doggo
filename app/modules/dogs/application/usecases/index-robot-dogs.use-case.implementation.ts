@@ -16,13 +16,13 @@ export class IndexRobotDogsUseCaseImplementation implements IndexRobotDogsUseCas
     const page = Math.max(1, params.page ?? 1)
     const limit = Math.min(params.limit ?? 20, 100)
 
-    logger.info({page, limit}, 'page and limit')
+    logger.info({ page, limit }, 'page and limit')
 
     const { data: dogs, meta } = await this.robotDogRepository.findAll({ page, limit })
 
     logger.info({ count: dogs.length }, 'IndexRobotDogsUseCase completed successfully')
 
-    const dto: RobotDogOutput[] = dogs.map(dog => ({
+    const dto: RobotDogOutput[] = dogs.map((dog) => ({
       id: dog.id.value,
       serialNumber: dog.serialNumber,
       name: dog.name,

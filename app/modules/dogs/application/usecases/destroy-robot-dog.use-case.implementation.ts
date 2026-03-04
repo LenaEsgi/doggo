@@ -4,7 +4,7 @@ import { DestroyRobotDogDto } from '../DTO/destroy-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
 import { inject } from '@adonisjs/core'
 import { DestroyRobotDogUseCase } from '../contracts/destroy-robot-dog.use-case.js'
-import logger from "@adonisjs/core/services/logger";
+import logger from '@adonisjs/core/services/logger'
 
 @inject()
 export class DestroyRobotDogUseCaseImplementation implements DestroyRobotDogUseCase {

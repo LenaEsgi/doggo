@@ -64,6 +64,7 @@
     "@adonisjs/lucid": "^22.0.0",
     "@vinejs/vine": "^4.3.0",
     "adonis-autoswagger": "^3.73.0",
+    "eslint-plugin-unicorn": "^63.0.0",
     "js-yaml": "^4.1.1",
     "luxon": "^3.7.2",
     "pg": "^8.18.0",

@@ -1,4 +1,4 @@
-import { ApplicationService } from '@adonisjs/core/types'
+import { type ApplicationService } from '@adonisjs/core/types'
 import { DeleteAccountAuthService } from '#auth/application/contracts/delete.account.auth.service'
 import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.auth.service'
 import { FinalizeTotpSetupAuthService } from '#auth/application/contracts/finalize.totp.setup.auth.service'

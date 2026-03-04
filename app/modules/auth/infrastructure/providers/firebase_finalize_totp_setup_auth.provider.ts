@@ -1,4 +1,4 @@
-import { FinalizeTotpSetupAuthProvider } from '#auth/domain/contracts/finalize.totp.setup.auth.provider'
+import { type FinalizeTotpSetupAuthProvider } from '#auth/domain/contracts/finalize.totp.setup.auth.provider'
 import type { TotpFinalizeResult } from '#auth/domain/types/totp.finalize.result'
 import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase_auth.base'
 

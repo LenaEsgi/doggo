@@ -3,7 +3,6 @@ import { RobotDogId } from '../../../../../app/modules/dogs/domain/value-objects
 import { InvalidRobotDogIdError } from '../../../../../app/modules/dogs/domain/exceptions/invalid-robot-dog-id.error.js'
 
 test.group('RobotDogId Value Object', () => {
-
   test('generate() should create a valid UUID v4', ({ assert }) => {
     const id = RobotDogId.generate()
     assert.match(id.value, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
@@ -22,7 +21,10 @@ test.group('RobotDogId Value Object', () => {
   test('fromString() should throw InvalidRobotDogIdError if invalid format', ({ assert }) => {
     assert.throws(() => RobotDogId.fromString('not-a-uuid'), InvalidRobotDogIdError)
     assert.throws(() => RobotDogId.fromString('123'), InvalidRobotDogIdError)
-    assert.throws(() => RobotDogId.fromString('00000000-0000-0000-0000-000000000000'), InvalidRobotDogIdError) // non v4
+    assert.throws(
+      () => RobotDogId.fromString('00000000-0000-0000-0000-000000000000'),
+      InvalidRobotDogIdError
+    ) // non v4
   })
 
   test('equals() should return true for same value', ({ assert }) => {
@@ -39,5 +41,4 @@ test.group('RobotDogId Value Object', () => {
 
     assert.isFalse(id1.equals(id2))
   })
-
 })

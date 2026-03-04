@@ -31,7 +31,9 @@ function responseCollector() {
     out,
     response: {
       created: (body: any) => ((out.status = 201), (out.body = body), body),
-      status: (code: number) => ({ send: (body: any) => ((out.status = code), (out.body = body), body) }),
+      status: (code: number) => ({
+        send: (body: any) => ((out.status = code), (out.body = body), body),
+      }),
       badRequest: (body: any) => ((out.status = 400), (out.body = body), body),
     },
   }
@@ -42,7 +44,14 @@ test('RegisterAuthController returns 201 on success', async ({ assert }) => {
   const { response, out } = responseCollector()
 
   await controller.handle({
-    request: { validateUsing: async () => ({ firstname: 'John', lastname: 'Doe', email: 'john@example.com', password: 'SuperPassword123' }) },
+    request: {
+      validateUsing: async () => ({
+        firstname: 'John',
+        lastname: 'Doe',
+        email: 'john@example.com',
+        password: 'SuperPassword123',
+      }),
+    },
     response,
   } as any)
 
@@ -55,7 +64,14 @@ test('RegisterAuthController maps firebase errors', async ({ assert }) => {
   const { response, out } = responseCollector()
 
   await controller.handle({
-    request: { validateUsing: async () => ({ firstname: 'John', lastname: 'Doe', email: 'john@example.com', password: 'SuperPassword123' }) },
+    request: {
+      validateUsing: async () => ({
+        firstname: 'John',
+        lastname: 'Doe',
+        email: 'john@example.com',
+        password: 'SuperPassword123',
+      }),
+    },
     response,
   } as any)
 

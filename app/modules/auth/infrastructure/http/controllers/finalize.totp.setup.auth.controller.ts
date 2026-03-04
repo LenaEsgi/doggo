@@ -4,7 +4,6 @@ import { FinalizeTotpSetupAuthService } from '#auth/application/contracts/finali
 import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { finalizeTotpSetupAuthValidator } from '#auth/infrastructure/http/validators/finalize.totp.setup.auth.validator'
 
-
 @inject()
 export default class FinalizeTotpSetupAuthController {
   constructor(private readonly authService: FinalizeTotpSetupAuthService) {}

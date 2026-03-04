@@ -21,7 +21,13 @@ test('LoginWithTotpAuthController returns auth success payload', async ({ assert
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({
-    request: { validateUsing: async () => ({ pendingCredential: 'pending', mfaEnrollmentId: 'mfa-id', verificationCode: '123456' }) },
+    request: {
+      validateUsing: async () => ({
+        pendingCredential: 'pending',
+        mfaEnrollmentId: 'mfa-id',
+        verificationCode: '123456',
+      }),
+    },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
   } as any)
 

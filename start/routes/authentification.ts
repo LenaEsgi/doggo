@@ -1,7 +1,9 @@
 import router from '@adonisjs/core/services/router'
 
-const RegisterAuthController = () => import('#app/modules/auth/infrastructure/http/controllers/register.auth.controller')
-const LoginAuthController = () => import('#app/modules/auth/infrastructure/http/controllers/login.auth.controller')
+const RegisterAuthController = () =>
+  import('#app/modules/auth/infrastructure/http/controllers/register.auth.controller')
+const LoginAuthController = () =>
+  import('#app/modules/auth/infrastructure/http/controllers/login.auth.controller')
 const LoginWithTotpAuthController = () =>
   import('#app/modules/auth/infrastructure/http/controllers/login.with.totp.auth.controller')
 const PasswordResetAuthController = () =>

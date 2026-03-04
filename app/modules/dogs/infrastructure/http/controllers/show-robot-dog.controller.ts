@@ -30,7 +30,10 @@ export default class ShowRobotDogController {
         return response.status(404).json({ message: err.message })
       }
 
-      logger.error({ robotDogId: params.id, error: err }, 'Unexpected error in ShowRobotDogController')
+      logger.error(
+        { robotDogId: params.id, error: err },
+        'Unexpected error in ShowRobotDogController'
+      )
 
       throw err
     }

@@ -1,8 +1,6 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
-import {
-  UpdateRobotDogUseCaseImplementation
-} from '../../../../../app/modules/dogs/application/usecases/update-robot-dog.use-case.implementation.js'
+import { UpdateRobotDogUseCaseImplementation } from '../../../../../app/modules/dogs/application/usecases/update-robot-dog.use-case.implementation.js'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogNotFoundError } from '../../../../../app/modules/dogs/domain/exceptions/robot-dog-not-found.error.js'
 
@@ -27,7 +25,8 @@ test.group('UpdateRobotDogUseCaseImplementation', (group) => {
 
   test('should throw RobotDogNotFoundError if robot does not exist', async ({ assert }) => {
     await assert.rejects(
-      async () => await useCase.execute({ id: '56a39d4d-b05d-42fb-a402-6782fc66dc3d', name: 'Bolt' }),
+      async () =>
+        await useCase.execute({ id: '56a39d4d-b05d-42fb-a402-6782fc66dc3d', name: 'Bolt' }),
       RobotDogNotFoundError
     )
   })

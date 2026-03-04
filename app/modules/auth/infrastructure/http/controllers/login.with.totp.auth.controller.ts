@@ -5,7 +5,6 @@ import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer'
 import { loginWithTotpAuthValidator } from '#auth/infrastructure/http/validators/login.with.totp.auth.validator'
 
-
 @inject()
 export default class LoginWithTotpAuthController {
   constructor(private readonly authService: LoginWithTotpAuthService) {}

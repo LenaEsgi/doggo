@@ -1,6 +1,9 @@
-import { StartTotpSetupAuthProvider } from '#auth/domain/contracts/start.totp.setup.auth.provider'
+import { type StartTotpSetupAuthProvider } from '#auth/domain/contracts/start.totp.setup.auth.provider'
 import type { TotpEnrollmentStart } from '#auth/domain/types/totp.enrollment.start'
-import { FirebaseAuthProviderBase, FirebaseHttpError } from '#auth/infrastructure/providers/firebase_auth.base'
+import {
+  FirebaseAuthProviderBase,
+  FirebaseHttpError,
+} from '#auth/infrastructure/providers/firebase_auth.base'
 
 export class FirebaseStartTotpSetupAuthProvider
   extends FirebaseAuthProviderBase
@@ -23,7 +26,11 @@ export class FirebaseStartTotpSetupAuthProvider
     const info = payload.totpSessionInfo
 
     if (!info?.sessionInfo || !info.sharedSecretKey) {
-      throw new FirebaseHttpError('Firebase did not return TOTP enrollment details', 502, 'TOTP_SETUP_INVALID')
+      throw new FirebaseHttpError(
+        'Firebase did not return TOTP enrollment details',
+        502,
+        'TOTP_SETUP_INVALID'
+      )
     }
 
     const email = this.tryExtractEmailFromIdToken(idToken)

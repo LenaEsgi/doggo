@@ -4,7 +4,6 @@ import { StartTotpSetupAuthService } from '#auth/application/contracts/start.tot
 import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { startTotpSetupAuthValidator } from '#auth/infrastructure/http/validators/start.totp.setup.auth.validator'
 
-
 @inject()
 export default class StartTotpSetupAuthController {
   constructor(private readonly authService: StartTotpSetupAuthService) {}

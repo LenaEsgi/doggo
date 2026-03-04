@@ -16,7 +16,9 @@ class FakeUpdateUserService extends UpdateUserService {
 
 test('UpdateUserController returns 200 when updated', async ({ assert }) => {
   const controller = new UpdateUserController(
-    new FakeUpdateUserService(User.rehydrate('u1', 'jane@example.com', 'Jane', 'Doe', UserRole.ADMIN))
+    new FakeUpdateUserService(
+      User.rehydrate('u1', 'jane@example.com', 'Jane', 'Doe', UserRole.ADMIN)
+    )
   )
 
   const result: { status?: number; body?: any } = {}
@@ -60,9 +62,7 @@ test('UpdateUserController returns 404 when missing', async ({ assert }) => {
       params: () => ({ id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' }),
       validateUsing: async () => {
         call += 1
-        return call === 1
-          ? { id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' }
-          : { firstname: 'Jane' }
+        return call === 1 ? { id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' } : { firstname: 'Jane' }
       },
     },
     response: {

@@ -1,11 +1,11 @@
-import { RobotDogRepository } from '../../../domain/contracts/robot-dog.repository.js'
+import { type RobotDogRepository } from '../../../domain/contracts/robot-dog.repository.js'
 import { RobotDog } from '../../../domain/robot-dog.entity.js'
 import RobotDogModel from '../models/robot-dog.js'
-import { RobotDogState } from '../../../domain/enums/robot-dog.state.js'
+import { type RobotDogState } from '../../../domain/enums/robot-dog.state.js'
 import { DateTime } from 'luxon'
-import { RobotDogId } from '../../../domain/value-objects/robot-dog-id.js'
-import {FindAllOptions} from "#dogs/domain/contracts/find-all-options";
-import {PaginatedResult} from "#app/modules/share/DTO/paginated-result.dto";
+import { type RobotDogId } from '../../../domain/value-objects/robot-dog-id.js'
+import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
+import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
 export class RobotDogRepositoryImplementation implements RobotDogRepository {
   async findById(id: RobotDogId): Promise<RobotDog | null> {
@@ -26,17 +26,19 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
   async findAll({ page = 1, limit = 20 }: FindAllOptions = {}): Promise<PaginatedResult<RobotDog>> {
     const paginated = await RobotDogModel.query().paginate(page, limit)
 
-    const data = paginated.all().map(row =>
+    const data = paginated
+      .all()
+      .map((row) =>
         RobotDog.rehydrate(
-            row.id,
-            row.serialNumber,
-            row.key,
-            row.name,
-            row.state as RobotDogState,
-            row.batteryLevel,
-            row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+          row.id,
+          row.serialNumber,
+          row.key,
+          row.name,
+          row.state as RobotDogState,
+          row.batteryLevel,
+          row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
         )
-    )
+      )
 
     return {
       data,
@@ -46,7 +48,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
         currentPage: paginated.currentPage,
         firstPage: paginated.firstPage,
         lastPage: paginated.lastPage,
-      }
+      },
     }
   }
 
@@ -70,10 +72,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
   }
 
   async findBySerialNumber(serialNumber: string): Promise<RobotDog | null> {
-    const row = await RobotDogModel
-      .query()
-      .where('serialNumber', serialNumber)
-      .first()
+    const row = await RobotDogModel.query().where('serialNumber', serialNumber).first()
 
     if (!row) return null
 

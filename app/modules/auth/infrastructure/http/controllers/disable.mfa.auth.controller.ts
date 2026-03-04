@@ -4,7 +4,6 @@ import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.a
 import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
 import { disableMfaAuthValidator } from '#auth/infrastructure/http/validators/disable.mfa.auth.validator'
 
-
 @inject()
 export default class DisableMfaAuthController {
   constructor(private readonly authService: DisableMfaAuthService) {}

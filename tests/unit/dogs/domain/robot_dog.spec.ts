@@ -2,14 +2,13 @@ import { test } from '@japa/runner'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 
-import { InvalidRobotDogNameError } from '../../../../app/modules/dogs/domain/exceptions/invalid-robot-dog-name.error.js'
-import { InvalidRobotDogSerialNumberError } from '../../../../app/modules/dogs/domain/exceptions/invalid-robot-dog-serial-number.error.js'
-import { InvalidBatteryLevelError } from '../../../../app/modules/dogs/domain/exceptions/invalid-battery-level-error.js'
-import { BatteryTooLowError } from '../../../../app/modules/dogs/domain/exceptions/battery-too-low-error.js'
-import { InvalidDogStateError } from '../../../../app/modules/dogs/domain/exceptions/invalid-dog-state-error.js'
+import { InvalidRobotDogNameError } from '#dogs/domain/exceptions/invalid-robot-dog-name.error'
+import { InvalidRobotDogSerialNumberError } from '#dogs/domain/exceptions/invalid-robot-dog-serial-number.error'
+import { InvalidBatteryLevelError } from '#dogs/domain/exceptions/invalid-battery-level-error'
+import { BatteryTooLowError } from '#dogs/domain/exceptions/battery-too-low-error'
+import { InvalidDogStateError } from '#dogs/domain/exceptions/invalid-dog-state-error'
 
 test.group('RobotDog Entity', () => {
-
   test('should create robot dog successfully', ({ assert }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
 
