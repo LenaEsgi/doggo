@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { StartTotpSetupAuthService } from '#auth/application/contracts/start.totp.setup.auth.service'
-import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
+import { handleAuthError } from '#auth/infrastructure/http/auth-error-handler'
 import { startTotpSetupAuthValidator } from '#auth/infrastructure/http/validators/start.totp.setup.auth.validator'
 
 @inject()

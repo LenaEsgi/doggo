@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
-import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
-import { CreateRobotDogUseCaseImplementation } from '../../../../../app/modules/dogs/application/usecases/create-robot-dog.use-case.implementation.js'
+import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
+import { CreateRobotDogUseCaseImplementation } from '#dogs/application/usecases/create-robot-dog.use-case.implementation'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
 

@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
 import { RegisterAuthService } from '#auth/application/contracts/register.auth.service'
-import { FirebaseHttpError } from '#auth/infrastructure/providers/firebase_auth.base'
+import { FirebaseHttpError } from '#auth/infrastructure/providers/firebase-auth.base'
 import type { RegisterDto } from '#auth/application/dto/register.dto'
-import type { AuthTokens } from '#auth/domain/types/auth.types'
+import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import RegisterAuthController from '#auth/infrastructure/http/controllers/register.auth.controller'
 
 class FakeRegisterAuthService extends RegisterAuthService {

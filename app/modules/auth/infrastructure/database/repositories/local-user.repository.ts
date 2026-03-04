@@ -1,4 +1,4 @@
-import { LocalUserRepository } from '#auth/domain/contracts/local_user.repository'
+import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
 import UserModel from '#users/infrastructure/database/models/user'
 
 export class LocalUserRepositoryImplementation extends LocalUserRepository {

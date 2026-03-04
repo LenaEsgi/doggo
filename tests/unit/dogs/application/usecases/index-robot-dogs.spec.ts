@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
-import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
-import { IndexRobotDogsUseCaseImplementation } from '../../../../../app/modules/dogs/application/usecases/index-robot-dogs.use-case.implementation.js'
+import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
+import { IndexRobotDogsUseCaseImplementation } from '#dogs/application/usecases/index-robot-dogs.use-case.implementation'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 
 test.group('ListRobotDogsUseCase', (group) => {

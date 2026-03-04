@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { ListMfaEnrollmentsAuthService } from '#auth/application/contracts/list.mfa.enrollments.auth.service'
-import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
+import { handleAuthError } from '#auth/infrastructure/http/auth-error-handler'
 import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer'
 import { listMfaEnrollmentsAuthValidator } from '#auth/infrastructure/http/validators/list.mfa.enrollments.auth.validator'
 

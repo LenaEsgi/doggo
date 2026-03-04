@@ -3,7 +3,7 @@ import type { TotpEnrollmentStart } from '#auth/domain/types/totp.enrollment.sta
 import {
   FirebaseAuthProviderBase,
   FirebaseHttpError,
-} from '#auth/infrastructure/providers/firebase_auth.base'
+} from '#auth/infrastructure/providers/firebase-auth.base'
 
 export class FirebaseStartTotpSetupAuthProvider
   extends FirebaseAuthProviderBase

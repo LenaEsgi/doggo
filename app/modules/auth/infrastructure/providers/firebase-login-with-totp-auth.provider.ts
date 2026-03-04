@@ -3,7 +3,7 @@ import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import {
   FirebaseAuthProviderBase,
   FirebaseHttpError,
-} from '#auth/infrastructure/providers/firebase_auth.base'
+} from '#auth/infrastructure/providers/firebase-auth.base'
 
 export class FirebaseLoginWithTotpAuthProvider
   extends FirebaseAuthProviderBase

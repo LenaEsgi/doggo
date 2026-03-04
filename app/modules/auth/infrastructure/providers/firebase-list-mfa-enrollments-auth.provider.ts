@@ -1,6 +1,6 @@
 import { type ListMfaEnrollmentsAuthProvider } from '#auth/domain/contracts/list.mfa.enrollments.auth.provider'
 import type { MfaInfo } from '#auth/domain/types/mfa.info'
-import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase_auth.base'
+import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase-auth.base'
 
 export class FirebaseListMfaEnrollmentsAuthProvider
   extends FirebaseAuthProviderBase

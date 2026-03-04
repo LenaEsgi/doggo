@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DeleteAccountAuthService } from '#auth/application/contracts/delete.account.auth.service'
-import { handleAuthError } from '#auth/infrastructure/http/auth_error_handler'
+import { handleAuthError } from '#auth/infrastructure/http/auth-error-handler'
 import { deleteAccountAuthValidator } from '#auth/infrastructure/http/validators/delete.account.auth.validator'
 
 @inject()

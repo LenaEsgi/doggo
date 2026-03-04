@@ -17,7 +17,7 @@ import { LoginWithTotpAuthProvider } from '#auth/domain/contracts/login.with.tot
 import { PasswordResetAuthProvider } from '#auth/domain/contracts/password.reset.auth.provider'
 import { RegisterAuthProvider } from '#auth/domain/contracts/register.auth.provider'
 import { StartTotpSetupAuthProvider } from '#auth/domain/contracts/start.totp.setup.auth.provider'
-import { LocalUserRepository } from '#auth/domain/contracts/local_user.repository'
+import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
 import { CreateUserService } from '#users/application/contracts/create.user.service'
 import { DeleteUserService } from '#users/application/contracts/delete.user.service'
 import { IndexUserService } from '#users/application/contracts/index.user.service'
@@ -26,13 +26,13 @@ import { UpdateUserService } from '#users/application/contracts/update.user.serv
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
-import { CreateRobotDogUseCase } from '../app/modules/dogs/application/contracts/create-robot-dog.use-case.js'
-import { IndexRobotDogsUseCase } from '../app/modules/dogs/application/contracts/index-robot-dogs.use-case.js'
-import { ShowRobotDogUseCase } from '../app/modules/dogs/application/contracts/show-robot-dog.use-case.js'
-import { DestroyRobotDogUseCase } from '../app/modules/dogs/application/contracts/destroy-robot-dog.use-case.js'
-import { UpdateRobotDogUseCase } from '../app/modules/dogs/application/contracts/update-robot-dog.use-case.js'
+import { CreateRobotDogUseCase } from '#dogs/application/contracts/create-robot-dog.use-case'
+import { IndexRobotDogsUseCase } from '#dogs/application/contracts/index-robot-dogs.use-case'
+import { ShowRobotDogUseCase } from '#dogs/application/contracts/show-robot-dog.use-case'
+import { DestroyRobotDogUseCase } from '#dogs/application/contracts/destroy-robot-dog.use-case'
+import { UpdateRobotDogUseCase } from '#dogs/application/contracts/update-robot-dog.use-case'
 import { RobotDogRepositoryImplementation } from '#dogs/infrastructure/database/repositories/robot-dog.repository.implementation'
-import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local_user.repository'
+import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local-user.repository'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -57,23 +57,23 @@ export default class AppProvider {
     const { StartTotpSetupAuth } =
       await import('#auth/application/services/start.totp.setup.auth.service')
     const { FirebaseRegisterAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_register_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-register-auth.provider')
     const { FirebaseLoginAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_login_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-login-auth.provider')
     const { FirebaseLoginWithTotpAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_login_with_totp_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-login-with-totp-auth.provider')
     const { FirebasePasswordResetAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_password_reset_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-password-reset-auth.provider')
     const { FirebaseStartTotpSetupAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_start_totp_setup_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-start-totp-setup-auth.provider')
     const { FirebaseFinalizeTotpSetupAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_finalize_totp_setup_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-finalize-totp-setup-auth.provider')
     const { FirebaseListMfaEnrollmentsAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_list_mfa_enrollments_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-list-mfa-enrollments-auth.provider')
     const { FirebaseDisableMfaAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_disable_mfa_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-disable-mfa-auth.provider')
     const { FirebaseDeleteAccountAuthProvider } =
-      await import('#auth/infrastructure/providers/firebase_delete_account_auth.provider')
+      await import('#auth/infrastructure/providers/firebase-delete-account-auth.provider')
     const { CreateUser } = await import('#users/application/services/create.user.service')
     const { DeleteUser } = await import('#users/application/services/delete.user.service')
     const { IndexUser } = await import('#users/application/services/index.user.service')

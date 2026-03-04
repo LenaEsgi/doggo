@@ -3,7 +3,7 @@ import type { DeleteAccountResult } from '#auth/domain/types/delete.account.resu
 import {
   FirebaseAuthProviderBase,
   FirebaseHttpError,
-} from '#auth/infrastructure/providers/firebase_auth.base'
+} from '#auth/infrastructure/providers/firebase-auth.base'
 
 export class FirebaseDeleteAccountAuthProvider
   extends FirebaseAuthProviderBase

@@ -1,6 +1,6 @@
 import { type DisableMfaAuthProvider } from '#auth/domain/contracts/disable.mfa.auth.provider'
 import type { DisableMfaResult } from '#auth/domain/types/disable.mfa.result'
-import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase_auth.base'
+import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase-auth.base'
 
 export class FirebaseDisableMfaAuthProvider
   extends FirebaseAuthProviderBase

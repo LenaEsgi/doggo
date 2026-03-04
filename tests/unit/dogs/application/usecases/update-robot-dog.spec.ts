@@ -1,8 +1,8 @@
 import { test } from '@japa/runner'
-import { FakeRobotDogRepository } from '#tests/unit/fakes/fake_robot_dog_repository'
-import { UpdateRobotDogUseCaseImplementation } from '../../../../../app/modules/dogs/application/usecases/update-robot-dog.use-case.implementation.js'
+import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
+import { UpdateRobotDogUseCaseImplementation } from '#dogs/application/usecases/update-robot-dog.use-case.implementation'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
-import { RobotDogNotFoundError } from '../../../../../app/modules/dogs/domain/exceptions/robot-dog-not-found.error.js'
+import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 
 test.group('UpdateRobotDogUseCaseImplementation', (group) => {
   let fakeRepo: FakeRobotDogRepository

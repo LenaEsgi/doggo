@@ -5,7 +5,7 @@ import type { MfaInfo } from '#auth/domain/types/mfa.info'
 import {
   FirebaseAuthProviderBase,
   FirebaseHttpError,
-} from '#auth/infrastructure/providers/firebase_auth.base'
+} from '#auth/infrastructure/providers/firebase-auth.base'
 
 export class FirebaseLoginAuthProvider
   extends FirebaseAuthProviderBase
