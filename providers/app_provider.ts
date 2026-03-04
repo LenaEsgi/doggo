@@ -51,6 +51,10 @@ import { UpdateMissionUseCase } from '#app/modules/missions/application/contract
 import {
   UpdateMissionUseCaseImplementation
 } from '#app/modules/missions/application/usecases/update-mission.use-case.implementation'
+import { DestroyMissionUseCase } from '#app/modules/missions/application/contracts/destroy-mission.use-case'
+import {
+  DestroyMissionUseCaseImplementation
+} from '#app/modules/missions/application/usecases/destroy-mission.use-case.implementation'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -201,6 +205,10 @@ export default class AppProvider {
 
     this.app.container.bind(UpdateMissionUseCase, () => {
       return this.app.container.make(UpdateMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(DestroyMissionUseCase, () => {
+      return this.app.container.make(DestroyMissionUseCaseImplementation)
     })
 
     this.app.container.bind(MissionRepository, () => {
