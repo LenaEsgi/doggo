@@ -4,8 +4,25 @@ on:
   push:
     branches:
       - dev
+      - add-linter-in-github-action
 
 jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node (exemple)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint
+
   test:
     runs-on: ubuntu-latest
 
@@ -40,7 +57,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - run: cp .env.test .env
+      - run: cp .env.ci.test .env
 
       - name: Run migrations
         run: node ace migration:run
