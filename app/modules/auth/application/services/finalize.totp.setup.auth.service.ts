@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core'
 import { FinalizeTotpSetupAuthService } from '#auth/application/contracts/finalize.totp.setup.auth.service'
-import type { FinalizeTotpSetupDto } from '#auth/application/dto/finalize_totp_setup.dto'
+import type { FinalizeTotpSetupDto } from '#auth/application/dto/finalize-totp-setup.dto'
 import { FinalizeTotpSetupAuthProvider } from '#auth/domain/contracts/finalize.totp.setup.auth.provider'
 import type { TotpFinalizeResult } from '#auth/domain/types/totp.finalize.result'
 

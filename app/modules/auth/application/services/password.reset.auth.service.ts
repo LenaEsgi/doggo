@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core'
 import { PasswordResetAuthService } from '#auth/application/contracts/password.reset.auth.service'
-import type { PasswordResetDto } from '#auth/application/dto/password_reset.dto'
+import type { PasswordResetDto } from '#auth/application/dto/password-reset.dto'
 import { PasswordResetAuthProvider } from '#auth/domain/contracts/password.reset.auth.provider'
 
 @inject()

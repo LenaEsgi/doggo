@@ -1,5 +1,5 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import { RobotDogFactory } from '#database/factories/robot_dog_factory'
+import { RobotDogFactory } from '#database/factories/robot-dog-factory'
 
 export default class extends BaseSeeder {
   async run() {

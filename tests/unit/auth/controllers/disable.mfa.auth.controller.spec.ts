@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.auth.service'
-import type { DisableMfaDto } from '#auth/application/dto/disable_mfa.dto'
-import type { DisableMfaResult } from '#auth/domain/types/auth.types'
+import type { DisableMfaDto } from '#auth/application/dto/disable-mfa.dto'
+import type { DisableMfaResult } from '#auth/domain/types/disable.mfa.result'
 import DisableMfaAuthController from '#auth/infrastructure/http/controllers/disable.mfa.auth.controller'
 
 class FakeDisableMfaAuthService extends DisableMfaAuthService {

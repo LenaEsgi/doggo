@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core'
 import { StartTotpSetupAuthService } from '#auth/application/contracts/start.totp.setup.auth.service'
-import type { StartTotpSetupDto } from '#auth/application/dto/start_totp_setup.dto'
+import type { StartTotpSetupDto } from '#auth/application/dto/start-totp-setup.dto'
 import { StartTotpSetupAuthProvider } from '#auth/domain/contracts/start.totp.setup.auth.provider'
 import type { TotpEnrollmentStart } from '#auth/domain/types/totp.enrollment.start'
 
