@@ -5,6 +5,8 @@ const IndexMissionController = () => import('#app/modules/missions/infrastructur
 const UpdateMissionController = () => import('#app/modules/missions/infrastructure/http/controllers/update-mission.controller')
 const DestroyMissionController = () => import('#app/modules/missions/infrastructure/http/controllers/destroy-mission.controller')
 const AddStepController = () => import('#app/modules/missions/infrastructure/http/controllers/add-step.controller')
+const DestroyMissionStepController = () => import('#app/modules/missions/infrastructure/http/controllers/destroy-mission-step.controller')
+
 
 router.group(() => {
   router.post('/', [CreateMissionController])
@@ -13,5 +15,6 @@ router.group(() => {
   router.put('/:id', [UpdateMissionController])
   router.delete('/:id', [DestroyMissionController])
 
-  router.post('/:id/step', [AddStepController])
+  router.post('/:id/steps', [AddStepController])
+  router.delete('/:missionId/steps/:stepId', [DestroyMissionStepController])
 }).prefix('/missions')

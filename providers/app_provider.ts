@@ -59,6 +59,9 @@ import { AddMissionStepUseCase } from '#app/modules/missions/application/contrac
 import {
   AddMissionStepUseCaseImplementation
 } from '#app/modules/missions/application/usecases/add-mission-step.use-case.implementation'
+import { RemoveMissionStepUseCase } from '#app/modules/missions/application/contracts/remove-mission-step.use-case'
+import RemoveMissionStepImplementation
+  from '#app/modules/missions/application/usecases/remove-mission-step.use-case.implementation'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -217,6 +220,10 @@ export default class AppProvider {
 
     this.app.container.bind(AddMissionStepUseCase, () => {
       return this.app.container.make(AddMissionStepUseCaseImplementation)
+    })
+
+    this.app.container.bind(RemoveMissionStepUseCase, () => {
+      return this.app.container.make(RemoveMissionStepImplementation)
     })
 
     this.app.container.bind(MissionRepository, () => {
