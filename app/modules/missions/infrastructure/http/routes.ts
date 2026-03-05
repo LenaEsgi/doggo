@@ -7,6 +7,7 @@ const DestroyMissionController = () => import('#app/modules/missions/infrastruct
 const AddStepController = () => import('#app/modules/missions/infrastructure/http/controllers/add-step.controller')
 const DestroyMissionStepController = () => import('#app/modules/missions/infrastructure/http/controllers/destroy-mission-step.controller')
 
+const MoveMissionStepController = () => import('#app/modules/missions/infrastructure/http/controllers/move-mission-step.controller')
 
 router.group(() => {
   router.post('/', [CreateMissionController])
@@ -17,4 +18,5 @@ router.group(() => {
 
   router.post('/:id/steps', [AddStepController])
   router.delete('/:missionId/steps/:stepId', [DestroyMissionStepController])
+  router.put('/:missionId/steps/:stepId', [MoveMissionStepController])
 }).prefix('/missions')
