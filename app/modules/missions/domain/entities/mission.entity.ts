@@ -47,6 +47,7 @@ export default class Mission {
     name: string,
     userId: string,
     status: MissionStatus,
+    missionSteps: MissionStep[] = [],
     robotDogIds?: RobotDogId[]
   ) {
     return new Mission(
@@ -55,7 +56,7 @@ export default class Mission {
       robotDogIds ?? [],
       userId,
       status,
-      []
+      missionSteps
     )
   }
 

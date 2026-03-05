@@ -55,6 +55,10 @@ import { DestroyMissionUseCase } from '#app/modules/missions/application/contrac
 import {
   DestroyMissionUseCaseImplementation
 } from '#app/modules/missions/application/usecases/destroy-mission.use-case.implementation'
+import { AddMissionStepUseCase } from '#app/modules/missions/application/contracts/add-mission-step.use-case'
+import {
+  AddMissionStepUseCaseImplementation
+} from '#app/modules/missions/application/usecases/add-mission-step.use-case.implementation'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -209,6 +213,10 @@ export default class AppProvider {
 
     this.app.container.bind(DestroyMissionUseCase, () => {
       return this.app.container.make(DestroyMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(AddMissionStepUseCase, () => {
+      return this.app.container.make(AddMissionStepUseCaseImplementation)
     })
 
     this.app.container.bind(MissionRepository, () => {

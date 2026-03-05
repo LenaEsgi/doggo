@@ -4,15 +4,32 @@ import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
+import MissionStepModel from '#app/modules/missions/infrastructure/database/models/mission-step'
+import db from '@adonisjs/lucid/services/db'
+import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 
 export class MissionRepositoryImplementation implements MissionRepository {
 
   async findById(id: MissionId): Promise<Mission | null> {
-    const row = await MissionModel.find(id.value)
+    const row = await MissionModel.query()
+      .where('id', id.value)
+      .preload('steps', (query) => {
+      query.orderBy('sequence_order', 'asc')
+    }).first()
 
     if (!row) return null
 
-    return Mission.rehydrate(row.id, row.name, row.userId, row.status)
+    const steps = row.steps.map((s) =>
+      MissionStep.rehydrate(
+        s.id,
+        s.actionId,
+        s.sequenceOrder,
+        s.parameters,
+        s.status
+      )
+    )
+
+    return Mission.rehydrate(row.id, row.name, row.userId, row.status, steps)
   }
 
   async index(options?: PaginationDto): Promise<PaginatedResult<Mission>> {
@@ -47,17 +64,39 @@ export class MissionRepositoryImplementation implements MissionRepository {
   }
 
   async save(mission: Mission): Promise<void> {
+    // On crée la transaction
+    await db.transaction(async (trx) => {
 
-    await MissionModel.updateOrCreate(
-      { id: mission.id.value },
-      {
-        name: mission.name,
-        userId: mission.userId,
-        status: mission.status,
-      }
-    )
+      const missionRow = await MissionModel.updateOrCreate(
+        { id: mission.id.value },
+        {
+          name: mission.name,
+          userId: mission.userId,
+          status: mission.status,
+        },
+        { client: trx }
+      )
+
+      const domainStepIds = mission.missionSteps.map((s) => s.id.value)
+
+      await missionRow
+        .useTransaction(trx)
+        .related('steps')
+        .query()
+        .whereNotIn('id', domainStepIds)
+        .delete()
+
+      const stepsData = mission.missionSteps.map((step) => ({
+        id: step.id.value,
+        actionId: step.actionId,
+        sequenceOrder: step.order,
+        parameters: JSON.stringify(step.parameters),
+        missionId: mission.id.value,
+        status: step.status,
+      }))
+      await MissionStepModel.updateOrCreateMany('id', stepsData, { client: trx })
+    })
   }
-
   async delete(missionId: MissionId): Promise<void> {
     const row = await MissionModel.findOrFail(missionId.value)
     await row.delete()

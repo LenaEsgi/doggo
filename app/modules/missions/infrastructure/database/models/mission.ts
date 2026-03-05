@@ -1,9 +1,10 @@
-import { BaseModel, column, hasOne, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, hasOne, manyToMany } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
-import type { HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
 import UserModel from '#users/infrastructure/database/models/user'
 import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
+import MissionStepModel from '#app/modules/missions/infrastructure/database/models/mission-step'
 
 export default class MissionModel extends BaseModel {
   public static table = 'missions'
@@ -19,6 +20,11 @@ export default class MissionModel extends BaseModel {
 
   @manyToMany(() => RobotDogModel)
   declare robotDogs: ManyToMany<typeof RobotDogModel>
+
+  @hasMany(() => MissionStepModel, {
+    foreignKey: 'missionId',
+  })
+  declare steps: HasMany<typeof MissionStepModel>
 
   @column()
   declare userId: string
