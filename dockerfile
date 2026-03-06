@@ -8,7 +8,6 @@ FROM node:25-alpine
 WORKDIR /app
 COPY --from=builder /app/build ./
 RUN npm ci --omit=dev
-COPY .env.production.local ./.env
 COPY swagger.yml .
 EXPOSE 3333
 CMD ["node", "bin/server.js"]
