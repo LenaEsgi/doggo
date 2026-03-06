@@ -3,8 +3,8 @@ name: Run Tests
 on:
   push:
     branches:
+      - master
       - dev
-      - add-linter-in-github-action
 
 jobs:
   linter:

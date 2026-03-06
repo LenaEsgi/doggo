@@ -2,8 +2,7 @@ name: buildAndDeploy.yml
 on:
   push:
     branches:
-      - dev
-      - add-linter-in-github-action
+      - master
 
 jobs:
   build:
