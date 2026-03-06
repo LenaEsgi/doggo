@@ -1,4 +1,4 @@
-name: buildAndDeploy.yml
+name: Build and Deploy API image
 on:
   workflow_dispatch:
   push:
