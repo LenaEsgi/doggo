@@ -4,10 +4,10 @@ import { indexEntities } from '@adonisjs/core'
 export default defineConfig({
   hooks: {
     init: [
-        // Always needed
-        indexEntities({
-          transformers: {enabled: true}
-        })
+      // Always needed
+      indexEntities({
+        transformers: { enabled: true }
+      })
 
     ]
   },
@@ -61,6 +61,9 @@ export default defineConfig({
     () => import('@adonisjs/lucid/database_provider'),
     () => import('#providers/app_provider'),
     () => import('#providers/api_provider'),
+    () => import('#providers/mission_provider'),
+    () => import('#providers/robot_dog_provider'),
+    () => import('#providers/user_provider')
   ],
 
   /*

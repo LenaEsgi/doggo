@@ -22,18 +22,30 @@ export type ScannedRoutes = {
     'create_robot_dog': { paramsTuple?: []; params?: {} }
     'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'create_mission': { paramsTuple?: []; params?: {} }
+    'index_mission': { paramsTuple?: []; params?: {} }
+    'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'update_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
   }
   GET: {
     'index_user': { paramsTuple?: []; params?: {} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'index_mission': { paramsTuple?: []; params?: {} }
+    'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'index_user': { paramsTuple?: []; params?: {} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'index_mission': { paramsTuple?: []; params?: {} }
+    'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -43,6 +55,8 @@ export type ScannedRoutes = {
     'disable_mfa_auth': { paramsTuple?: []; params?: {} }
     'delete_account_auth': { paramsTuple?: []; params?: {} }
     'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
   }
   POST: {
     'register_auth': { paramsTuple?: []; params?: {} }
@@ -53,9 +67,13 @@ export type ScannedRoutes = {
     'finalize_totp_setup_auth': { paramsTuple?: []; params?: {} }
     'list_mfa_enrollments_auth': { paramsTuple?: []; params?: {} }
     'create_robot_dog': { paramsTuple?: []; params?: {} }
+    'create_mission': { paramsTuple?: []; params?: {} }
+    'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'update_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {
