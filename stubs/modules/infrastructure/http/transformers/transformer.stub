@@ -1,0 +1,21 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
+{{#var className = modelName + 'Transformer'}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'infrastructure/http/transformers', kebabName + '.transformer.ts')
+  })
+}}}
+import { BaseTransformer } from '@adonisjs/core/transformers'
+import type {{ modelName }} from '../../../domain/entities/{{ kebabName }}.entity.js'
+
+export default class {{ className }} extends BaseTransformer<{{ modelName }}> {
+  toObject() {
+    return {
+      // Map other domain properties here
+    }
+  }
+}

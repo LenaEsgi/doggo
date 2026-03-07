@@ -37,8 +37,6 @@ test.group('UpdateMissionUseCase', (group) => {
   })
 
   test('should throw error if id format is invalid', async ({ assert }) => {
-    await assert.rejects(
-      () => useCase.execute({ id: 'invalid-uuid', name: 'New Name' })
-    )
+    await assert.rejects(() => useCase.execute({ id: 'invalid-uuid', name: 'New Name' }))
   })
 })

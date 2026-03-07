@@ -2,6 +2,7 @@
 {{#var modelName = generators.modelName(entity.name)}}
 {{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
 {{#var className = 'Destroy' + modelName + 'Controller'}}
+{{#var useCaseName = 'Destroy' + modelName + 'UseCase'}}
 {{#var paramFolder = string(name).camelCase().toString()}}
 
 {{{
@@ -10,9 +11,24 @@
   })
 }}}
 import { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+import { {{ useCaseName }} } from '../../application/usecases/destroy-{{ kebabName }}.use-case.js'
 
+@inject()
 export default class {{ className }} {
-  async handle({ request, response }: HttpContext) {
-    // TODO: implement
+  constructor(private readonly useCase: {{ useCaseName }}) {}
+
+  async handle({ params, response, logger }: HttpContext) {
+    const id = params.id
+
+    logger.info('Starting {{ modelName }} deletion', { id })
+
+    await this.useCase.execute({ id })
+
+    logger.info('{{ modelName }} successfully deleted', { id })
+
+    return response.status(204).json({
+      message: '{{ modelName }} deleted successfully'
+    })
   }
 }

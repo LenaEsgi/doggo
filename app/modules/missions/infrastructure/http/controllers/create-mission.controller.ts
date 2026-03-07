@@ -5,7 +5,6 @@ import { CreateMissionValidator } from '#app/modules/missions/infrastructure/htt
 
 @inject()
 export default class CreateMissionController {
-
   constructor(private createUseCase: CreateMissionUseCase) {}
   public async handle({ request }: HttpContext) {
     const payload = await request.validateUsing(CreateMissionValidator)

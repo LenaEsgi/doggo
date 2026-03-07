@@ -1,15 +1,14 @@
 {{#var entity = generators.createEntity(name)}}
 {{#var modelName = generators.modelName(entity.name)}}
 {{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
-{{#var className = 'Index' + modelName + 'UseCaseImplementation'}}
-{{#var contractClassName = 'Index' + modelName + 'UseCase'}}
+{{#var className = 'Index' + modelName + 'UseCase'}}
 {{#var outputClassName = modelName + 'OutputDto'}}
 {{#var repoClassName = modelName + 'Repository'}}
 {{#var paramFolder = string(name).camelCase().toString()}}
 
 {{{
   exports({
-    to: app.makePath('app/modules', paramFolder, 'application/usecases', 'index-' + kebabName + '.use-case.implementation.ts')
+    to: app.makePath('app/modules', paramFolder, 'application/usecases', 'index-' + kebabName + '.use-case.ts')
   })
 }}}
 
@@ -18,15 +17,16 @@ import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { {{ outputClassName }} } from '../dto/{{ kebabName }}.output.dto.js'
 import { inject } from '@adonisjs/core'
-import { {{ contractClassName }} } from '../contracts/index-{{ kebabName }}.use-case.js'
 import logger from '@adonisjs/core/services/logger'
 
 @inject()
-export class {{ className }} implements {{ contractClassName }} {
+export class {{ className }} {
   constructor(private {{ string.camelCase(repoClassName) }}: {{ repoClassName }}) {}
 
   async execute(params: PaginationDto): Promise<PaginatedResult<{{ outputClassName }}>> {
-    logger.info('{{ contractClassName }} started', { params })
+    logger.info('{{ className }} started', { params })
+
+    // Implementation logic here
     return null as any
   }
 }

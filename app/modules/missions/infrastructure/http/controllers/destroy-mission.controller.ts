@@ -4,9 +4,7 @@ import { DestroyMissionUseCase } from '#app/modules/missions/application/contrac
 
 @inject()
 export default class DestroyMissionController {
-
-  constructor(private destroyMission: DestroyMissionUseCase) {
-  }
+  constructor(private destroyMission: DestroyMissionUseCase) {}
   async handle({ params, response }: HttpContext) {
     await this.destroyMission.execute({ id: params.id })
     return response.noContent()

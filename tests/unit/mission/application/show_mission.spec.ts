@@ -28,17 +28,12 @@ test.group('ShowMissionUseCase', (group) => {
   test('should throw an error if mission is not found', async ({ assert }) => {
     const unknownId = '550e8400-e29b-41d4-a716-446655440000'
 
-    await assert.rejects(
-      () => useCase.execute(unknownId),
-      InvalidMissionNotFountError
-    )
+    await assert.rejects(() => useCase.execute(unknownId), InvalidMissionNotFountError)
   })
 
   test('should throw error if id format is invalid', async ({ assert }) => {
     const invalidId = 'not-a-uuid'
 
-    await assert.rejects(
-      () => useCase.execute(invalidId)
-    )
+    await assert.rejects(() => useCase.execute(invalidId))
   })
 })

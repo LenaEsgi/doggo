@@ -1,0 +1,17 @@
+{{#var modelName = generators.modelName(name)}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
+{{#var className = 'Update' + modelName + 'Validator'}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'infrastructure/http/validators', 'update-' + kebabName + '.validator.ts')
+  })
+}}}
+import vine from '@vinejs/vine'
+
+export const {{ className }} = vine.compile(
+  vine.object({
+    // Add other optional fields here
+  })
+)

@@ -1,6 +1,3 @@
-
 export class DestroyMissionDto {
-  constructor(
-    public readonly id: string,
-  ) {}
+  constructor(public readonly id: string) {}
 }

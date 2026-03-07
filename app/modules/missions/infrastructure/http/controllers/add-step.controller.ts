@@ -5,7 +5,6 @@ import { AddStepValidator } from '#app/modules/missions/infrastructure/http/vali
 
 @inject()
 export default class AddStepController {
-
   constructor(private addStepUseCase: AddMissionStepUseCase) {}
   public async handle({ request, params }: HttpContext) {
     const payload = await request.validateUsing(AddStepValidator)

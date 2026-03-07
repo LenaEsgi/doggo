@@ -1,7 +1,7 @@
-import Mission from '#app/modules/missions/domain/entities/mission.entity'
-import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
-import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
-import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import type Mission from '#app/modules/missions/domain/entities/mission.entity'
+import { type MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
+import { type MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
+import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
 export class FakeMissionRepository implements MissionRepository {
   public storedMissions: Mission[] = []
@@ -33,7 +33,7 @@ export class FakeMissionRepository implements MissionRepository {
   }
 
   async save(mission: Mission): Promise<void> {
-    const index = this.storedMissions.findIndex(m => m.id.equals(mission.id))
+    const index = this.storedMissions.findIndex((m) => m.id.equals(mission.id))
     if (index >= 0) {
       this.storedMissions[index] = mission
     } else {
@@ -42,6 +42,6 @@ export class FakeMissionRepository implements MissionRepository {
   }
 
   async delete(id: MissionId): Promise<void> {
-    this.storedMissions = this.storedMissions.filter(m => !m.id.equals(id))
+    this.storedMissions = this.storedMissions.filter((m) => !m.id.equals(id))
   }
 }

@@ -1,4 +1,4 @@
-import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
+import { type MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { DomainError } from '#app/modules/share/exceptions/domain-error'
 
 export class InvalidMissionStepNotFoundError extends DomainError {

@@ -1,5 +1,5 @@
 import { BaseTransformer } from '@adonisjs/core/transformers'
-import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
+import type MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 
 export default class MissionStepTransformer extends BaseTransformer<MissionStep> {
   toObject() {

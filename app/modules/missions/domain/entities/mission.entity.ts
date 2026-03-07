@@ -1,22 +1,14 @@
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
-import {
-  InvalidMissionAlreadyRunningError
-} from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
+import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import { InvalidMissionNotRunningError } from '../exceptions/Invalid-mission-not-running.error.ts'
-import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
-import {
-  InvalidMissionStepNotFoundError
-} from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
+import { type MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
+import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
-import {
-  InvalidMissionNotEditableError
-} from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
+import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
-import { RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
-import {
-  MissionNameCannotBeEmptyError
-} from '#app/modules/missions/domain/exceptions/invalid-mission-name-cannot-be-empty.error'
+import { type RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
+import { MissionNameCannotBeEmptyError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-cannot-be-empty.error'
 import { MissionNameTooLongError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-too-long.error'
 
 export default class Mission {
@@ -32,14 +24,7 @@ export default class Mission {
   ) {}
 
   public static create(name: string, userId: string) {
-    return new Mission(
-      MissionId.generate(),
-      name,
-      [],
-      userId,
-      MissionStatus.STAND_BY,
-      []
-    )
+    return new Mission(MissionId.generate(), name, [], userId, MissionStatus.STAND_BY, [])
   }
 
   public static rehydrate(
@@ -100,19 +85,12 @@ export default class Mission {
     this._status = MissionStatus.INTERRUPTED
   }
 
-  public addStep(
-    actionId: string,
-    parameters: string
-  ): void {
+  public addStep(actionId: string, parameters: string): void {
     this.ensureEditable()
 
     const nextOrder = this._missionSteps.length + 1
 
-    const step = MissionStep.create(
-      actionId,
-      nextOrder,
-      parameters
-    )
+    const step = MissionStep.create(actionId, nextOrder, parameters)
 
     this._missionSteps.push(step)
   }
@@ -120,7 +98,7 @@ export default class Mission {
   public removeStep(id: MissionStepId): void {
     this.ensureEditable()
 
-    const index = this._missionSteps.findIndex(s => s.id.equals(id))
+    const index = this._missionSteps.findIndex((s) => s.id.equals(id))
 
     if (index === -1) {
       throw new InvalidMissionStepNotFoundError(id)
@@ -133,7 +111,7 @@ export default class Mission {
   public moveStep(stepId: MissionStepId, newOrder: number): void {
     this.ensureEditable()
 
-    const stepToMove = this._missionSteps.find(s => s.id.equals(stepId))
+    const stepToMove = this._missionSteps.find((s) => s.id.equals(stepId))
     if (!stepToMove) {
       throw new InvalidMissionStepNotFoundError(stepId)
     }
@@ -148,7 +126,7 @@ export default class Mission {
     if (newOrder === oldOrder) return
 
     if (newOrder < oldOrder) {
-      this._missionSteps.forEach(s => {
+      this._missionSteps.forEach((s) => {
         if (s.order >= newOrder && s.order < oldOrder) {
           s.changeOrder(s.order + 1)
         }
@@ -156,7 +134,7 @@ export default class Mission {
     }
 
     if (newOrder > oldOrder) {
-      this._missionSteps.forEach(s => {
+      this._missionSteps.forEach((s) => {
         if (s.order <= newOrder && s.order > oldOrder) {
           s.changeOrder(s.order - 1)
         }

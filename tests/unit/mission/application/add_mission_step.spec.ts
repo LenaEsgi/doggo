@@ -5,7 +5,6 @@ import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/in
 import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
 
 test.group('AddMissionStepUseCase', () => {
-
   test('doit ajouter une étape à une mission existante dans le repository', async ({ assert }) => {
     // --- ARRANGE ---
     const repo = new FakeMissionRepository()
@@ -17,7 +16,7 @@ test.group('AddMissionStepUseCase', () => {
     const dto = {
       missionId: mission.id.value,
       actionId: 'move_to',
-      parameters: "test"
+      parameters: 'test',
     }
 
     // --- ACT ---
@@ -29,10 +28,10 @@ test.group('AddMissionStepUseCase', () => {
     assert.isNotNull(updatedMission)
     assert.lengthOf(updatedMission!.missionSteps, 1)
     assert.equal(updatedMission!.missionSteps[0].actionId, 'move_to')
-    assert.deepEqual(updatedMission!.missionSteps[0].parameters, "test")
+    assert.deepEqual(updatedMission!.missionSteps[0].parameters, 'test')
   })
 
-  test('doit échouer si la mission n\'existe pas dans le fake repository', async ({ assert }) => {
+  test("doit échouer si la mission n'existe pas dans le fake repository", async ({ assert }) => {
     const repo = new FakeMissionRepository()
     const useCase = new AddMissionStepUseCaseImplementation(repo)
 
@@ -41,7 +40,7 @@ test.group('AddMissionStepUseCase', () => {
     const dto = {
       missionId: validButUnknownUuid,
       actionId: 'take_photo',
-      parameters: ""
+      parameters: '',
     }
 
     await assert.rejects(async () => {

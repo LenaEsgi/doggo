@@ -15,7 +15,7 @@ export class CreateMissionUseCaseImplementation implements CreateMissionUseCase 
   constructor(
     private missionRepository: MissionRepository,
     private robotDogGateway: RobotDogGateway,
-    private userGateway: UserGateway,
+    private userGateway: UserGateway
   ) {}
 
   async execute(dto: CreateMissionDto) {
@@ -25,18 +25,13 @@ export class CreateMissionUseCaseImplementation implements CreateMissionUseCase 
 
     const robotDog = await this.robotDogGateway.findBy(robotDogId)
     if (!robotDog) {
-      throw new RobotDogNotFoundError(
-        `Robot Dog with id ${robotDogId.value} not found`
-      )
+      throw new RobotDogNotFoundError(`Robot Dog with id ${robotDogId.value} not found`)
     }
 
     const user = await this.userGateway.findBy(dto.userId)
     if (!user) {
-      throw new InvalidUserNotFoundError(
-        `user with id ${dto.userId} not found`
-      )
+      throw new InvalidUserNotFoundError(`user with id ${dto.userId} not found`)
     }
-
 
     const mission = Mission.create(dto.name, dto.userId)
     await this.missionRepository.save(mission)

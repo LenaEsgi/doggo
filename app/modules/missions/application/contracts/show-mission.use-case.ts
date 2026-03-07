@@ -1,7 +1,5 @@
-import Mission from '#app/modules/missions/domain/entities/mission.entity'
+import type Mission from '#app/modules/missions/domain/entities/mission.entity'
 
 export abstract class ShowMissionUseCase {
-  abstract execute(
-    id: string
-  ): Promise<Mission>
+  abstract execute(id: string): Promise<Mission>
 }

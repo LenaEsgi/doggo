@@ -1,0 +1,18 @@
+{{#var modelName = generators.modelName(name)}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
+{{#var className = modelName + 'NotFoundError'}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'domain/exceptions', kebabName + '-not-found.error.ts')
+  })
+}}}
+import { DomainError } from '#app/modules/share/exceptions/domain-error'
+
+export class {{ className }} extends DomainError {
+  constructor(id: string) {
+    super('{{ modelName }} with id ' + id + ' not found')
+    this.name = '{{ className }}'
+  }
+}

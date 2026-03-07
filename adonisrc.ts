@@ -6,10 +6,9 @@ export default defineConfig({
     init: [
       // Always needed
       indexEntities({
-        transformers: { enabled: true }
-      })
-
-    ]
+        transformers: { enabled: true },
+      }),
+    ],
   },
   /*
   |--------------------------------------------------------------------------
@@ -27,7 +26,7 @@ export default defineConfig({
   },
 
   directories: {
-    controllers: '*/http/controllers'
+    controllers: '*/http/controllers',
   },
   /*
   |--------------------------------------------------------------------------
@@ -63,7 +62,7 @@ export default defineConfig({
     () => import('#providers/api_provider'),
     () => import('#providers/mission_provider'),
     () => import('#providers/robot_dog_provider'),
-    () => import('#providers/user_provider')
+    () => import('#providers/user_provider'),
   ],
 
   /*

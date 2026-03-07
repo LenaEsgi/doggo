@@ -2,6 +2,8 @@
 {{#var modelName = generators.modelName(entity.name)}}
 {{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
 {{#var className = 'Show' + modelName + 'Controller'}}
+{{#var useCaseName = 'Show' + modelName + 'UseCase'}}
+{{#var transformerName = modelName + 'Transformer'}}
 {{#var paramFolder = string(name).camelCase().toString()}}
 
 {{{
@@ -9,10 +11,18 @@
     to: app.makePath('app/modules', paramFolder, 'infrastructure/http/controllers', 'show-' + kebabName + '.controller.ts')
   })
 }}}
-import { HttpContext } from '@adonisjs/core/http'
+import type { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+import { {{ useCaseName }} } from '../../application/usecases/show-{{ kebabName }}.use-case.js'
+import {{ transformerName }} from '../transformers/{{ kebabName }}.transformer.js'
 
+@inject()
 export default class {{ className }} {
-  async handle({ request, response }: HttpContext) {
-    // TODO: implement
+  constructor(private readonly useCase: {{ useCaseName }}) {}
+
+  async handle({ serialize, params }: HttpContext) {
+    const result = await this.useCase.execute(params.id)
+
+    return serialize({{ transformerName }}.transform(result))
   }
 }

@@ -7,9 +7,7 @@ import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/
 import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
-import {
-  InvalidMissionNotRunningError
-} from '#app/modules/missions/domain/exceptions/Invalid-mission-not-running.error'
+import { InvalidMissionNotRunningError } from '#app/modules/missions/domain/exceptions/Invalid-mission-not-running.error'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 
 test.group('Mission entity', () => {
@@ -101,7 +99,10 @@ test.group('Mission entity', () => {
 
   test('should throw if remove non-existent step', ({ assert }) => {
     const mission = Mission.create('Test', 'user-1')
-    assert.throws(() => mission.removeStep(MissionStep.create('action', 1, 'params').id), InvalidMissionStepNotFoundError)
+    assert.throws(
+      () => mission.removeStep(MissionStep.create('action', 1, 'params').id),
+      InvalidMissionStepNotFoundError
+    )
   })
 
   test('should reorder steps when remove', ({ assert }) => {
@@ -134,7 +135,10 @@ test.group('Mission entity', () => {
 
   test('should throw if move non-existent step', ({ assert }) => {
     const mission = Mission.create('Test', 'user-1')
-    assert.throws(() => mission.moveStep(MissionStep.create('action', 1, 'params').id, 1), InvalidMissionStepNotFoundError)
+    assert.throws(
+      () => mission.moveStep(MissionStep.create('action', 1, 'params').id, 1),
+      InvalidMissionStepNotFoundError
+    )
   })
 
   // -------------------

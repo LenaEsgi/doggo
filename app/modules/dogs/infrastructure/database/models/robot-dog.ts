@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { RobotDogState } from '../../../domain/enums/robot-dog.state.js'
-import { randomUUID } from 'node:crypto'
 
 export default class RobotDogModel extends BaseModel {
   public static table = 'robot_dogs'
@@ -32,9 +31,4 @@ export default class RobotDogModel extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
-
-  @beforeCreate()
-  static assignUuid(robotDog: RobotDogModel) {
-    robotDog.id = randomUUID()
-  }
 }

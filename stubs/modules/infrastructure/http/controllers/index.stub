@@ -2,6 +2,8 @@
 {{#var modelName = generators.modelName(entity.name)}}
 {{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
 {{#var className = 'Index' + modelName + 'Controller'}}
+{{#var useCaseName = 'Index' + modelName + 'UseCase'}}
+{{#var transformerName = modelName + 'Transformer'}}
 {{#var paramFolder = string(name).camelCase().toString()}}
 
 {{{
@@ -10,9 +12,28 @@
   })
 }}}
 import { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+import { {{ useCaseName }} } from '../../application/usecases/index-{{ kebabName }}.use-case.js'
+import {{ transformerName }} from '../transformers/{{ kebabName }}.transformer.js'
+import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
+@inject()
 export default class {{ className }} {
-  async handle({ request, response }: HttpContext) {
-    // TODO: implement
+  constructor(private readonly useCase: {{ useCaseName }}) {}
+
+  async handle({ request, serialize, response }: HttpContext) {
+    const params: PaginationDto = {
+      page: Number(request.input('page', 1)),
+      limit: Number(request.input('limit', 20)),
+    }
+
+    const result = await this.useCase.execute(params)
+
+    const { data } = await serialize({{ transformerName }}.transform(result.data))
+
+    return response.ok({
+      data,
+      meta: result.meta,
+    })
   }
 }

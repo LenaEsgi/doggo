@@ -4,15 +4,13 @@ import { RemoveMissionStepUseCase } from '#app/modules/missions/application/cont
 
 @inject()
 export default class DestroyMissionStepController {
-  constructor(
-    private removeMissionStep: RemoveMissionStepUseCase
-  ) {}
+  constructor(private removeMissionStep: RemoveMissionStepUseCase) {}
   public async handle({ params, response }: HttpContext) {
-      await this.removeMissionStep.execute({
-        missionId: params.missionId,
-        stepId: params.stepId,
-      })
+    await this.removeMissionStep.execute({
+      missionId: params.missionId,
+      stepId: params.stepId,
+    })
 
-      return response.status(200)
+    return response.status(200)
   }
 }

@@ -9,7 +9,7 @@ export default class MissionTransformer extends BaseTransformer<Mission> {
       name: this.resource.name,
       status: this.resource.status,
       userId: this.resource.userId,
-      missionSteps: MissionStepTransformer.transform(this.resource.missionSteps)
+      missionSteps: MissionStepTransformer.transform(this.resource.missionSteps),
     }
   }
 }

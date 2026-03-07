@@ -1,32 +1,26 @@
-import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
-import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
-import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { type MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
+import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
-import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
+import { type MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import MissionStepModel from '#app/modules/missions/infrastructure/database/models/mission-step'
 import db from '@adonisjs/lucid/services/db'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 
 export class MissionRepositoryImplementation implements MissionRepository {
-
   async findById(id: MissionId): Promise<Mission | null> {
     const row = await MissionModel.query()
       .where('id', id.value)
       .preload('steps', (query) => {
-      query.orderBy('sequence_order', 'asc')
-    }).first()
+        query.orderBy('sequence_order', 'asc')
+      })
+      .first()
 
     if (!row) return null
 
     const steps = row.steps.map((s) =>
-      MissionStep.rehydrate(
-        s.id,
-        s.actionId,
-        s.sequenceOrder,
-        s.parameters,
-        s.status
-      )
+      MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters, s.status)
     )
 
     return Mission.rehydrate(row.id, row.name, row.userId, row.status, steps)
@@ -36,19 +30,12 @@ export class MissionRepositoryImplementation implements MissionRepository {
     const page = options?.page ?? 1
     const perPage = options?.limit ?? 10
 
-    const paginator = await MissionModel
-      .query()
+    const paginator = await MissionModel.query()
       .orderBy('created_at', 'desc')
       .paginate(page, perPage)
 
     const missions = paginator.all().map((row) => {
-      return Mission.rehydrate(
-        row.id,
-        row.name,
-        row.userId,
-        row.status,
-        []
-      )
+      return Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
     })
 
     return {
@@ -59,14 +46,13 @@ export class MissionRepositoryImplementation implements MissionRepository {
         currentPage: paginator.currentPage,
         firstPage: paginator.firstPage,
         lastPage: paginator.lastPage,
-      }
+      },
     }
   }
 
   async save(mission: Mission): Promise<void> {
     // On crée la transaction
     await db.transaction(async (trx) => {
-
       const missionRow = await MissionModel.updateOrCreate(
         { id: mission.id.value },
         {

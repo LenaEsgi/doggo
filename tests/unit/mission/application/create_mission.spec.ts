@@ -18,11 +18,7 @@ test.group('CreateMissionUseCase', (group) => {
     robotGateway = new FakeRobotDogGateway()
     userGateway = new FakeUserGateway()
 
-    useCase = new CreateMissionUseCaseImplementation(
-      missionRepo,
-      robotGateway,
-      userGateway
-    )
+    useCase = new CreateMissionUseCaseImplementation(missionRepo, robotGateway, userGateway)
   })
 
   test('should create and save a mission when robot and user exist', async ({ assert }) => {
@@ -54,11 +50,12 @@ test.group('CreateMissionUseCase', (group) => {
 
     // Act & Assert
     await assert.rejects(
-      () => useCase.execute({
-        name: 'Fail Mission',
-        robotDogId: robotId,
-        userId: 'user-123',
-      }),
+      () =>
+        useCase.execute({
+          name: 'Fail Mission',
+          robotDogId: robotId,
+          userId: 'user-123',
+        }),
       RobotDogNotFoundError
     )
 
@@ -74,11 +71,12 @@ test.group('CreateMissionUseCase', (group) => {
 
     // Act & Assert
     await assert.rejects(
-      () => useCase.execute({
-        name: 'Fail Mission',
-        robotDogId: robotId,
-        userId: userId,
-      }),
+      () =>
+        useCase.execute({
+          name: 'Fail Mission',
+          robotDogId: robotId,
+          userId: userId,
+        }),
       InvalidUserNotFoundError
     )
 

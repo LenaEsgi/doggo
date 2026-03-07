@@ -1,0 +1,25 @@
+{{#var modelName = generators.modelName(name)}}
+{{#var modelFileName = string(modelName).snakeCase().toString().replaceAll('_', '-')}}
+{{#var tableName = string(modelName).snakeCase().plural().toString()}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'infrastructure/database/models', modelFileName + '.ts')
+  })
+}}}
+import { DateTime } from 'luxon'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
+
+export default class {{ modelName }}Model extends BaseModel {
+  public static table = '{{ tableName }}'
+
+  @column({ isPrimary: true })
+  declare id: string
+
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+}

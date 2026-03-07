@@ -2,6 +2,8 @@
 {{#var modelName = generators.modelName(entity.name)}}
 {{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
 {{#var className = 'Update' + modelName + 'Controller'}}
+{{#var useCaseName = 'Update' + modelName + 'UseCase'}}
+{{#var validatorName = 'Update' + modelName + 'Validator'}}
 {{#var paramFolder = string(name).camelCase().toString()}}
 
 {{{
@@ -10,9 +12,22 @@
   })
 }}}
 import { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
+import { {{ useCaseName }} } from '../../application/usecases/update-{{ kebabName }}.use-case.js'
+import { {{ validatorName }} } from '../validators/update-{{ kebabName }}.validator.js'
 
+@inject()
 export default class {{ className }} {
-  async handle({ request, response }: HttpContext) {
-    // TODO: implement
+  constructor(private readonly useCase: {{ useCaseName }}) {}
+
+  async handle({ request, params, response }: HttpContext) {
+    const payload = await request.validateUsing({{ validatorName }})
+
+    await this.useCase.execute({
+      id: params.id,
+      ...payload,
+    })
+
+    return response.ok({ message: '{{ modelName }} updated successfully' })
   }
 }

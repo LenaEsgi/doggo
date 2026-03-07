@@ -2,6 +2,8 @@
 {{#var modelName = generators.modelName(entity.name)}}
 {{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
 {{#var className = 'Create' + modelName + 'Controller'}}
+{{#var useCaseName = 'Create' + modelName + 'UseCase'}}
+{{#var validatorName = 'Create' + modelName + 'Validator'}}
 {{#var paramFolder = string(name).camelCase().toString()}}
 
 {{{
@@ -9,10 +11,26 @@
     to: app.makePath('app/modules', paramFolder, 'infrastructure/http/controllers', 'create-' + kebabName + '.controller.ts')
   })
 }}}
+import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
+import { {{ useCaseName }} } from '../../application/usecases/create-{{ kebabName }}.use-case.js'
+import { {{ validatorName }} } from '../validators/create-{{ kebabName }}.validator.js'
 
+@inject()
 export default class {{ className }} {
-  async handle({ request, response }: HttpContext) {
-    // TODO: implement
+  constructor(private readonly useCase: {{ useCaseName }}) {}
+
+  async handle({ request, response, logger }: HttpContext) {
+    const validatedData = await request.validateUsing({{ validatorName }})
+
+    logger.info('Starting {{ modelName }} creation', { data: validatedData })
+
+    await this.useCase.execute(validatedData)
+
+    logger.info('{{ modelName }} successfully created')
+
+    return response.status(201).json({
+      message: '{{ modelName }} created successfully'
+    })
   }
 }

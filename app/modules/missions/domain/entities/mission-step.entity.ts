@@ -1,12 +1,9 @@
 import { MissionStepStatus } from '#app/modules/missions/domain/enums/mission-step-status'
 import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
-import {
-  InvalidMissionStepTransitionError
-} from '#app/modules/missions/domain/exceptions/invalid-mission-step-transition-error'
+import { InvalidMissionStepTransitionError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-transition-error'
 
 export default class MissionStep {
-
   constructor(
     private readonly _id: MissionStepId,
     private _actionId: string,
@@ -20,10 +17,22 @@ export default class MissionStep {
       throw new InvalidMissionStepOrderError(sequenceOrder)
     }
 
-    return new MissionStep(MissionStepId.generate(), action, sequenceOrder, parameters, MissionStepStatus.PENDING)
+    return new MissionStep(
+      MissionStepId.generate(),
+      action,
+      sequenceOrder,
+      parameters,
+      MissionStepStatus.PENDING
+    )
   }
 
-  static rehydrate(id: string, action: string, sequenceOrder: number, parameters: string, status: MissionStepStatus) {
+  static rehydrate(
+    id: string,
+    action: string,
+    sequenceOrder: number,
+    parameters: string,
+    status: MissionStepStatus
+  ) {
     return new MissionStep(MissionStepId.fromString(id), action, sequenceOrder, parameters, status)
   }
 
@@ -59,9 +68,19 @@ export default class MissionStep {
     this._status = MissionStepStatus.FAILED
   }
 
-  get id() { return this._id }
-  get actionId() { return this._actionId }
-  get order() { return this._sequenceOrder }
-  get parameters() { return this._parameters }
-  get status() { return this._status }
+  get id() {
+    return this._id
+  }
+  get actionId() {
+    return this._actionId
+  }
+  get order() {
+    return this._sequenceOrder
+  }
+  get parameters() {
+    return this._parameters
+  }
+  get status() {
+    return this._status
+  }
 }

@@ -7,7 +7,6 @@ import { inject } from '@adonisjs/core'
 
 @inject()
 export class AddMissionStepUseCaseImplementation implements AddMissionStepUseCase {
-
   constructor(private missionRepository: MissionRepository) {}
   async execute(dto: AddMissionStepDto): Promise<void> {
     const missionId = MissionId.fromString(dto.missionId)

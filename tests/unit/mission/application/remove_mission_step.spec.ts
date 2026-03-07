@@ -2,11 +2,9 @@ import { test } from '@japa/runner'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
-import RemoveMissionStepImplementation
-  from '#app/modules/missions/application/usecases/remove-mission-step.use-case.implementation'
+import RemoveMissionStepImplementation from '#app/modules/missions/application/usecases/remove-mission-step.use-case.implementation'
 
 test.group('RemoveMissionStepUseCase', () => {
-
   test('should remove a step and reorder remaining steps', async ({ assert }) => {
     // --- ARRANGE ---
     const repo = new FakeMissionRepository()
@@ -15,8 +13,8 @@ test.group('RemoveMissionStepUseCase', () => {
     // 1. Create a mission with 3 steps
     const mission = Mission.create('Cleaning Mission', 'user-123')
     mission.addStep('move_to', '{"x": 1}') // Order 1
-    mission.addStep('sweep', '{}')         // Order 2
-    mission.addStep('mop', '{}')           // Order 3
+    mission.addStep('sweep', '{}') // Order 2
+    mission.addStep('mop', '{}') // Order 3
 
     await repo.save(mission)
 
@@ -24,7 +22,7 @@ test.group('RemoveMissionStepUseCase', () => {
     const stepIdToRemove = mission.missionSteps[1].id.value
     const dto = {
       missionId: mission.id.value,
-      stepId: stepIdToRemove
+      stepId: stepIdToRemove,
     }
 
     // --- ACT ---
@@ -54,7 +52,7 @@ test.group('RemoveMissionStepUseCase', () => {
 
     const dto = {
       missionId: validUuid,
-      stepId: validUuid
+      stepId: validUuid,
     }
 
     // --- ACT & ASSERT ---

@@ -2,7 +2,6 @@ import { InvalidMissionIdError } from '#app/modules/missions/domain/exceptions/i
 import { UniqueEntityId } from '#app/modules/share/entities/unique-entity-id'
 
 export class MissionStepId extends UniqueEntityId {
-
   private constructor(value: string) {
     super(value)
   }

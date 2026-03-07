@@ -11,9 +11,7 @@ export default class RemoveMissionStepImplementation implements RemoveMissionSte
   constructor(private readonly missionRepository: MissionRepository) {}
 
   public async execute(dto: RemoveMissionStepDto): Promise<void> {
-    const mission = await this.missionRepository.findById(
-      MissionId.fromString(dto.missionId)
-    )
+    const mission = await this.missionRepository.findById(MissionId.fromString(dto.missionId))
 
     if (!mission) {
       throw new MissionNotFoundError(dto.missionId)

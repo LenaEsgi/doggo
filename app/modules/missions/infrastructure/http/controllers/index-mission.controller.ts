@@ -6,10 +6,8 @@ import { inject } from '@adonisjs/core'
 
 @inject()
 export default class IndexMissionController {
-
   constructor(private indexUseCase: IndexMissionUseCase) {}
   async handle({ request, serialize, response }: HttpContext) {
-
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 20)),
@@ -17,13 +15,11 @@ export default class IndexMissionController {
 
     const result = await this.indexUseCase.execute(params)
 
-    const { data } = await serialize(
-      MissionTransformer.transform(result.data)
-    )
+    const { data } = await serialize(MissionTransformer.transform(result.data))
 
     response.ok({
       data,
-      meta: result.meta
+      meta: result.meta,
     })
   }
 }

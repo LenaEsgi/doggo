@@ -1,0 +1,81 @@
+{{#var entity = generators.createEntity(name)}}
+{{#var modelName = generators.modelName(entity.name)}}
+{{#var idClassName = modelName + 'Id'}}
+{{#var className = modelName + 'RepositoryImplementation'}}
+{{#var contractClassName = modelName + 'Repository'}}
+{{#var modelClassName = modelName}}
+{{#var modelFileName = string(modelName).snakeCase().toString().replaceAll('_', '-')}}
+{{#var resourceFileNameEntity = modelFileName + '.entity.js'}}
+{{#var resourceFileNameContract = modelFileName + '.repository.js'}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+{{#var entityInstanceName = string.camelCase(modelName)}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'infrastructure/database/repositories', modelFileName + '.repository.implementation.ts')
+  })
+}}}
+
+import { type {{ contractClassName }} } from '../../../domain/contracts/{{ resourceFileNameContract }}'
+import type {{ modelName }} from '../../../domain/{{ resourceFileNameEntity }}'
+import { type {{ idClassName }} } from '../../../domain/value-objects/{{ modelFileName }}-id.js'
+import {{ modelClassName }}Model from '../models/{{ modelFileName }}.js'
+import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import db from '@adonisjs/lucid/services/db'
+
+export class {{ className }} implements {{ contractClassName }} {
+
+  async findById(id: {{ idClassName }}): Promise<{{ modelName }} | null> {
+    const row = await {{ modelClassName }}Model.find(id.value)
+    if (!row) return null
+
+    // TODO: Use your {{ modelName }}.rehydrate() method here
+    // return {{ modelName }}.rehydrate(row)
+    return null as any
+  }
+
+  async index(options?: PaginationDto): Promise<PaginatedResult<{{ modelName }}>> {
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 10
+
+    const paginator = await {{ modelClassName }}Model
+      .query()
+      .orderBy('id', 'desc')
+      .paginate(page, perPage)
+
+    const data = paginator.all().map((_row) => {
+       // TODO: Use your {{ modelName }}.rehydrate() method here
+       return null as any
+    })
+
+    return {
+      data,
+      meta: {
+        total: paginator.total,
+        perPage: paginator.perPage,
+        currentPage: paginator.currentPage,
+        firstPage: paginator.firstPage,
+        lastPage: paginator.lastPage,
+      },
+    }
+  }
+
+  async save({{ entityInstanceName }}: {{ modelName }}): Promise<void> {
+    await db.transaction(async (trx) => {
+      await {{ modelClassName }}Model.updateOrCreate(
+        { id: {{ entityInstanceName }}.id.value },
+        {
+          // TODO: Map your domain entity fields to database columns
+          // name: {{ entityInstanceName }}.name,
+        },
+        { client: trx }
+      )
+    })
+  }
+
+  async delete(id: {{ idClassName }}): Promise<void> {
+    const row = await {{ modelClassName }}Model.findOrFail(id.value)
+    await row.delete()
+  }
+}

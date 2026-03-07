@@ -1,4 +1,4 @@
-import { UserGateway } from '#app/modules/missions/application/contracts/user.gateway'
+import { type UserGateway } from '#app/modules/missions/application/contracts/user.gateway'
 
 export class FakeUserGateway implements UserGateway {
   public users: Map<string, any> = new Map()

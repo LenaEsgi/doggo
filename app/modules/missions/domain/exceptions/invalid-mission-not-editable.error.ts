@@ -1,4 +1,4 @@
-import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
+import { type MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
 import { DomainError } from '#app/modules/share/exceptions/domain-error'
 
 export class InvalidMissionNotEditableError extends DomainError {

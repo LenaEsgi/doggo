@@ -1,7 +1,9 @@
 {{#var entity = generators.createEntity(name)}}
 {{#var modelName = generators.modelName(entity.name)}}
+{{#var idClassName = modelName + 'Id'}}
 {{#var modelReference = string.camelCase(modelName)}}
-{{#var resourceFileName = string(modelName).snakeCase().toString().replaceAll('_', '-') + '.entity.ts'}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_', '-')}}
+{{#var resourceFileName = kebabName + '.entity.ts'}}
 {{#var paramFolder = string(name).camelCase().toString()}}
 
 {{{
@@ -9,18 +11,23 @@
     to: app.makePath('app/modules', paramFolder, 'domain', resourceFileName)
   })
 }}}
+import { {{ idClassName }} } from './value-objects/{{ kebabName }}-id.js'
 
 export default class {{ modelName }} {
+  private constructor(
+    public readonly id: {{ idClassName }},
+  ) {}
 
-  private constructor() {}
 
-  public static create() {
+  public static create(): {{ modelName }} {
+    const id = {{ idClassName }}.generate()
 
-    return new {{ modelName }}()
+    return new {{ modelName }}(id)
   }
 
-  public static rehydrate() {
-
-    return new {{ modelName }}()
+  public static rehydrate(id: string): {{ modelName }} {
+    return new {{ modelName }}(
+      {{ idClassName }}.fromString(id)
+    )
   }
 }

@@ -36,10 +36,7 @@ test.group('DestroyMissionUseCase', (group) => {
     const nonExistentId = '75d8481d-e069-45d2-8178-59c25605652e'
 
     // Act & Assert
-    await assert.rejects(
-      () => useCase.execute({ id: nonExistentId }),
-      MissionNotFoundError
-    )
+    await assert.rejects(() => useCase.execute({ id: nonExistentId }), MissionNotFoundError)
   })
 
   test('should throw error if ID format is invalid', async ({ assert }) => {
@@ -47,8 +44,6 @@ test.group('DestroyMissionUseCase', (group) => {
     const invalidId = 'not-a-uuid'
 
     // Act & Assert
-    await assert.rejects(
-      () => useCase.execute({ id: invalidId })
-    )
+    await assert.rejects(() => useCase.execute({ id: invalidId }))
   })
 })

@@ -5,7 +5,6 @@ import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/in
 import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
 
 test.group('MoveMissionStepUseCase', () => {
-
   test('should move a step and reorder other steps accordingly', async ({ assert }) => {
     // --- ARRANGE ---
     const repo = new FakeMissionRepository()
@@ -13,9 +12,9 @@ test.group('MoveMissionStepUseCase', () => {
 
     // 1. Create a mission with 3 steps (Initial Orders: 1, 2, 3)
     const mission = Mission.create('Night Patrol', 'user-001')
-    mission.addStep('move_to', '{"x": 1}')    // Step A -> Order 1
-    mission.addStep('take_photo', '{}')       // Step B -> Order 2
-    mission.addStep('charge_battery', '{}')   // Step C -> Order 3
+    mission.addStep('move_to', '{"x": 1}') // Step A -> Order 1
+    mission.addStep('take_photo', '{}') // Step B -> Order 2
+    mission.addStep('charge_battery', '{}') // Step C -> Order 3
 
     await repo.save(mission)
 
@@ -26,7 +25,7 @@ test.group('MoveMissionStepUseCase', () => {
     const dto = {
       missionId: mission.id.value,
       stepId: stepIdToMove,
-      newOrder: newOrder
+      newOrder: newOrder,
     }
 
     // --- ACT ---
@@ -61,7 +60,7 @@ test.group('MoveMissionStepUseCase', () => {
     const dto = {
       missionId: validUuid,
       stepId: validUuid,
-      newOrder: 1
+      newOrder: 1,
     }
 
     // --- ACT & ASSERT ---

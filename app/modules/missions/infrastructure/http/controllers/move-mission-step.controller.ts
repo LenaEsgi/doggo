@@ -1,20 +1,16 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
 import { MoveMissionStepUseCase } from '#app/modules/missions/application/contracts/move-mission-step.use-case'
-import {
-  MoveMissionStepValidator
-} from '#app/modules/missions/infrastructure/http/validators/move-mission-step.validator'
+import { MoveMissionStepValidator } from '#app/modules/missions/infrastructure/http/validators/move-mission-step.validator'
 
 @inject()
 export default class MoveMissionStepController {
-  constructor(
-    private moveMissionStep: MoveMissionStepUseCase
-  ) {}
+  constructor(private moveMissionStep: MoveMissionStepUseCase) {}
 
   public async handle({ params, request, response }: HttpContext) {
     const payload = await request.validateUsing(MoveMissionStepValidator)
 
-    const fullPayload = {...payload, missionId: params.missionId, stepId: params.stepId}
+    const fullPayload = { ...payload, missionId: params.missionId, stepId: params.stepId }
 
     await this.moveMissionStep.execute(fullPayload)
 

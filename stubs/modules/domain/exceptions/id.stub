@@ -1,0 +1,18 @@
+{{#var modelName = generators.modelName(name)}}
+{{#var kebabName = string(modelName).snakeCase().toString().replaceAll('_','-')}}
+{{#var className = 'Invalid' + modelName + 'IdError'}}
+{{#var paramFolder = string(name).camelCase().toString()}}
+
+{{{
+  exports({
+    to: app.makePath('app/modules', paramFolder, 'domain/exceptions', 'invalid-' + kebabName + '-id.error.ts')
+  })
+}}}
+import { DomainError } from '#app/modules/share/exceptions/domain-error'
+
+export class {{ className }} extends DomainError {
+  constructor(value: string) {
+    super('The id <' + value + '> is not a valid {{ modelName }} identifier.')
+    this.name = '{{ className }}'
+  }
+}

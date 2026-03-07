@@ -1,6 +1,6 @@
-import { BaseCommand } from '@adonisjs/core/ace'
+import { args, BaseCommand } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import { args } from '@adonisjs/core/ace'
+import { execa } from 'execa'
 
 const STUBS_ROOT = '../stubs'
 
@@ -17,6 +17,18 @@ export default class MakeModule extends BaseCommand {
     const codemods = await this.createCodemods()
 
     await codemods.makeUsingStub(STUBS_ROOT, 'modules/domain/entity.stub', {
+      name: this.name,
+    })
+
+    await codemods.makeUsingStub(STUBS_ROOT, 'modules/domain/value-objects/id.stub', {
+      name: this.name,
+    })
+
+    await codemods.makeUsingStub(STUBS_ROOT, 'modules/domain/exceptions/id.stub', {
+      name: this.name,
+    })
+
+    await codemods.makeUsingStub(STUBS_ROOT, 'modules/domain/exceptions/not_found.stub', {
       name: this.name,
     })
 
@@ -37,22 +49,6 @@ export default class MakeModule extends BaseCommand {
       name: this.name,
     })
     await codemods.makeUsingStub(STUBS_ROOT, 'modules/application/dto/output.stub', {
-      name: this.name,
-    })
-
-    await codemods.makeUsingStub(STUBS_ROOT, 'modules/application/contracts/create.stub', {
-      name: this.name,
-    })
-    await codemods.makeUsingStub(STUBS_ROOT, 'modules/application/contracts/show.stub', {
-      name: this.name,
-    })
-    await codemods.makeUsingStub(STUBS_ROOT, 'modules/application/contracts/index.stub', {
-      name: this.name,
-    })
-    await codemods.makeUsingStub(STUBS_ROOT, 'modules/application/contracts/update.stub', {
-      name: this.name,
-    })
-    await codemods.makeUsingStub(STUBS_ROOT, 'modules/application/contracts/destroy.stub', {
       name: this.name,
     })
 
@@ -93,5 +89,44 @@ export default class MakeModule extends BaseCommand {
       'modules/infrastructure/http/controllers/destroy.stub',
       { name: this.name }
     )
+
+    await codemods.makeUsingStub(
+      STUBS_ROOT,
+      'modules/infrastructure/http/transformers/transformer.stub',
+      {
+        name: this.name,
+      }
+    )
+
+    await codemods.makeUsingStub(STUBS_ROOT, 'modules/infrastructure/http/validators/create.stub', {
+      name: this.name,
+    })
+
+    await codemods.makeUsingStub(STUBS_ROOT, 'modules/infrastructure/http/validators/update.stub', {
+      name: this.name,
+    })
+
+    await codemods.makeUsingStub(STUBS_ROOT, 'modules/infrastructure/database/models/model.stub', {
+      name: this.name,
+    })
+
+    await codemods.makeUsingStub(
+      STUBS_ROOT,
+      'modules/infrastructure/database/repositories/repository.stub',
+      {
+        name: this.name,
+      }
+    )
+
+    const modulePath = `app/modules/${this.name}`
+
+    this.logger.info('Running ESLint fix...')
+
+    try {
+      await execa('npx', ['eslint', modulePath, '--fix'])
+      this.logger.success('Linting complete')
+    } catch (error) {
+      this.logger.warning('Could not run ESLint fix automatically')
+    }
   }
 }

@@ -21,10 +21,7 @@ export class MoveMissionStepUseCaseImplementation implements MoveMissionStepUseC
       throw new MissionNotFoundError(missionId.value)
     }
 
-    mission.moveStep(
-      MissionStepId.fromString(dto.stepId),
-      dto.newOrder
-    )
+    mission.moveStep(MissionStepId.fromString(dto.stepId), dto.newOrder)
     await this.missionRepository.save(mission)
   }
 }
