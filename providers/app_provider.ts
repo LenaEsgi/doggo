@@ -1,4 +1,4 @@
-import { type ApplicationService } from '@adonisjs/core/types'
+import { ApplicationService } from '@adonisjs/core/types'
 import { DeleteAccountAuthService } from '#auth/application/contracts/delete.account.auth.service'
 import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.auth.service'
 import { FinalizeTotpSetupAuthService } from '#auth/application/contracts/finalize.totp.setup.auth.service'
@@ -26,13 +26,13 @@ import { UpdateUserService } from '#users/application/contracts/update.user.serv
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
-import { CreateRobotDogUseCase } from '#dogs/application/contracts/create-robot-dog.use-case'
-import { IndexRobotDogsUseCase } from '#dogs/application/contracts/index-robot-dogs.use-case'
-import { ShowRobotDogUseCase } from '#dogs/application/contracts/show-robot-dog.use-case'
-import { DestroyRobotDogUseCase } from '#dogs/application/contracts/destroy-robot-dog.use-case'
-import { UpdateRobotDogUseCase } from '#dogs/application/contracts/update-robot-dog.use-case'
+import { CreateRobotDogUseCase } from '../app/modules/dogs/application/contracts/create-robot-dog.use-case.js'
+import { IndexRobotDogsUseCase } from '../app/modules/dogs/application/contracts/index-robot-dogs.use-case.js'
+import { ShowRobotDogUseCase } from '../app/modules/dogs/application/contracts/show-robot-dog.use-case.js'
+import { DestroyRobotDogUseCase } from '../app/modules/dogs/application/contracts/destroy-robot-dog.use-case.js'
+import { UpdateRobotDogUseCase } from '../app/modules/dogs/application/contracts/update-robot-dog.use-case.js'
 import { RobotDogRepositoryImplementation } from '#dogs/infrastructure/database/repositories/robot-dog.repository.implementation'
-import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local-user.repository'
+import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local_user.repository'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -81,32 +81,8 @@ export default class AppProvider {
     const { UpdateUser } = await import('#users/application/services/update.user.service')
     const { UserRepositoryImplementation } =
       await import('#users/infrastructure/database/repositories/user.repository.implementation')
-    this.app.container.bind(RegisterAuthProvider, () => {
-      return this.app.container.make(FirebaseRegisterAuthProvider)
-    })
-    this.app.container.bind(LoginAuthProvider, () => {
-      return this.app.container.make(FirebaseLoginAuthProvider)
-    })
-    this.app.container.bind(LoginWithTotpAuthProvider, () => {
-      return this.app.container.make(FirebaseLoginWithTotpAuthProvider)
-    })
-    this.app.container.bind(PasswordResetAuthProvider, () => {
-      return this.app.container.make(FirebasePasswordResetAuthProvider)
-    })
-    this.app.container.bind(StartTotpSetupAuthProvider, () => {
-      return this.app.container.make(FirebaseStartTotpSetupAuthProvider)
-    })
-    this.app.container.bind(FinalizeTotpSetupAuthProvider, () => {
-      return this.app.container.make(FirebaseFinalizeTotpSetupAuthProvider)
-    })
-    this.app.container.bind(ListMfaEnrollmentsAuthProvider, () => {
-      return this.app.container.make(FirebaseListMfaEnrollmentsAuthProvider)
-    })
-    this.app.container.bind(DisableMfaAuthProvider, () => {
-      return this.app.container.make(FirebaseDisableMfaAuthProvider)
-    })
-    this.app.container.bind(DeleteAccountAuthProvider, () => {
-      return this.app.container.make(FirebaseDeleteAccountAuthProvider)
+    this.app.container.bind(AuthProvider, () => {
+      return this.app.container.make(FirebaseAuthProvider)
     })
 
     this.app.container.bind(UserReadRepository, () => {
@@ -205,6 +181,52 @@ export default class AppProvider {
 
     this.app.container.bind(DeleteUserService, () => {
       return this.app.container.make(DeleteUser)
+    })
+
+
+    // MISSIONS
+    this.app.container.bind(CreateMissionUseCase, () => {
+      return this.app.container.make(CreateMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(ShowMissionUseCase, () => {
+      return this.app.container.make(ShowMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(IndexMissionUseCase, () => {
+      return this.app.container.make(IndexMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(UpdateMissionUseCase, () => {
+      return this.app.container.make(UpdateMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(DestroyMissionUseCase, () => {
+      return this.app.container.make(DestroyMissionUseCaseImplementation)
+    })
+
+    this.app.container.bind(AddMissionStepUseCase, () => {
+      return this.app.container.make(AddMissionStepUseCaseImplementation)
+    })
+
+    this.app.container.bind(RemoveMissionStepUseCase, () => {
+      return this.app.container.make(RemoveMissionStepImplementation)
+    })
+
+    this.app.container.bind(MoveMissionStepUseCase, () => {
+      return this.app.container.make(MoveMissionStepUseCaseImplementation)
+    })
+
+    this.app.container.bind(MissionRepository, () => {
+      return this.app.container.make(MissionRepositoryImplementation)
+    })
+
+    this.app.container.bind(RobotDogGateway, () => {
+      return this.app.container.make(RobotDogGatewayImplementation)
+    })
+
+    this.app.container.bind(UserGateway, () => {
+      return this.app.container.make(UserGatewayImplementation)
     })
   }
 }

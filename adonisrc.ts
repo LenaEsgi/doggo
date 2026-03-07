@@ -4,9 +4,12 @@ import { indexEntities } from '@adonisjs/core'
 export default defineConfig({
   hooks: {
     init: [
-      // Always needed
-      indexEntities(),
-    ],
+        // Always needed
+        indexEntities({
+          transformers: {enabled: true}
+        })
+
+    ]
   },
   /*
   |--------------------------------------------------------------------------
@@ -23,6 +26,9 @@ export default defineConfig({
     shutdownInReverseOrder: true,
   },
 
+  directories: {
+    controllers: '*/http/controllers'
+  },
   /*
   |--------------------------------------------------------------------------
   | Commands
@@ -54,6 +60,7 @@ export default defineConfig({
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
     () => import('#providers/app_provider'),
+    () => import('#providers/api_provider'),
   ],
 
   /*

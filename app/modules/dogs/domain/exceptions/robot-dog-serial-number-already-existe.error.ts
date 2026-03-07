@@ -1,4 +1,4 @@
-import { DomainError } from '#dogs/domain/exceptions/domain-error'
+import { DomainError } from '#app/modules/share/exceptions/domain-error'
 
 export class RobotDogSerialNumberAlreadyExistsError extends DomainError {
   constructor(serialNumber: string) {

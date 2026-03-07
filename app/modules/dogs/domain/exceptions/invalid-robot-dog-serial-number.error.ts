@@ -1,4 +1,4 @@
-import { DomainError } from './domain-error.js'
+import { DomainError } from '../../../share/exceptions/domain-error.js'
 
 export class InvalidRobotDogSerialNumberError extends DomainError {
   constructor() {

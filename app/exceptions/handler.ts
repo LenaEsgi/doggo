@@ -1,8 +1,10 @@
 import app from '@adonisjs/core/services/app'
-import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
+import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import { DomainError } from '../modules/dogs/domain/exceptions/domain-error.js'
 import { RobotDogNotFoundError } from '../modules/dogs/domain/exceptions/robot-dog-not-found.error.js'
-import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
+import {
+  RobotDogSerialNumberAlreadyExistsError
+} from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
