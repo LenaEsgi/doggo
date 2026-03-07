@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 import { AddMissionStepUseCaseImplementation } from '#app/modules/missions/application/usecases/add-mission-step.use-case.implementation'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
-import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
+import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 
 test.group('AddMissionStepUseCase', () => {
   test('doit ajouter une étape à une mission existante dans le repository', async ({ assert }) => {

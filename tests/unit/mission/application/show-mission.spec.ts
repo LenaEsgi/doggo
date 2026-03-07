@@ -1,8 +1,7 @@
-// tests/unit/missions/show_mission_use_case.spec.ts
 import { test } from '@japa/runner'
 import { ShowMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/show-mission.use-case.implementation'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
-import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
+import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { InvalidMissionNotFountError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fount.error'
 
 test.group('ShowMissionUseCase', (group) => {

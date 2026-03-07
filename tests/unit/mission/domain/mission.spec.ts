@@ -7,7 +7,7 @@ import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/
 import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
-import { InvalidMissionNotRunningError } from '#app/modules/missions/domain/exceptions/Invalid-mission-not-running.error'
+import { InvalidMissionNotRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-running.error'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 
 test.group('Mission entity', () => {

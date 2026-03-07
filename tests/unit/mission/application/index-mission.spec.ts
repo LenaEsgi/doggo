@@ -1,8 +1,7 @@
-// tests/unit/missions/index_mission_use_case.spec.ts
 import { test } from '@japa/runner'
 import { IndexMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/index-mission.use-case.implementation'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
-import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
+import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 
 test.group('IndexMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository

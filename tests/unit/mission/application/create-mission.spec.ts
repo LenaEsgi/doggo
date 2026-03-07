@@ -1,11 +1,10 @@
-// tests/unit/missions/create_mission_use_case.spec.ts
 import { test } from '@japa/runner'
 import { CreateMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/create-mission.use-case.implementation'
 import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
-import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
-import { FakeRobotDogGateway } from '#tests/unit/fakes/fake_robot_dog_gateway'
-import { FakeUserGateway } from '#tests/unit/fakes/fake_user_gateway'
+import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
+import { FakeRobotDogGateway } from '#tests/unit/fakes/fake-robot-dog-gateway'
+import { FakeUserGateway } from '#tests/unit/fakes/fake-user-gateway'
 
 test.group('CreateMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository

@@ -1,9 +1,8 @@
-// tests/unit/missions/destroy_mission_use_case.spec.ts
 import { test } from '@japa/runner'
 import { DestroyMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/destroy-mission.use-case.implementation'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
-import { FakeMissionRepository } from '#tests/unit/fakes/fake_mission_repository'
+import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 
 test.group('DestroyMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository

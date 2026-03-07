@@ -1,7 +1,7 @@
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
-import { InvalidMissionNotRunningError } from '../exceptions/Invalid-mission-not-running.error.ts'
+import { InvalidMissionNotRunningError } from '../exceptions/invalid-mission-not-running.error.ts'
 import { type MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
