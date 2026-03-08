@@ -33,6 +33,7 @@ export type ScannedRoutes = {
     'create_action': { paramsTuple?: []; params?: {} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'index_user': { paramsTuple?: []; params?: {} }
@@ -64,6 +65,7 @@ export type ScannedRoutes = {
     'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'register_auth': { paramsTuple?: []; params?: {} }

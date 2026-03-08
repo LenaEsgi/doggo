@@ -59,7 +59,8 @@ export class ActionRepositoryImplementation implements ActionRepository {
   }
 
   async delete(id: ActionId): Promise<void> {
-    const row = await ActionModel.findOrFail(id.value)
+    const row = await ActionModel.find(id.value)
+    if (!row) return
     await row.delete()
   }
 }
