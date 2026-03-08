@@ -31,6 +31,7 @@ export type ScannedRoutes = {
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
+    'index': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'index_user': { paramsTuple?: []; params?: {} }
@@ -39,6 +40,7 @@ export type ScannedRoutes = {
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_mission': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'index': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'index_user': { paramsTuple?: []; params?: {} }
@@ -47,6 +49,7 @@ export type ScannedRoutes = {
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_mission': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'index': { paramsTuple?: []; params?: {} }
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

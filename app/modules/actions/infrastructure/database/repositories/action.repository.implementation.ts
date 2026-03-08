@@ -30,9 +30,8 @@ export class ActionRepositoryImplementation implements ActionRepository {
 
     const paginator = await ActionModel.query().orderBy('id', 'desc').paginate(page, perPage)
 
-    const data = paginator.all().map((_row) => {
-      // TODO: Use your Action.rehydrate() method here
-      return null as any
+    const data = paginator.all().map((row) => {
+      return Action.rehydrate(row.id, row.code, row.name, row.slug, row.description)
     })
 
     return {
