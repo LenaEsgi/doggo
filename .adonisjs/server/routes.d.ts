@@ -30,6 +30,7 @@ export type ScannedRoutes = {
     'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'create_action': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'index_user': { paramsTuple?: []; params?: {} }
@@ -69,6 +70,7 @@ export type ScannedRoutes = {
     'create_robot_dog': { paramsTuple?: []; params?: {} }
     'create_mission': { paramsTuple?: []; params?: {} }
     'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'create_action': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

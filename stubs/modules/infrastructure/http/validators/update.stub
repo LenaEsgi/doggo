@@ -10,7 +10,7 @@
 }}}
 import vine from '@vinejs/vine'
 
-export const {{ className }} = vine.compile(
+export const {{ className }} = vine.create(
   vine.object({
     // Add other optional fields here
   })
