@@ -10,10 +10,7 @@ export class ActionRepositoryImplementation implements ActionRepository {
   async findById(id: ActionId): Promise<Action | null> {
     const row = await ActionModel.find(id.value)
     if (!row) return null
-
-    // TODO: Use your Action.rehydrate() method here
-    // return Action.rehydrate(row)
-    return null as any
+    return Action.rehydrate(row.id, row.code, row.name, row.slug, row.description)
   }
 
   async findByCode(code: string): Promise<Action | null> {

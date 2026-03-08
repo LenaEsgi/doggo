@@ -6,9 +6,13 @@ const CreateActionController = () =>
 const IndexController = () =>
   import('#app/modules/actions/infrastructure/http/controllers/index-action.controller')
 
+const ShowController = () =>
+  import('#app/modules/actions/infrastructure/http/controllers/show-action.controller')
+
 router
   .group(() => {
     router.post('/', [CreateActionController])
     router.get('/', [IndexController])
+    router.get('/:id', [ShowController])
   })
   .prefix('/actions')

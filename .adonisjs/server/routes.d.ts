@@ -32,6 +32,7 @@ export type ScannedRoutes = {
     'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
     'index': { paramsTuple?: []; params?: {} }
+    'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'index_user': { paramsTuple?: []; params?: {} }
@@ -41,6 +42,7 @@ export type ScannedRoutes = {
     'index_mission': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
+    'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'index_user': { paramsTuple?: []; params?: {} }
@@ -50,6 +52,7 @@ export type ScannedRoutes = {
     'index_mission': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
+    'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
