@@ -34,6 +34,7 @@ export type ScannedRoutes = {
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'index_user': { paramsTuple?: []; params?: {} }
@@ -57,6 +58,7 @@ export type ScannedRoutes = {
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
     'delete_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

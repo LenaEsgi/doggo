@@ -12,11 +12,15 @@ const ShowController = () =>
 const DestroyController = () =>
   import('#app/modules/actions/infrastructure/http/controllers/destroy-action.controller')
 
+const UpdateController = () =>
+  import('#app/modules/actions/infrastructure/http/controllers/update-action.controller')
+
 router
   .group(() => {
     router.post('/', [CreateActionController])
     router.get('/', [IndexController])
     router.get('/:id', [ShowController])
     router.delete('/:id', [DestroyController])
+    router.patch('/:id', [UpdateController])
   })
   .prefix('/actions')
