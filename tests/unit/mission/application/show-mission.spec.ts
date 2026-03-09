@@ -1,16 +1,16 @@
 import { test } from '@japa/runner'
-import { ShowMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/show-mission.use-case.implementation'
+import { ShowMissionUseCase } from '#app/modules/missions/application/usecases/show-mission.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { InvalidMissionNotFountError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fount.error'
 
 test.group('ShowMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository
-  let useCase: ShowMissionUseCaseImplementation
+  let useCase: ShowMissionUseCase
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
-    useCase = new ShowMissionUseCaseImplementation(missionRepo)
+    useCase = new ShowMissionUseCase(missionRepo)
   })
 
   test('should return a mission by id', async ({ assert }) => {

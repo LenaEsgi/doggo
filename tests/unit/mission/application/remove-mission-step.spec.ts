@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
-import RemoveMissionStepImplementation from '#app/modules/missions/application/usecases/remove-mission-step.use-case.implementation'
+import RemoveMissionStepImplementation from '#app/modules/missions/application/usecases/remove-mission-step.use-case'
 
 test.group('RemoveMissionStepUseCase', () => {
   test('should remove a step and reorder remaining steps', async ({ assert }) => {

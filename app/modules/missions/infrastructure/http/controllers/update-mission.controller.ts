@@ -1,7 +1,7 @@
 import { HttpContext } from '@adonisjs/core/http'
-import { UpdateMissionUseCase } from '#app/modules/missions/application/contracts/update-mission.use-case'
 import { inject } from '@adonisjs/core'
 import { UpdateMissionValidator } from '#app/modules/missions/infrastructure/http/validators/update-mission.validator'
+import { UpdateMissionUseCase } from '#app/modules/missions/application/usecases/update-mission.use-case'
 
 @inject()
 export default class UpdateMissionController {

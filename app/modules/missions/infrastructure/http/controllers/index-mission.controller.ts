@@ -1,12 +1,13 @@
 import { HttpContext } from '@adonisjs/core/http'
-import { IndexMissionUseCase } from '#app/modules/missions/application/contracts/index-mission.use-case'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import MissionTransformer from '#app/modules/missions/infrastructure/http/transformers/mission.transformer'
 import { inject } from '@adonisjs/core'
+import { IndexMissionUseCase } from '#app/modules/missions/application/usecases/index-mission.use-case'
 
 @inject()
 export default class IndexMissionController {
   constructor(private indexUseCase: IndexMissionUseCase) {}
+
   async handle({ request, serialize, response }: HttpContext) {
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),

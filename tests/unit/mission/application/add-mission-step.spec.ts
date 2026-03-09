@@ -1,5 +1,5 @@
 import { test } from '@japa/runner'
-import { AddMissionStepUseCaseImplementation } from '#app/modules/missions/application/usecases/add-mission-step.use-case.implementation'
+import { AddMissionStepUseCase } from '#app/modules/missions/application/usecases/add-mission-step.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
@@ -8,7 +8,7 @@ test.group('AddMissionStepUseCase', () => {
   test('doit ajouter une étape à une mission existante dans le repository', async ({ assert }) => {
     // --- ARRANGE ---
     const repo = new FakeMissionRepository()
-    const useCase = new AddMissionStepUseCaseImplementation(repo)
+    const useCase = new AddMissionStepUseCase(repo)
 
     const mission = Mission.create('Mission Patrouille', 'user-001')
     await repo.save(mission)
@@ -33,7 +33,7 @@ test.group('AddMissionStepUseCase', () => {
 
   test("doit échouer si la mission n'existe pas dans le fake repository", async ({ assert }) => {
     const repo = new FakeMissionRepository()
-    const useCase = new AddMissionStepUseCaseImplementation(repo)
+    const useCase = new AddMissionStepUseCase(repo)
 
     const validButUnknownUuid = '550e8400-e29b-41d4-a716-446655440000'
 
