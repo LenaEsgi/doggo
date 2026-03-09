@@ -9,6 +9,11 @@ import { IndexUser } from '#users/application/services/index.user.service'
 import { ShowUser } from '#users/application/services/show.user.service'
 import { UpdateUser } from '#users/application/services/update.user.service'
 import { DeleteUser } from '#users/application/services/delete.user.service'
+import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
+import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
+import { UserRepositoryImplementation } from '#users/infrastructure/database/repositories/user.repository.implementation'
+import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
+import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local-user.repository'
 
 export default class UserProvider {
   constructor(protected app: ApplicationService) {}
@@ -17,6 +22,18 @@ export default class UserProvider {
    * Register bindings to the container
    */
   register() {
+    this.app.container.bind(UserReadRepository, () => {
+      return this.app.container.make(UserRepositoryImplementation)
+    })
+
+    this.app.container.bind(UserWriteRepository, () => {
+      return this.app.container.make(UserRepositoryImplementation)
+    })
+
+    this.app.container.bind(LocalUserRepository, () => {
+      return this.app.container.make(LocalUserRepositoryImplementation)
+    })
+
     this.app.container.bind(CreateUserService, () => {
       return this.app.container.make(CreateUser)
     })

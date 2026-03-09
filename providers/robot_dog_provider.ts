@@ -9,6 +9,8 @@ import { ShowRobotDogUseCaseImplementation } from '#dogs/application/usecases/sh
 import { IndexRobotDogsUseCaseImplementation } from '#dogs/application/usecases/index-robot-dogs.use-case.implementation'
 import { CreateRobotDogUseCase } from '#dogs/application/contracts/create-robot-dog.use-case'
 import { CreateRobotDogUseCaseImplementation } from '#dogs/application/usecases/create-robot-dog.use-case.implementation'
+import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
+import { RobotDogRepositoryImplementation } from '#dogs/infrastructure/database/repositories/robot-dog.repository.implementation'
 
 export default class RobotDogProvider {
   constructor(protected app: ApplicationService) {}
@@ -35,6 +37,10 @@ export default class RobotDogProvider {
 
     this.app.container.bind(UpdateRobotDogUseCase, () => {
       return this.app.container.make(UpdateRobotDogUseCaseImplementation)
+    })
+
+    this.app.container.bind(RobotDogRepository, () => {
+      return this.app.container.make(RobotDogRepositoryImplementation)
     })
   }
 
