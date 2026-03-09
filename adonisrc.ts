@@ -58,6 +58,7 @@ export default defineConfig({
     () => import('@adonisjs/core/providers/vinejs_provider'),
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
+    () => import('#providers/firebase_admin_provider'),
     () => import('#providers/app_provider'),
     () => import('#providers/api_provider'),
     () => import('#providers/mission_provider'),
