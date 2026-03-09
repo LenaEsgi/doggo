@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
-import { IndexRobotDogsUseCase } from '../../../application/contracts/index-robot-dogs.use-case.js'
 import { HttpContext } from '@adonisjs/core/http'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { IndexRobotDogsUseCase } from '#dogs/application/usecases/index-robot-dogs.use-case'
 
 @inject()
 export default class ListRobotDogsController {

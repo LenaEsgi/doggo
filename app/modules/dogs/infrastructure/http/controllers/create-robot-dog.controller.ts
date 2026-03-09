@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
-import { CreateRobotDogUseCase } from '../../../application/contracts/create-robot-dog.use-case.js'
 import { CreateRobotDogValidator } from '../validators/create-robot-dog.validator.js'
+import { CreateRobotDogUseCase } from '#dogs/application/usecases/create-robot-dog.use-case'
 
 @inject()
 export default class CreateRobotDogController {

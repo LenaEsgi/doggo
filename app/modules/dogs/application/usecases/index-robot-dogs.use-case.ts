@@ -1,5 +1,4 @@
 import { RobotDogRepository } from '../../domain/contracts/robot-dog.repository.js'
-import { IndexRobotDogsUseCase } from '../contracts/index-robot-dogs.use-case.js'
 import { RobotDogOutput } from '../DTO/robot-dog.output.dto.js'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
@@ -7,7 +6,7 @@ import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
 @inject()
-export class IndexRobotDogsUseCaseImplementation implements IndexRobotDogsUseCase {
+export class IndexRobotDogsUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
   async execute(params: PaginationDto): Promise<PaginatedResult<RobotDogOutput>> {

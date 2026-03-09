@@ -4,11 +4,10 @@ import { RobotDogOutput } from '../DTO/robot-dog.output.dto.js'
 import { ShowRobotDogDto } from '../DTO/show-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
 import { inject } from '@adonisjs/core'
-import { ShowRobotDogUseCase } from '../contracts/show-robot-dog.use-case.js'
 import logger from '@adonisjs/core/services/logger'
 
 @inject()
-export class ShowRobotDogUseCaseImplementation implements ShowRobotDogUseCase {
+export class ShowRobotDogUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
   async execute(dto: ShowRobotDogDto): Promise<RobotDogOutput> {

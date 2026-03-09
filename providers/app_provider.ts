@@ -10,8 +10,6 @@ import { StartTotpSetupAuthService } from '#auth/application/contracts/start.tot
 import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
-import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
-import { RobotDogRepositoryImplementation } from '#dogs/infrastructure/database/repositories/robot-dog.repository.implementation'
 import type { ApplicationService } from '@adonisjs/core/types'
 import { LocalUserRepositoryImplementation } from '#auth/infrastructure/database/repositories/local-user.repository'
 
@@ -57,9 +55,6 @@ export default class AppProvider {
      */
     this.app.container.bind(RegisterAuthService, () => {
       return this.app.container.make(RegisterAuth)
-    })
-    this.app.container.bind(RobotDogRepository, () => {
-      return this.app.container.make(RobotDogRepositoryImplementation)
     })
 
     this.app.container.bind(LoginAuthService, () => {
