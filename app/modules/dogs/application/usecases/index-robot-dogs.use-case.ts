@@ -1,15 +1,15 @@
 import { RobotDogRepository } from '../../domain/contracts/robot-dog.repository.js'
-import { RobotDogOutput } from '../DTO/robot-dog.output.dto.js'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
 
 @inject()
 export class IndexRobotDogsUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
-  async execute(params: PaginationDto): Promise<PaginatedResult<RobotDogOutput>> {
+  async execute(params: PaginationDto): Promise<PaginatedResult<RobotDog>> {
     logger.info({}, 'IndexRobotDogsUseCase started')
 
     const page = Math.max(1, params.page ?? 1)
@@ -17,19 +17,10 @@ export class IndexRobotDogsUseCase {
 
     logger.info({ page, limit }, 'page and limit')
 
-    const { data: dogs, meta } = await this.robotDogRepository.findAll({ page, limit })
+    const { data, meta } = await this.robotDogRepository.findAll({ page, limit })
 
-    logger.info({ count: dogs.length }, 'IndexRobotDogsUseCase completed successfully')
+    logger.info({ count: data.length }, 'IndexRobotDogsUseCase completed successfully')
 
-    const dto: RobotDogOutput[] = dogs.map((dog) => ({
-      id: dog.id.value,
-      serialNumber: dog.serialNumber,
-      name: dog.name,
-      state: dog.state,
-      batteryLevel: dog.batteryLevel,
-      lastHeartbeat: dog.lastHeartbeat,
-    }))
-
-    return { data: dto, meta }
+    return { data, meta }
   }
 }
