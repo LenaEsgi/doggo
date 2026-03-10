@@ -24,6 +24,7 @@ test('FinalizeTotpSetupAuthController returns success payload', async ({ assert 
       header: (name: string) => (name === 'authorization' ? 'Bearer id-token' : null),
     },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
+    logger: { info: () => {} },
   } as any)
 
   assert.equal(out.status, 200)

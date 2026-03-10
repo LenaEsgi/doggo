@@ -46,6 +46,7 @@ test('RegisterAuthController returns 201 on success', async ({ assert }) => {
       }),
     },
     response,
+    logger: { info: () => {} },
   } as any)
 
   assert.equal(out.status, 201)
@@ -68,6 +69,7 @@ test('RegisterAuthController maps firebase errors', async ({ assert }) => {
           }),
         },
         response: {},
+        logger: { info: () => {} },
       } as any),
     FirebaseHttpError
   )

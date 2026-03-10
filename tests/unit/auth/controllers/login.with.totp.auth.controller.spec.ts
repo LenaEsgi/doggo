@@ -28,6 +28,7 @@ test('LoginWithTotpAuthController returns auth success payload', async ({ assert
       }),
     },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
+    logger: { info: () => {} },
   } as any)
 
   assert.equal(out.status, 200)
