@@ -1,14 +1,13 @@
 import { test } from '@japa/runner'
-import { DeleteAccountAuthService } from '#auth/application/contracts/delete.account.auth.service'
 import type { DeleteAccountDto } from '#auth/application/dto/delete-account.dto'
 import DeleteAccountAuthController from '#auth/infrastructure/http/controllers/delete.account.auth.controller'
 
-class FakeDeleteAccountAuthService extends DeleteAccountAuthService {
-  async deleteAccount(_payload: DeleteAccountDto): Promise<void> {}
+class FakeDeleteAccountAuthUseCase {
+  async execute(_payload: DeleteAccountDto): Promise<void> {}
 }
 
 test('DeleteAccountAuthController returns success payload', async ({ assert }) => {
-  const controller = new DeleteAccountAuthController(new FakeDeleteAccountAuthService())
+  const controller = new DeleteAccountAuthController(new FakeDeleteAccountAuthUseCase() as any)
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({

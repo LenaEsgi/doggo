@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-import { UpdateUserService } from '#users/application/contracts/update.user.service'
+import { UpdateUserUseCase } from '#users/application/usecases/update-user.use-case'
 import { UserSerializer } from '#users/infrastructure/serializers/user.serializer'
 import {
   updateUserParamValidator,
@@ -9,7 +9,7 @@ import {
 
 @inject()
 export default class UpdateUserController {
-  constructor(private readonly userService: UpdateUserService) {}
+  constructor(private readonly useCase: UpdateUserUseCase) {}
 
   async handle({ request, response }: HttpContext): Promise<void> {
     const { id } = await request.validateUsing(updateUserParamValidator, {
@@ -17,7 +17,7 @@ export default class UpdateUserController {
     })
 
     const payload = await request.validateUsing(updateUserValidator)
-    const user = await this.userService.update(id, payload)
+    const user = await this.useCase.execute(id, payload)
 
     if (!user) {
       response.notFound({

@@ -1,11 +1,10 @@
 import { test } from '@japa/runner'
-import { LoginWithTotpAuthService } from '#auth/application/contracts/login.with.totp.auth.service'
 import type { LoginWithTotpDto } from '#auth/application/dto/login-with-totp.dto'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import LoginWithTotpAuthController from '#auth/infrastructure/http/controllers/login.with.totp.auth.controller'
 
-class FakeLoginWithTotpAuthService extends LoginWithTotpAuthService {
-  async loginWithTotp(_payload: LoginWithTotpDto): Promise<AuthTokens> {
+class FakeLoginWithTotpAuthUseCase {
+  async execute(_payload: LoginWithTotpDto): Promise<AuthTokens> {
     return {
       localId: 'uid-1',
       email: 'john@example.com',
@@ -17,7 +16,7 @@ class FakeLoginWithTotpAuthService extends LoginWithTotpAuthService {
 }
 
 test('LoginWithTotpAuthController returns auth success payload', async ({ assert }) => {
-  const controller = new LoginWithTotpAuthController(new FakeLoginWithTotpAuthService())
+  const controller = new LoginWithTotpAuthController(new FakeLoginWithTotpAuthUseCase() as any)
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({

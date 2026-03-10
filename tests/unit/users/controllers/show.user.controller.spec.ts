@@ -1,22 +1,21 @@
 import { test } from '@japa/runner'
-import { ShowUserService } from '#users/application/contracts/show.user.service'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import ShowUserController from '#users/infrastructure/http/controllers/show.user.controller'
 
-class FakeShowUserService extends ShowUserService {
-  constructor(private readonly user: User | null) {
-    super()
-  }
+class FakeShowUserUseCase {
+  constructor(private readonly user: User | null) {}
 
-  async show() {
+  async execute() {
     return this.user
   }
 }
 
 test('ShowUserController returns 200 when found', async ({ assert }) => {
   const controller = new ShowUserController(
-    new FakeShowUserService(User.rehydrate('u1', 'john@example.com', 'John', 'Doe', UserRole.USER))
+    new FakeShowUserUseCase(
+      User.rehydrate('u1', 'john@example.com', 'John', 'Doe', UserRole.USER)
+    ) as any
   )
 
   const result: { status?: number; body?: any } = {}
@@ -43,7 +42,7 @@ test('ShowUserController returns 200 when found', async ({ assert }) => {
 })
 
 test('ShowUserController returns 404 when missing', async ({ assert }) => {
-  const controller = new ShowUserController(new FakeShowUserService(null))
+  const controller = new ShowUserController(new FakeShowUserUseCase(null) as any)
   const result: { status?: number; body?: any } = {}
 
   await controller.handle({

@@ -1,11 +1,10 @@
 import { test } from '@japa/runner'
-import { LoginAuthService } from '#auth/application/contracts/login.auth.service'
 import type { LoginDto } from '#auth/application/dto/login.dto'
 import type { LoginResult } from '#auth/domain/types/login.result'
 import LoginAuthController from '#auth/infrastructure/http/controllers/login.auth.controller'
 
-class FakeLoginAuthService extends LoginAuthService {
-  async login(_payload: LoginDto): Promise<LoginResult> {
+class FakeLoginAuthUseCase {
+  async execute(_payload: LoginDto): Promise<LoginResult> {
     return {
       mfaRequired: false,
       localId: 'uid-1',
@@ -18,7 +17,7 @@ class FakeLoginAuthService extends LoginAuthService {
 }
 
 test('LoginAuthController returns login payload', async ({ assert }) => {
-  const controller = new LoginAuthController(new FakeLoginAuthService())
+  const controller = new LoginAuthController(new FakeLoginAuthUseCase() as any)
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({

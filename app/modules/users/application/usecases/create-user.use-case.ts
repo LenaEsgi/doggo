@@ -1,15 +1,14 @@
 import { inject } from '@adonisjs/core'
 import { randomUUID } from 'node:crypto'
-import { CreateUserService } from '#users/application/contracts/create.user.service'
-import { CreateUserDto } from '#users/application/dto/create.user.dto'
+import { type CreateUserDto } from '#users/application/dto/create.user.dto'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
 import { User } from '#users/domain/user.entity'
 
 @inject()
-export class CreateUser implements CreateUserService {
-  constructor(private repository: UserWriteRepository) {}
+export class CreateUserUseCase {
+  constructor(private readonly repository: UserWriteRepository) {}
 
-  create(dto: CreateUserDto): Promise<User> {
+  execute(dto: CreateUserDto): Promise<User> {
     const user = User.create(randomUUID(), dto.email, dto.firstname, dto.lastname)
     return this.repository.create(user)
   }

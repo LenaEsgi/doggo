@@ -1,17 +1,16 @@
 import { test } from '@japa/runner'
-import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.auth.service'
 import type { DisableMfaDto } from '#auth/application/dto/disable-mfa.dto'
 import type { DisableMfaResult } from '#auth/domain/types/disable.mfa.result'
 import DisableMfaAuthController from '#auth/infrastructure/http/controllers/disable.mfa.auth.controller'
 
-class FakeDisableMfaAuthService extends DisableMfaAuthService {
-  async disableMfa(_payload: DisableMfaDto): Promise<DisableMfaResult> {
+class FakeDisableMfaAuthUseCase {
+  async execute(_payload: DisableMfaDto): Promise<DisableMfaResult> {
     return { idToken: 'id', refreshToken: 'refresh' }
   }
 }
 
 test('DisableMfaAuthController returns success payload', async ({ assert }) => {
-  const controller = new DisableMfaAuthController(new FakeDisableMfaAuthService())
+  const controller = new DisableMfaAuthController(new FakeDisableMfaAuthUseCase() as any)
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({
