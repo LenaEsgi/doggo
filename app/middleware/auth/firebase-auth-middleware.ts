@@ -46,10 +46,3 @@ export default class FirebaseAuthMiddleware {
     }
   }
 }
-
-declare module '@adonisjs/core/http' {
-  export interface HttpContext {
-    firebaseUser: AuthenticatedFirebaseUser
-    user: User
-  }
-}
