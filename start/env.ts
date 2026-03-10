@@ -30,4 +30,5 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_DATABASE: Env.schema.string(),
 
   FIREBASE_API_KEY: Env.schema.string(),
+  FIREBASE_SERVICE_ACCOUNT_KEYS: Env.schema.string.optional(),
 })
