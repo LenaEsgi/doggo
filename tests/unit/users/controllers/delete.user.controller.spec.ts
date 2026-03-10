@@ -1,19 +1,16 @@
 import { test } from '@japa/runner'
-import { DeleteUserService } from '#users/application/contracts/delete.user.service'
 import DeleteUserController from '#users/infrastructure/http/controllers/delete.user.controller'
 
-class FakeDeleteUserService extends DeleteUserService {
-  constructor(private readonly result: boolean) {
-    super()
-  }
+class FakeDeleteUserUseCase {
+  constructor(private readonly result: boolean) {}
 
-  async delete() {
+  async execute() {
     return this.result
   }
 }
 
 test('DeleteUserController returns 200 when deleted', async ({ assert }) => {
-  const controller = new DeleteUserController(new FakeDeleteUserService(true))
+  const controller = new DeleteUserController(new FakeDeleteUserUseCase(true) as any)
 
   const result: { status?: number; body?: any } = {}
 
@@ -39,7 +36,7 @@ test('DeleteUserController returns 200 when deleted', async ({ assert }) => {
 })
 
 test('DeleteUserController returns 404 when missing', async ({ assert }) => {
-  const controller = new DeleteUserController(new FakeDeleteUserService(false))
+  const controller = new DeleteUserController(new FakeDeleteUserUseCase(false) as any)
 
   const result: { status?: number; body?: any } = {}
 

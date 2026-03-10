@@ -1,19 +1,18 @@
 import { inject } from '@adonisjs/core'
-import { UpdateUserService } from '#users/application/contracts/update.user.service'
-import { UpdateUserDto } from '#users/application/dto/update.user.dto'
+import { type UpdateUserDto } from '#users/application/dto/update.user.dto'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
 import { UserRole } from '#users/domain/enums/user.role'
 import { User } from '#users/domain/user.entity'
 
 @inject()
-export class UpdateUser implements UpdateUserService {
+export class UpdateUserUseCase {
   constructor(
-    private userReadRepository: UserReadRepository,
-    private userWriteRepository: UserWriteRepository
+    private readonly userReadRepository: UserReadRepository,
+    private readonly userWriteRepository: UserWriteRepository
   ) {}
 
-  async update(id: string, payload: UpdateUserDto): Promise<User | null> {
+  async execute(id: string, payload: UpdateUserDto): Promise<User | null> {
     const current = await this.userReadRepository.findById(id)
 
     if (!current) {

@@ -4,6 +4,7 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
+    'create_user': { paramsTuple?: []; params?: {} }
     'index_user': { paramsTuple?: []; params?: {} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -56,6 +57,20 @@ export type ScannedRoutes = {
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
+  POST: {
+    'create_user': { paramsTuple?: []; params?: {} }
+    'register_auth': { paramsTuple?: []; params?: {} }
+    'login_auth': { paramsTuple?: []; params?: {} }
+    'login_with_totp_auth': { paramsTuple?: []; params?: {} }
+    'password_reset_auth': { paramsTuple?: []; params?: {} }
+    'start_totp_setup_auth': { paramsTuple?: []; params?: {} }
+    'finalize_totp_setup_auth': { paramsTuple?: []; params?: {} }
+    'list_mfa_enrollments_auth': { paramsTuple?: []; params?: {} }
+    'create_robot_dog': { paramsTuple?: []; params?: {} }
+    'create_mission': { paramsTuple?: []; params?: {} }
+    'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'create_action': { paramsTuple?: []; params?: {} }
+  }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -68,19 +83,6 @@ export type ScannedRoutes = {
     'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
-  POST: {
-    'register_auth': { paramsTuple?: []; params?: {} }
-    'login_auth': { paramsTuple?: []; params?: {} }
-    'login_with_totp_auth': { paramsTuple?: []; params?: {} }
-    'password_reset_auth': { paramsTuple?: []; params?: {} }
-    'start_totp_setup_auth': { paramsTuple?: []; params?: {} }
-    'finalize_totp_setup_auth': { paramsTuple?: []; params?: {} }
-    'list_mfa_enrollments_auth': { paramsTuple?: []; params?: {} }
-    'create_robot_dog': { paramsTuple?: []; params?: {} }
-    'create_mission': { paramsTuple?: []; params?: {} }
-    'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'create_action': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

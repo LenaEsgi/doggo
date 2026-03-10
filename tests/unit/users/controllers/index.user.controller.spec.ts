@@ -1,17 +1,16 @@
 import { test } from '@japa/runner'
-import { IndexUserService } from '#users/application/contracts/index.user.service'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import IndexUserController from '#users/infrastructure/http/controllers/index.user.controller'
 
-class FakeIndexUserService extends IndexUserService {
-  async index() {
+class FakeIndexUserUseCase {
+  async execute() {
     return [User.rehydrate('u1', 'john@example.com', 'John', 'Doe', UserRole.USER)]
   }
 }
 
 test('IndexUserController returns users list', async ({ assert }) => {
-  const controller = new IndexUserController(new FakeIndexUserService())
+  const controller = new IndexUserController(new FakeIndexUserUseCase() as any)
   const result: { status?: number; body?: any } = {}
 
   await controller.handle({

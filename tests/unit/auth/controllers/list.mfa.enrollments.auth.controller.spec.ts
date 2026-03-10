@@ -1,17 +1,18 @@
 import { test } from '@japa/runner'
-import { ListMfaEnrollmentsAuthService } from '#auth/application/contracts/list.mfa.enrollments.auth.service'
 import type { ListMfaEnrollmentsDto } from '#auth/application/dto/list-mfa-enrollments.dto'
 import type { MfaInfo } from '#auth/domain/types/mfa.info'
 import ListMfaEnrollmentsAuthController from '#auth/infrastructure/http/controllers/list.mfa.enrollments.auth.controller'
 
-class FakeListMfaEnrollmentsAuthService extends ListMfaEnrollmentsAuthService {
-  async listMfaEnrollments(_payload: ListMfaEnrollmentsDto): Promise<MfaInfo[]> {
+class FakeListMfaEnrollmentsAuthUseCase {
+  async execute(_payload: ListMfaEnrollmentsDto): Promise<MfaInfo[]> {
     return [{ mfaEnrollmentId: 'm1', displayName: 'Aegis' }]
   }
 }
 
 test('ListMfaEnrollmentsAuthController returns enrollments', async ({ assert }) => {
-  const controller = new ListMfaEnrollmentsAuthController(new FakeListMfaEnrollmentsAuthService())
+  const controller = new ListMfaEnrollmentsAuthController(
+    new FakeListMfaEnrollmentsAuthUseCase() as any
+  )
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({

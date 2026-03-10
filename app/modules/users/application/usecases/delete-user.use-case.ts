@@ -1,16 +1,15 @@
 import { inject } from '@adonisjs/core'
-import { DeleteUserService } from '#users/application/contracts/delete.user.service'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
 
 @inject()
-export class DeleteUser implements DeleteUserService {
+export class DeleteUserUseCase {
   constructor(
-    private userReadRepository: UserReadRepository,
-    private userWriteRepository: UserWriteRepository
+    private readonly userReadRepository: UserReadRepository,
+    private readonly userWriteRepository: UserWriteRepository
   ) {}
 
-  async delete(id: string): Promise<boolean> {
+  async execute(id: string): Promise<boolean> {
     const user = await this.userReadRepository.findById(id)
 
     if (!user) {

@@ -1,11 +1,10 @@
 import { test } from '@japa/runner'
-import { CreateUserService } from '#users/application/contracts/create.user.service'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import CreateUserController from '#users/infrastructure/http/controllers/create.user.controller'
 
-class FakeCreateUserService extends CreateUserService {
-  async create() {
+class FakeCreateUserUseCase {
+  async execute() {
     return User.rehydrate('u1', 'john@example.com', 'John', 'Doe', UserRole.USER)
   }
 }
@@ -31,7 +30,7 @@ function createContext(validatedPayload: any) {
 }
 
 test('CreateUserController creates a user', async ({ assert }) => {
-  const controller = new CreateUserController(new FakeCreateUserService())
+  const controller = new CreateUserController(new FakeCreateUserUseCase() as any)
   const { ctx, result } = createContext({
     firstname: 'John',
     lastname: 'Doe',

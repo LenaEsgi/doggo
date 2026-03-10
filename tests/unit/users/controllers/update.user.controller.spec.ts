@@ -1,24 +1,21 @@
 import { test } from '@japa/runner'
-import { UpdateUserService } from '#users/application/contracts/update.user.service'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import UpdateUserController from '#users/infrastructure/http/controllers/update.user.controller'
 
-class FakeUpdateUserService extends UpdateUserService {
-  constructor(private readonly result: User | null) {
-    super()
-  }
+class FakeUpdateUserUseCase {
+  constructor(private readonly result: User | null) {}
 
-  async update() {
+  async execute() {
     return this.result
   }
 }
 
 test('UpdateUserController returns 200 when updated', async ({ assert }) => {
   const controller = new UpdateUserController(
-    new FakeUpdateUserService(
+    new FakeUpdateUserUseCase(
       User.rehydrate('u1', 'jane@example.com', 'Jane', 'Doe', UserRole.ADMIN)
-    )
+    ) as any
   )
 
   const result: { status?: number; body?: any } = {}
@@ -52,7 +49,7 @@ test('UpdateUserController returns 200 when updated', async ({ assert }) => {
 })
 
 test('UpdateUserController returns 404 when missing', async ({ assert }) => {
-  const controller = new UpdateUserController(new FakeUpdateUserService(null))
+  const controller = new UpdateUserController(new FakeUpdateUserUseCase(null) as any)
 
   const result: { status?: number; body?: any } = {}
   let call = 0

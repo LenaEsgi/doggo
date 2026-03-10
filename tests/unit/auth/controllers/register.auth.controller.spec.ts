@@ -1,16 +1,13 @@
 import { test } from '@japa/runner'
-import { RegisterAuthService } from '#auth/application/contracts/register.auth.service'
 import { FirebaseHttpError } from '#auth/infrastructure/providers/firebase-auth.base'
 import type { RegisterDto } from '#auth/application/dto/register.dto'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import RegisterAuthController from '#auth/infrastructure/http/controllers/register.auth.controller'
 
-class FakeRegisterAuthService extends RegisterAuthService {
-  constructor(private readonly shouldThrow = false) {
-    super()
-  }
+class FakeRegisterAuthUseCase {
+  constructor(private readonly shouldThrow = false) {}
 
-  async register(_payload: RegisterDto): Promise<AuthTokens> {
+  async execute(_payload: RegisterDto): Promise<AuthTokens> {
     if (this.shouldThrow) {
       throw new FirebaseHttpError('An account with this email already exists', 409, 'EMAIL_EXISTS')
     }
@@ -40,7 +37,7 @@ function responseCollector() {
 }
 
 test('RegisterAuthController returns 201 on success', async ({ assert }) => {
-  const controller = new RegisterAuthController(new FakeRegisterAuthService())
+  const controller = new RegisterAuthController(new FakeRegisterAuthUseCase() as any)
   const { response, out } = responseCollector()
 
   await controller.handle({
@@ -60,7 +57,7 @@ test('RegisterAuthController returns 201 on success', async ({ assert }) => {
 })
 
 test('RegisterAuthController maps firebase errors', async ({ assert }) => {
-  const controller = new RegisterAuthController(new FakeRegisterAuthService(true))
+  const controller = new RegisterAuthController(new FakeRegisterAuthUseCase(true) as any)
   const { response, out } = responseCollector()
 
   await controller.handle({

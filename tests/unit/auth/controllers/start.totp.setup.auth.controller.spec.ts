@@ -1,11 +1,10 @@
 import { test } from '@japa/runner'
-import { StartTotpSetupAuthService } from '#auth/application/contracts/start.totp.setup.auth.service'
 import type { StartTotpSetupDto } from '#auth/application/dto/start-totp-setup.dto'
 import type { TotpEnrollmentStart } from '#auth/domain/types/totp.enrollment.start'
 import StartTotpSetupAuthController from '#auth/infrastructure/http/controllers/start.totp.setup.auth.controller'
 
-class FakeStartTotpSetupAuthService extends StartTotpSetupAuthService {
-  async startTotpSetup(_payload: StartTotpSetupDto): Promise<TotpEnrollmentStart> {
+class FakeStartTotpSetupAuthUseCase {
+  async execute(_payload: StartTotpSetupDto): Promise<TotpEnrollmentStart> {
     return {
       sessionInfo: 'session',
       sharedSecret: 'secret',
@@ -18,7 +17,7 @@ class FakeStartTotpSetupAuthService extends StartTotpSetupAuthService {
 }
 
 test('StartTotpSetupAuthController returns setup payload', async ({ assert }) => {
-  const controller = new StartTotpSetupAuthController(new FakeStartTotpSetupAuthService())
+  const controller = new StartTotpSetupAuthController(new FakeStartTotpSetupAuthUseCase() as any)
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({
