@@ -19,14 +19,6 @@ export default class UpdateUserController {
     const payload = await request.validateUsing(updateUserValidator)
     const user = await this.useCase.execute(id, payload)
 
-    if (!user) {
-      response.notFound({
-        error: 'USER_NOT_FOUND',
-        message: 'User not found',
-      })
-      return
-    }
-
     response.ok({
       message: 'User updated successfully',
       user: UserSerializer.toJson(user),

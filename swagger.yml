@@ -160,23 +160,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
   /users:
-    post:
-      tags:
-        - Users
-      summary: Create user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUserRequest'
-      responses:
-        '201':
-          description: User created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserCreatedResponse'
     get:
       tags:
         - Users

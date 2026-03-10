@@ -7,7 +7,14 @@ export class UserMapper {
     const role =
       model.role === ('admin' as unknown as typeof model.role) ? UserRole.ADMIN : UserRole.USER
 
-    return User.rehydrate(model.id, model.email, model.firstname, model.lastname, role)
+    return User.rehydrate(
+      model.id,
+      model.firebaseUid,
+      model.email,
+      model.firstname,
+      model.lastname,
+      role
+    )
   }
 
   static toPersistenceRole(role: UserRole): UserModel['role'] {

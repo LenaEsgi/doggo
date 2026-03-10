@@ -5,7 +5,9 @@ import IndexUserController from '#users/infrastructure/http/controllers/index.us
 
 class FakeIndexUserUseCase {
   async execute() {
-    return [User.rehydrate('u1', 'john@example.com', 'John', 'Doe', UserRole.USER)]
+    return [
+      User.rehydrate('u1', 'firebase-uid-john', 'john@example.com', 'John', 'Doe', UserRole.USER),
+    ]
   }
 }
 

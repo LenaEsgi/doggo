@@ -1,8 +1,10 @@
 import app from '@adonisjs/core/services/app'
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
-import { RobotDogNotFoundError } from '../modules/dogs/domain/exceptions/robot-dog-not-found.error.js'
+import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
 import { DomainError } from '#app/modules/share/exceptions/domain-error'
+import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import { FirebaseHttpError } from '#auth/infrastructure/providers/firebase-auth.base'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -22,6 +24,21 @@ export default class HttpExceptionHandler extends ExceptionHandler {
 
     if (error instanceof RobotDogSerialNumberAlreadyExistsError) {
       return ctx.response.status(409).json({ message: error.message })
+    }
+
+    if (error instanceof InvalidUserNotFoundError) {
+      return ctx.response.status(404).json({
+        error: 'USER_NOT_FOUND',
+        message: 'User not found',
+      })
+    }
+
+    if (error instanceof FirebaseHttpError) {
+      return ctx.response.status(error.status).json({
+        error: error.code,
+        message: error.message,
+        details: error.details,
+      })
     }
 
     if (error instanceof DomainError) {

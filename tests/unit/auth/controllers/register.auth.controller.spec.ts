@@ -28,10 +28,6 @@ function responseCollector() {
     out,
     response: {
       created: (body: any) => ((out.status = 201), (out.body = body), body),
-      status: (code: number) => ({
-        send: (body: any) => ((out.status = code), (out.body = body), body),
-      }),
-      badRequest: (body: any) => ((out.status = 400), (out.body = body), body),
     },
   }
 }
@@ -53,25 +49,26 @@ test('RegisterAuthController returns 201 on success', async ({ assert }) => {
   } as any)
 
   assert.equal(out.status, 201)
+  assert.equal(out.body.user.uid, 'uid-1')
   assert.equal(out.body.user.email, 'john@example.com')
 })
 
 test('RegisterAuthController maps firebase errors', async ({ assert }) => {
   const controller = new RegisterAuthController(new FakeRegisterAuthUseCase(true) as any)
-  const { response, out } = responseCollector()
 
-  await controller.handle({
-    request: {
-      validateUsing: async () => ({
-        firstname: 'John',
-        lastname: 'Doe',
-        email: 'john@example.com',
-        password: 'SuperPassword123',
-      }),
-    },
-    response,
-  } as any)
-
-  assert.equal(out.status, 409)
-  assert.equal(out.body.error, 'EMAIL_EXISTS')
+  await assert.rejects(
+    () =>
+      controller.handle({
+        request: {
+          validateUsing: async () => ({
+            firstname: 'John',
+            lastname: 'Doe',
+            email: 'john@example.com',
+            password: 'SuperPassword123',
+          }),
+        },
+        response: {},
+      } as any),
+    FirebaseHttpError
+  )
 })
