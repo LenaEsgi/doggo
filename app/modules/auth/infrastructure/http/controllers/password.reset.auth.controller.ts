@@ -7,10 +7,12 @@ import { passwordResetAuthValidator } from '#auth/infrastructure/http/validators
 export default class PasswordResetAuthController {
   constructor(private readonly useCase: PasswordResetAuthUseCase) {}
 
-  async handle({ request, response }: HttpContext) {
+  async handle({ request, response, logger }: HttpContext) {
     const payload = await request.validateUsing(passwordResetAuthValidator)
+    logger.info({ email: payload.email }, 'PasswordResetAuthController called')
     await this.useCase.execute(payload)
 
+    logger.info({ email: payload.email }, 'PasswordResetAuthController completed successfully')
     return response.ok({
       message: 'Password reset email sent',
     })

@@ -8,11 +8,17 @@ import { disableMfaAuthValidator } from '#auth/infrastructure/http/validators/di
 export default class DisableMfaAuthController {
   constructor(private readonly useCase: DisableMfaAuthUseCase) {}
 
-  async handle({ request, response }: HttpContext) {
+  async handle({ request, response, logger }: HttpContext) {
     const body = await request.validateUsing(disableMfaAuthValidator)
+    logger.info({ mfaEnrollmentId: body.mfaEnrollmentId }, 'DisableMfaAuthController called')
+
     const payload = { ...body, idToken: extractBearerToken(request) }
     const result = await this.useCase.execute(payload)
 
+    logger.info(
+      { mfaEnrollmentId: body.mfaEnrollmentId },
+      'DisableMfaAuthController completed successfully'
+    )
     return response.ok({
       message: 'Two-factor authentication disabled',
       tokens: result,

@@ -8,11 +8,16 @@ import { finalizeTotpSetupAuthValidator } from '#auth/infrastructure/http/valida
 export default class FinalizeTotpSetupAuthController {
   constructor(private readonly useCase: FinalizeTotpSetupAuthUseCase) {}
 
-  async handle({ request, response }: HttpContext) {
+  async handle({ request, response, logger }: HttpContext) {
     const body = await request.validateUsing(finalizeTotpSetupAuthValidator)
+    logger.info(
+      { hasDisplayName: Boolean(body.displayName) },
+      'FinalizeTotpSetupAuthController called'
+    )
     const payload = { ...body, idToken: extractBearerToken(request) }
     const result = await this.useCase.execute(payload)
 
+    logger.info({}, 'FinalizeTotpSetupAuthController completed successfully')
     return response.ok({
       message: 'Two-factor authentication enabled',
       tokens: result,

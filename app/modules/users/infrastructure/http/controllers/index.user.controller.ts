@@ -7,9 +7,11 @@ import { UserSerializer } from '#users/infrastructure/serializers/user.serialize
 export default class IndexUserController {
   constructor(private readonly useCase: IndexUserUseCase) {}
 
-  async handle({ response }: HttpContext): Promise<void> {
+  async handle({ response, logger }: HttpContext): Promise<void> {
+    logger.info({}, 'IndexUserController called')
     const users = await this.useCase.execute()
 
+    logger.info({ count: users.length }, 'IndexUserController completed successfully')
     response.ok({
       users: UserSerializer.collection(users),
     })

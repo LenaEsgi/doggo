@@ -7,10 +7,12 @@ import { extractBearerToken } from '#auth/infrastructure/http/helpers/extract-be
 export default class DeleteAccountAuthController {
   constructor(private readonly useCase: DeleteAccountAuthUseCase) {}
 
-  async handle({ request, response }: HttpContext) {
+  async handle({ request, response, logger }: HttpContext) {
+    logger.info({}, 'DeleteAccountAuthController called')
     const payload = { idToken: extractBearerToken(request) }
     await this.useCase.execute(payload)
 
+    logger.info({}, 'DeleteAccountAuthController completed successfully')
     return response.ok({
       message: 'Account deleted successfully',
     })

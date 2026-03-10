@@ -8,13 +8,15 @@ import { showUserParamValidator } from '#users/infrastructure/http/validators/sh
 export default class ShowUserController {
   constructor(private readonly useCase: ShowUserUseCase) {}
 
-  async handle({ request, response }: HttpContext): Promise<void> {
+  async handle({ request, response, logger }: HttpContext): Promise<void> {
     const { id } = await request.validateUsing(showUserParamValidator, {
       data: request.params(),
     })
 
+    logger.info({ userId: id }, 'ShowUserController called')
     const user = await this.useCase.execute(id)
 
+    logger.info({ userId: id }, 'ShowUserController completed successfully')
     response.ok({
       user: UserSerializer.toJson(user),
     })
