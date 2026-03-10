@@ -1,8 +1,8 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DeleteAccountAuthUseCase } from '#auth/application/usecases/delete-account-auth.use-case'
-import { handleAuthError } from '#auth/infrastructure/http/auth-error-handler'
-import { deleteAccountAuthValidator } from '#auth/infrastructure/http/validators/delete.account.auth.validator'
+import { extractBearerToken } from '#auth/infrastructure/http/helpers/extract-bearer-token'
+import { handleAuthError } from '#auth/infrastructure/http/errors/auth-error-handler'
 
 @inject()
 export default class DeleteAccountAuthController {
@@ -10,7 +10,7 @@ export default class DeleteAccountAuthController {
 
   async handle({ request, response }: HttpContext) {
     try {
-      const payload = await request.validateUsing(deleteAccountAuthValidator)
+      const payload = { idToken: extractBearerToken(request) }
       await this.useCase.execute(payload)
 
       return response.ok({

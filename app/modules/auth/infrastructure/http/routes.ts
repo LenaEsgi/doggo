@@ -1,4 +1,5 @@
 import router from '@adonisjs/core/services/router'
+import { middleware } from '#start/kernel'
 
 const RegisterAuthController = () =>
   import('#auth/infrastructure/http/controllers/register.auth.controller')
@@ -29,6 +30,8 @@ router
     router.post('/2fa/verify', [FinalizeTotpSetupAuthController, 'handle'])
     router.post('/2fa/enrollments', [ListMfaEnrollmentsAuthController, 'handle'])
     router.delete('/2fa', [DisableMfaAuthController, 'handle'])
-    router.delete('/account', [DeleteAccountAuthController, 'handle'])
+    router
+      .delete('/account', [DeleteAccountAuthController, 'handle'])
+      .use(middleware.firebaseAuth())
   })
   .prefix('/auth')

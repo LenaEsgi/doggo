@@ -21,7 +21,10 @@ test('StartTotpSetupAuthController returns setup payload', async ({ assert }) =>
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({
-    request: { validateUsing: async () => ({ idToken: 'id-token' }) },
+    request: {
+      validateUsing: async () => ({}),
+      header: (name: string) => (name === 'authorization' ? 'Bearer id-token' : null),
+    },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
   } as any)
 

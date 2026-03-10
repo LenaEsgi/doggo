@@ -1,7 +1,8 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DisableMfaAuthUseCase } from '#auth/application/usecases/disable-mfa-auth.use-case'
-import { handleAuthError } from '#auth/infrastructure/http/auth-error-handler'
+import { extractBearerToken } from '#auth/infrastructure/http/helpers/extract-bearer-token'
+import { handleAuthError } from '#auth/infrastructure/http/errors/auth-error-handler'
 import { disableMfaAuthValidator } from '#auth/infrastructure/http/validators/disable.mfa.auth.validator'
 
 @inject()
@@ -10,7 +11,8 @@ export default class DisableMfaAuthController {
 
   async handle({ request, response }: HttpContext) {
     try {
-      const payload = await request.validateUsing(disableMfaAuthValidator)
+      const body = await request.validateUsing(disableMfaAuthValidator)
+      const payload = { ...body, idToken: extractBearerToken(request) }
       const result = await this.useCase.execute(payload)
 
       return response.ok({
