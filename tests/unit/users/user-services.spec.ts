@@ -1,5 +1,4 @@
 import { test } from '@japa/runner'
-import { DeleteUserUseCase } from '#users/application/usecases/delete-user.use-case'
 import { IndexUserUseCase } from '#users/application/usecases/index-user.use-case'
 import { ShowUserUseCase } from '#users/application/usecases/show-user.use-case'
 import { UpdateUserUseCase } from '#users/application/usecases/update-user.use-case'
@@ -86,14 +85,5 @@ test.group('User use cases', () => {
     assert.equal(updated!.email, 'old@mail.com')
     assert.equal(updated!.role, UserRole.ADMIN)
     assert.lengthOf(writeRepo.updated, 1)
-  })
-
-  test('DeleteUserUseCase throws when user does not exist', async ({ assert }) => {
-    const readRepo = new FakeUserReadRepository([])
-    const writeRepo = new FakeUserWriteRepository()
-    const useCase = new DeleteUserUseCase(readRepo, writeRepo)
-
-    await assert.rejects(() => useCase.execute('missing'), InvalidUserNotFoundError)
-    assert.lengthOf(writeRepo.deletedIds, 0)
   })
 })
