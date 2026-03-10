@@ -1,7 +1,6 @@
 import { MissionRepository } from '../../domain/contracts/mission.repository.js'
 import { CreateMissionDto } from '../dto/create-mission.dto.js'
 import { inject } from '@adonisjs/core'
-import { CreateMissionUseCase } from '../contracts/create-mission.use-case.js'
 import logger from '@adonisjs/core/services/logger'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
@@ -11,7 +10,7 @@ import { UserGateway } from '../contracts/user.gateway.ts'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 
 @inject()
-export class CreateMissionUseCaseImplementation implements CreateMissionUseCase {
+export class CreateMissionUseCase {
   constructor(
     private missionRepository: MissionRepository,
     private robotDogGateway: RobotDogGateway,

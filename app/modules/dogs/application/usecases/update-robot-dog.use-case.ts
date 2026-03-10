@@ -3,11 +3,10 @@ import { UpdateRobotDogDto } from '../DTO/update-robot-dog.dto.js'
 import { RobotDogId } from '../../domain/value-objects/robot-dog-id.js'
 import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
 import { inject } from '@adonisjs/core'
-import { UpdateRobotDogUseCase } from '../contracts/update-robot-dog.use-case.js'
 import logger from '@adonisjs/core/services/logger'
 
 @inject()
-export class UpdateRobotDogUseCaseImplementation implements UpdateRobotDogUseCase {
+export class UpdateRobotDogUseCase {
   constructor(private readonly robotDogRepository: RobotDogRepository) {}
 
   async execute(dto: UpdateRobotDogDto): Promise<void> {

@@ -1,9 +1,9 @@
 import { inject } from '@adonisjs/core'
-import { UpdateRobotDogUseCase } from '../../../application/contracts/update-robot-dog.use-case.js'
 import { HttpContext } from '@adonisjs/core/http'
 import { UpdateRobotDogValidator } from '../validators/update-robot-dog.validator.js'
 import { UpdateRobotDogDto } from '../../../application/DTO/update-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../../domain/exceptions/robot-dog-not-found.error.js'
+import { UpdateRobotDogUseCase } from '#dogs/application/usecases/update-robot-dog.use-case'
 
 @inject()
 export default class UpdateRobotDogController {

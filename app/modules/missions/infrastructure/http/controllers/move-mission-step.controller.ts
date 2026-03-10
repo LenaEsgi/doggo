@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import { MoveMissionStepUseCase } from '#app/modules/missions/application/contracts/move-mission-step.use-case'
 import { MoveMissionStepValidator } from '#app/modules/missions/infrastructure/http/validators/move-mission-step.validator'
+import { MoveMissionStepUseCase } from '#app/modules/missions/application/usecases/move-mission-step.use-case'
 
 @inject()
 export default class MoveMissionStepController {

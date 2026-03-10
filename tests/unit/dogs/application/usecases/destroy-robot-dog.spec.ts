@@ -1,16 +1,16 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
-import { DestroyRobotDogUseCaseImplementation } from '#dogs/application/usecases/destroy-robot-dog.use-case.implementation'
+import { DestroyRobotDogUseCase } from '#dogs/application/usecases/destroy-robot-dog.use-case'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 
 test.group('DestroyRobotDogUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
-  let useCase: DestroyRobotDogUseCaseImplementation
+  let useCase: DestroyRobotDogUseCase
 
   group.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
-    useCase = new DestroyRobotDogUseCaseImplementation(fakeRepo)
+    useCase = new DestroyRobotDogUseCase(fakeRepo)
   })
 
   test('should delete a robot dog if it exists', async ({ assert }) => {

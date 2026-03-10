@@ -1,5 +1,5 @@
 import { test } from '@japa/runner'
-import { CreateMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/create-mission.use-case.implementation'
+import { CreateMissionUseCase } from '#app/modules/missions/application/usecases/create-mission.use-case'
 import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
@@ -10,14 +10,14 @@ test.group('CreateMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository
   let robotGateway: FakeRobotDogGateway
   let userGateway: FakeUserGateway
-  let useCase: CreateMissionUseCaseImplementation
+  let useCase: CreateMissionUseCase
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
     robotGateway = new FakeRobotDogGateway()
     userGateway = new FakeUserGateway()
 
-    useCase = new CreateMissionUseCaseImplementation(missionRepo, robotGateway, userGateway)
+    useCase = new CreateMissionUseCase(missionRepo, robotGateway, userGateway)
   })
 
   test('should create and save a mission when robot and user exist', async ({ assert }) => {

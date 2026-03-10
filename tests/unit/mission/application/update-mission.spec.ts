@@ -1,16 +1,16 @@
 import { test } from '@japa/runner'
-import { UpdateMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/update-mission.use-case.implementation'
+import { UpdateMissionUseCase } from '#app/modules/missions/application/usecases/update-mission.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 
 test.group('UpdateMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository
-  let useCase: UpdateMissionUseCaseImplementation
+  let useCase: UpdateMissionUseCase
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
-    useCase = new UpdateMissionUseCaseImplementation(missionRepo)
+    useCase = new UpdateMissionUseCase(missionRepo)
   })
 
   test('should update mission name successfully', async ({ assert }) => {

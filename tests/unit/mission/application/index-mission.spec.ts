@@ -1,15 +1,15 @@
 import { test } from '@japa/runner'
-import { IndexMissionUseCaseImplementation } from '#app/modules/missions/application/usecases/index-mission.use-case.implementation'
+import { IndexMissionUseCase } from '#app/modules/missions/application/usecases/index-mission.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 
 test.group('IndexMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository
-  let useCase: IndexMissionUseCaseImplementation
+  let useCase: IndexMissionUseCase
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
-    useCase = new IndexMissionUseCaseImplementation(missionRepo)
+    useCase = new IndexMissionUseCase(missionRepo)
   })
 
   test('should return a paginated list of missions', async ({ assert }) => {

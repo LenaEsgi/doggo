@@ -1,5 +1,5 @@
 import { test } from '@japa/runner'
-import { MoveMissionStepUseCaseImplementation } from '#app/modules/missions/application/usecases/move-mission-step.use-case.implementation'
+import { MoveMissionStepUseCase } from '#app/modules/missions/application/usecases/move-mission-step.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
@@ -8,7 +8,7 @@ test.group('MoveMissionStepUseCase', () => {
   test('should move a step and reorder other steps accordingly', async ({ assert }) => {
     // --- ARRANGE ---
     const repo = new FakeMissionRepository()
-    const useCase = new MoveMissionStepUseCaseImplementation(repo)
+    const useCase = new MoveMissionStepUseCase(repo)
 
     // 1. Create a mission with 3 steps (Initial Orders: 1, 2, 3)
     const mission = Mission.create('Night Patrol', 'user-001')
@@ -54,7 +54,7 @@ test.group('MoveMissionStepUseCase', () => {
   test('should throw MissionNotFoundError when mission does not exist', async ({ assert }) => {
     // --- ARRANGE ---
     const repo = new FakeMissionRepository()
-    const useCase = new MoveMissionStepUseCaseImplementation(repo)
+    const useCase = new MoveMissionStepUseCase(repo)
     const validUuid = '550e8400-e29b-41d4-a716-446655440000'
 
     const dto = {

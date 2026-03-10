@@ -1,16 +1,16 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
-import { CreateRobotDogUseCaseImplementation } from '#dogs/application/usecases/create-robot-dog.use-case.implementation'
+import { CreateRobotDogUseCase } from '#dogs/application/usecases/create-robot-dog.use-case'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
 
 test.group('CreateRobotDogUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
-  let useCase: CreateRobotDogUseCaseImplementation
+  let useCase: CreateRobotDogUseCase
 
   group.each.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
-    useCase = new CreateRobotDogUseCaseImplementation(fakeRepo)
+    useCase = new CreateRobotDogUseCase(fakeRepo)
   })
 
   test('should create and save a robot dog', async ({ assert }) => {

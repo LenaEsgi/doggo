@@ -1,15 +1,15 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
-import { IndexRobotDogsUseCaseImplementation } from '#dogs/application/usecases/index-robot-dogs.use-case.implementation'
+import { IndexRobotDogsUseCase } from '#dogs/application/usecases/index-robot-dogs.use-case'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 
 test.group('ListRobotDogsUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
-  let useCase: IndexRobotDogsUseCaseImplementation
+  let useCase: IndexRobotDogsUseCase
 
   group.each.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
-    useCase = new IndexRobotDogsUseCaseImplementation(fakeRepo)
+    useCase = new IndexRobotDogsUseCase(fakeRepo)
   })
 
   test('should return paginated robot dogs', async ({ assert }) => {

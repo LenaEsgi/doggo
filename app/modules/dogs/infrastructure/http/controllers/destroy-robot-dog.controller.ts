@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
-import { DestroyRobotDogUseCase } from '../../../application/contracts/destroy-robot-dog.use-case.js'
 import { RobotDogNotFoundError } from '../../../domain/exceptions/robot-dog-not-found.error.js'
 import { HttpContext } from '@adonisjs/core/http'
+import { DestroyRobotDogUseCase } from '#dogs/application/usecases/destroy-robot-dog.use-case'
 
 @inject()
 export default class DeleteRobotDogController {
