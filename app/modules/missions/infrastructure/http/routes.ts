@@ -1,4 +1,5 @@
 import router from '@adonisjs/core/services/router'
+import { middleware } from '#start/kernel'
 const CreateMissionController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/create-mission.controller')
 const ShowMissionController = () =>
@@ -30,3 +31,4 @@ router
     router.put('/:missionId/steps/:stepId', [MoveMissionStepController])
   })
   .prefix('/missions')
+  .use(middleware.firebaseAuth())
