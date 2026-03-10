@@ -13,6 +13,7 @@ test('PasswordResetAuthController returns success message', async ({ assert }) =
   await controller.handle({
     request: { validateUsing: async () => ({ email: 'john@example.com' }) },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
+    logger: { info: () => {} },
   } as any)
 
   assert.equal(out.status, 200)

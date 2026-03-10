@@ -23,6 +23,7 @@ test('IndexUserController returns users list', async ({ assert }) => {
         return body
       },
     },
+    logger: { info: () => {} },
   } as any)
 
   assert.equal(result.status, 200)

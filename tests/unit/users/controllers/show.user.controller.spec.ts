@@ -36,6 +36,7 @@ test('ShowUserController returns 200 when found', async ({ assert }) => {
         result.body = body
       },
     },
+    logger: { info: () => {} },
   } as any)
 
   assert.equal(result.status, 200)
@@ -55,6 +56,7 @@ test('ShowUserController returns 404 when missing', async ({ assert }) => {
         response: {
           ok: () => {},
         },
+        logger: { info: () => {} },
       } as any),
     InvalidUserNotFoundError
   )
