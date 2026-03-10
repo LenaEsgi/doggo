@@ -1,8 +1,8 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { StartTotpSetupAuthUseCase } from '#auth/application/usecases/start-totp-setup-auth.use-case'
-import { handleAuthError } from '#auth/infrastructure/http/auth-error-handler'
-import { startTotpSetupAuthValidator } from '#auth/infrastructure/http/validators/start.totp.setup.auth.validator'
+import { extractBearerToken } from '#auth/infrastructure/http/helpers/extract-bearer-token'
+import { handleAuthError } from '#auth/infrastructure/http/errors/auth-error-handler'
 
 @inject()
 export default class StartTotpSetupAuthController {
@@ -10,7 +10,7 @@ export default class StartTotpSetupAuthController {
 
   async handle({ request, response }: HttpContext) {
     try {
-      const payload = await request.validateUsing(startTotpSetupAuthValidator)
+      const payload = { idToken: extractBearerToken(request) }
       const result = await this.useCase.execute(payload)
 
       return response.ok({

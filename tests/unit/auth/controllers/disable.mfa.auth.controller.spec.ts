@@ -14,7 +14,10 @@ test('DisableMfaAuthController returns success payload', async ({ assert }) => {
   const out: { status?: number; body?: any } = {}
 
   await controller.handle({
-    request: { validateUsing: async () => ({ idToken: 'id-token', mfaEnrollmentId: 'm1' }) },
+    request: {
+      validateUsing: async () => ({ mfaEnrollmentId: 'm1' }),
+      header: (name: string) => (name === 'authorization' ? 'Bearer id-token' : null),
+    },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
   } as any)
 

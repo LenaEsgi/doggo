@@ -18,10 +18,10 @@ test('FinalizeTotpSetupAuthController returns success payload', async ({ assert 
   await controller.handle({
     request: {
       validateUsing: async () => ({
-        idToken: 'id-token',
         sessionInfo: 'session',
         verificationCode: '123456',
       }),
+      header: (name: string) => (name === 'authorization' ? 'Bearer id-token' : null),
     },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
   } as any)

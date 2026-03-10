@@ -65,7 +65,7 @@ export default defineConfig({
     () => import('#providers/robot_dog_provider'),
     () => import('#providers/user_provider'),
     () => import('#providers/action_provider'),
-    () => import('#providers/firebase_provider')
+    () => import('#providers/firebase_provider'),
   ],
 
   /*

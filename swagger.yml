@@ -92,12 +92,6 @@ paths:
       tags:
         - Authentication
       summary: Start TOTP enrollment setup
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IdTokenRequest'
       responses:
         '200':
           description: TOTP setup data (including otpauth URI)
@@ -128,12 +122,6 @@ paths:
       tags:
         - Authentication
       summary: List current MFA enrollments
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IdTokenRequest'
       responses:
         '200':
           description: Enrollment list
@@ -164,12 +152,6 @@ paths:
       tags:
         - Authentication
       summary: Delete current account (Firebase + local DB)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IdTokenRequest'
       responses:
         '200':
           description: Account deleted
@@ -354,24 +336,12 @@ components:
           type: string
           format: email
           example: robotdogprojetannuel@yopmail.com
-    IdTokenRequest:
-      type: object
-      required:
-        - idToken
-      properties:
-        idToken:
-          type: string
-          example: eyJhbGciOi...
     TotpVerifyRequest:
       type: object
       required:
-        - idToken
         - sessionInfo
         - verificationCode
       properties:
-        idToken:
-          type: string
-          example: eyJhbGciOi...
         sessionInfo:
           type: string
           example: SESSION_INFO
@@ -384,12 +354,8 @@ components:
     DisableMfaRequest:
       type: object
       required:
-        - idToken
         - mfaEnrollmentId
       properties:
-        idToken:
-          type: string
-          example: eyJhbGciOi...
         mfaEnrollmentId:
           type: string
           example: enrollment-id

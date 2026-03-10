@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { LoginWithTotpAuthUseCase } from '#auth/application/usecases/login-with-totp-auth.use-case'
-import { handleAuthError } from '#auth/infrastructure/http/auth-error-handler'
+import { handleAuthError } from '#auth/infrastructure/http/errors/auth-error-handler'
 import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer'
 import { loginWithTotpAuthValidator } from '#auth/infrastructure/http/validators/login.with.totp.auth.validator'
 
