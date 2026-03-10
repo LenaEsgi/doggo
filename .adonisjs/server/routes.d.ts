@@ -7,7 +7,6 @@ export type ScannedRoutes = {
     'index_user': { paramsTuple?: []; params?: {} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'delete_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'register_auth': { paramsTuple?: []; params?: {} }
     'login_auth': { paramsTuple?: []; params?: {} }
     'login_with_totp_auth': { paramsTuple?: []; params?: {} }
@@ -60,15 +59,6 @@ export type ScannedRoutes = {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
-  DELETE: {
-    'delete_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'disable_mfa_auth': { paramsTuple?: []; params?: {} }
-    'delete_account_auth': { paramsTuple?: []; params?: {} }
-    'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
-    'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
   POST: {
     'register_auth': { paramsTuple?: []; params?: {} }
     'login_auth': { paramsTuple?: []; params?: {} }
@@ -81,6 +71,14 @@ export type ScannedRoutes = {
     'create_mission': { paramsTuple?: []; params?: {} }
     'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
+  }
+  DELETE: {
+    'disable_mfa_auth': { paramsTuple?: []; params?: {} }
+    'delete_account_auth': { paramsTuple?: []; params?: {} }
+    'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
