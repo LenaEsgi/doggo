@@ -1,6 +1,8 @@
 import { HttpContext } from '@adonisjs/core/http'
 import { BaseSerializer } from '@adonisjs/core/transformers'
 import { type SimplePaginatorMetaKeys } from '@adonisjs/lucid/types/querybuilder'
+import {AuthenticatedFirebaseUser} from "#middleware/auth/types/authenticated-firebase-user";
+import type {User} from "#users/domain/user.entity";
 
 /**
  * Custom serializer for API responses that ensures consistent JSON structure
@@ -56,5 +58,7 @@ HttpContext.instanceProperty('serialize', serialize)
 declare module '@adonisjs/core/http' {
   export interface HttpContext {
     serialize: typeof serialize
+    firebaseUser: AuthenticatedFirebaseUser
+    user: User
   }
 }
