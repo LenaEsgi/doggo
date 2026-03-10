@@ -1,4 +1,5 @@
 import router from '@adonisjs/core/services/router'
+import { middleware } from '#start/kernel'
 
 const CreateActionController = () =>
   import('#app/modules/actions/infrastructure/http/controllers/create-action.controller')
@@ -24,3 +25,4 @@ router
     router.patch('/:id', [UpdateController])
   })
   .prefix('/actions')
+  .use(middleware.firebaseAuth)

@@ -25,11 +25,19 @@ router
     router.post('/register', [RegisterAuthController, 'handle'])
     router.post('/login', [LoginAuthController, 'handle'])
     router.post('/login/2fa', [LoginWithTotpAuthController, 'handle'])
-    router.post('/password-reset', [PasswordResetAuthController, 'handle'])
-    router.post('/2fa/setup', [StartTotpSetupAuthController, 'handle'])
-    router.post('/2fa/verify', [FinalizeTotpSetupAuthController, 'handle'])
-    router.post('/2fa/enrollments', [ListMfaEnrollmentsAuthController, 'handle'])
-    router.delete('/2fa', [DisableMfaAuthController, 'handle'])
+    router
+      .post('/password-reset', [PasswordResetAuthController, 'handle'])
+      .use(middleware.firebaseAuth())
+    router
+      .post('/2fa/setup', [StartTotpSetupAuthController, 'handle'])
+      .use(middleware.firebaseAuth())
+    router
+      .post('/2fa/verify', [FinalizeTotpSetupAuthController, 'handle'])
+      .use(middleware.firebaseAuth())
+    router
+      .post('/2fa/enrollments', [ListMfaEnrollmentsAuthController, 'handle'])
+      .use(middleware.firebaseAuth())
+    router.delete('/2fa', [DisableMfaAuthController, 'handle']).use(middleware.firebaseAuth())
     router
       .delete('/account', [DeleteAccountAuthController, 'handle'])
       .use(middleware.firebaseAuth())

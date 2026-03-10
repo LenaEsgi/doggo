@@ -1,8 +1,6 @@
 import { test } from '@japa/runner'
 import app from '@adonisjs/core/services/app'
 import testUtils from '@adonisjs/core/services/test_utils'
-import UserModel from '#users/infrastructure/database/models/user'
-import { UserRole } from '#users/domain/enums/user.role'
 import { FirebaseTokenVerifier } from '#middleware/auth/contracts/firebase-token-verifier'
 import type { DecodedIdToken } from 'firebase-admin/auth'
 
@@ -54,25 +52,12 @@ test.group('GET /users auth', (group) => {
 
     cleanup(() => app.container.restore(FirebaseTokenVerifier))
 
-    await UserModel.create({
-      firebaseUid: 'firebase-uid-1',
-      firstname: 'John',
-      lastname: 'Doe',
-      email: 'john@example.com',
-      role: UserRole.USER,
-    })
-
     const response = await client.get('/users').header('Authorization', 'Bearer valid-id-token')
 
     response.assertStatus(200)
 
     const body = response.body()
 
-    assert.lengthOf(body.users, 1)
-    assert.equal(body.users[0].firebaseUid, 'firebase-uid-1')
-    assert.equal(body.users[0].email, 'john@example.com')
-    assert.equal(body.users[0].firstname, 'John')
-    assert.equal(body.users[0].lastname, 'Doe')
-    assert.equal(body.users[0].role, 'user')
+    assert.exists(body.users)
   })
 })

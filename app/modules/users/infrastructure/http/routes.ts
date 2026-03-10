@@ -12,9 +12,10 @@ const DeleteUserController = () =>
 
 router
   .group(() => {
-    router.get('/', [IndexUserController, 'handle']).use(middleware.firebaseAuth())
+    router.get('/', [IndexUserController, 'handle'])
     router.get('/:id', [ShowUserController, 'handle'])
     router.patch('/:id', [UpdateUserController, 'handle'])
     router.delete('/:id', [DeleteUserController, 'handle'])
   })
   .prefix('/users')
+  .use(middleware.firebaseAuth())
