@@ -2,10 +2,8 @@ import { type LoginAuthProvider } from '#auth/domain/contracts/login.auth.provid
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import type { LoginResult } from '#auth/domain/types/login.result'
 import type { MfaInfo } from '#auth/domain/types/mfa.info'
-import {
-  FirebaseAuthProviderBase,
-  FirebaseHttpError,
-} from '#auth/infrastructure/providers/firebase-auth.base'
+import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase-auth.base'
+import { FirebaseAuthProviderError } from '#auth/domain/exceptions/firebase-auth-provider.error'
 
 export class FirebaseLoginAuthProvider
   extends FirebaseAuthProviderBase
@@ -24,7 +22,11 @@ export class FirebaseLoginAuthProvider
         ...payload,
       }
     } catch (error) {
-      if (error instanceof FirebaseHttpError && error.code === 'MFA_REQUIRED' && error.details) {
+      if (
+        error instanceof FirebaseAuthProviderError &&
+        error.code === 'MFA_REQUIRED' &&
+        error.details
+      ) {
         const details = error.details as Record<string, unknown>
         const mfaInfo = ((details.mfaInfo ?? []) as MfaInfo[]) || []
 

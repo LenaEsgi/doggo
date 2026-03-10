@@ -1,22 +1,6 @@
 import env from '#start/env'
-
-type FirebaseErrorBody = {
-  error?: {
-    message?: string
-    details?: Array<Record<string, unknown>>
-  }
-}
-
-export class FirebaseHttpError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly code: string,
-    public readonly details?: unknown
-  ) {
-    super(message)
-  }
-}
+import { FirebaseAuthProviderError } from '#auth/domain/exceptions/firebase-auth-provider.error'
+import type { FirebaseErrorBody } from '#auth/domain/types/firebase-error-body'
 
 export abstract class FirebaseAuthProviderBase {
   protected readonly apiKey = env.get('FIREBASE_API_KEY')
@@ -63,56 +47,9 @@ export abstract class FirebaseAuthProviderBase {
         ? (errorBody.error?.details?.[0] as Record<string, unknown>)
         : undefined
 
-      throw new FirebaseHttpError(
-        this.messageFromCode(firebaseCode),
-        this.statusFromCode(firebaseCode),
-        firebaseCode,
-        details
-      )
+      throw new FirebaseAuthProviderError(firebaseCode, details)
     }
 
     return (await response.json()) as T
-  }
-
-  private statusFromCode(code: string): number {
-    const map: Record<string, number> = {
-      EMAIL_EXISTS: 409,
-      EMAIL_NOT_FOUND: 404,
-      INVALID_PASSWORD: 401,
-      USER_DISABLED: 403,
-      INVALID_ID_TOKEN: 401,
-      TOKEN_EXPIRED: 401,
-      MFA_REQUIRED: 401,
-      INVALID_VERIFICATION_CODE: 401,
-      INVALID_SESSION_INFO: 400,
-      INVALID_MFA_PENDING_CREDENTIAL: 401,
-      TOO_MANY_ATTEMPTS_TRY_LATER: 429,
-      OPERATION_NOT_ALLOWED: 403,
-      WEAK_PASSWORD: 400,
-      INVALID_EMAIL: 400,
-    }
-
-    return map[code] ?? 400
-  }
-
-  private messageFromCode(code: string): string {
-    const map: Record<string, string> = {
-      EMAIL_EXISTS: 'An account with this email already exists',
-      EMAIL_NOT_FOUND: 'No account found with this email',
-      INVALID_PASSWORD: 'Invalid credentials',
-      USER_DISABLED: 'This account is disabled',
-      INVALID_ID_TOKEN: 'Invalid authentication token',
-      TOKEN_EXPIRED: 'Authentication token expired',
-      MFA_REQUIRED: 'Two-factor authentication is required',
-      INVALID_VERIFICATION_CODE: 'Invalid verification code',
-      INVALID_SESSION_INFO: 'Invalid MFA session information',
-      INVALID_MFA_PENDING_CREDENTIAL: 'Invalid pending MFA credential',
-      TOO_MANY_ATTEMPTS_TRY_LATER: 'Too many attempts, please retry later',
-      OPERATION_NOT_ALLOWED: 'This operation is not enabled in Firebase',
-      WEAK_PASSWORD: 'Password is too weak',
-      INVALID_EMAIL: 'Invalid email address',
-    }
-
-    return map[code] ?? 'Firebase authentication request failed'
   }
 }

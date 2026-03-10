@@ -1,9 +1,7 @@
 import { type LoginWithTotpAuthProvider } from '#auth/domain/contracts/login.with.totp.auth.provider'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
-import {
-  FirebaseAuthProviderBase,
-  FirebaseHttpError,
-} from '#auth/infrastructure/providers/firebase-auth.base'
+import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase-auth.base'
+import { FirebaseAuthProviderError } from '#auth/domain/exceptions/firebase-auth-provider.error'
 
 export class FirebaseLoginWithTotpAuthProvider
   extends FirebaseAuthProviderBase
@@ -26,11 +24,7 @@ export class FirebaseLoginWithTotpAuthProvider
     const sessionInfo = start.totpSessionInfo?.sessionInfo
 
     if (!sessionInfo) {
-      throw new FirebaseHttpError(
-        'Firebase did not return MFA session information',
-        502,
-        'MFA_SESSION_MISSING'
-      )
+      throw new FirebaseAuthProviderError('MFA_SESSION_MISSING')
     }
 
     return this.request<AuthTokens>('v2/accounts/mfaSignIn:finalize', {

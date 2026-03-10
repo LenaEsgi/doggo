@@ -1,15 +1,15 @@
 import { test } from '@japa/runner'
-import { FirebaseHttpError } from '#auth/infrastructure/providers/firebase-auth.base'
 import type { RegisterDto } from '#auth/application/dto/register.dto'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import RegisterAuthController from '#auth/infrastructure/http/controllers/register.auth.controller'
+import { FirebaseAuthProviderError } from '#auth/domain/exceptions/firebase-auth-provider.error'
 
 class FakeRegisterAuthUseCase {
   constructor(private readonly shouldThrow = false) {}
 
   async execute(_payload: RegisterDto): Promise<AuthTokens> {
     if (this.shouldThrow) {
-      throw new FirebaseHttpError('An account with this email already exists', 409, 'EMAIL_EXISTS')
+      throw new FirebaseAuthProviderError('EMAIL_EXISTS')
     }
 
     return {
@@ -71,6 +71,6 @@ test('RegisterAuthController maps firebase errors', async ({ assert }) => {
         response: {},
         logger: { info: () => {} },
       } as any),
-    FirebaseHttpError
+    FirebaseAuthProviderError
   )
 })
