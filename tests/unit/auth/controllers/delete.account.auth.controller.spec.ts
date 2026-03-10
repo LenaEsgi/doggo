@@ -19,6 +19,6 @@ test('DeleteAccountAuthController returns success payload', async ({ assert }) =
     logger: { info: () => {} },
   } as any)
 
-  assert.equal(out.status, 200)
+  assert.equal(out.status, 201)
   assert.equal(out.body.message, 'Account deleted successfully')
 })
