@@ -15,6 +15,7 @@ export class RegisterAuthUseCase {
     const authUser = await this.authProvider.register(payload.email, payload.password)
 
     await this.localUserRepository.ensureUserProfile({
+      firebaseUid: authUser.localId,
       firstname: payload.firstname,
       lastname: payload.lastname,
       email: payload.email,

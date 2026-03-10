@@ -2,11 +2,16 @@ import { test } from '@japa/runner'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import UpdateUserController from '#users/infrastructure/http/controllers/update.user.controller'
+import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 
 class FakeUpdateUserUseCase {
   constructor(private readonly result: User | null) {}
 
   async execute() {
+    if (!this.result) {
+      throw new InvalidUserNotFoundError('7b27cc5b-e591-48f2-85ba-f29f96eb9971')
+    }
+
     return this.result
   }
 }
@@ -14,7 +19,7 @@ class FakeUpdateUserUseCase {
 test('UpdateUserController returns 200 when updated', async ({ assert }) => {
   const controller = new UpdateUserController(
     new FakeUpdateUserUseCase(
-      User.rehydrate('u1', 'jane@example.com', 'Jane', 'Doe', UserRole.ADMIN)
+      User.rehydrate('u1', 'firebase-uid-jane', 'jane@example.com', 'Jane', 'Doe', UserRole.ADMIN)
     ) as any
   )
 
@@ -36,10 +41,6 @@ test('UpdateUserController returns 200 when updated', async ({ assert }) => {
         result.status = 200
         result.body = body
       },
-      notFound: (body: any) => {
-        result.status = 404
-        result.body = body
-      },
     },
   } as any)
 
@@ -50,30 +51,24 @@ test('UpdateUserController returns 200 when updated', async ({ assert }) => {
 
 test('UpdateUserController returns 404 when missing', async ({ assert }) => {
   const controller = new UpdateUserController(new FakeUpdateUserUseCase(null) as any)
-
-  const result: { status?: number; body?: any } = {}
   let call = 0
 
-  await controller.handle({
-    request: {
-      params: () => ({ id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' }),
-      validateUsing: async () => {
-        call += 1
-        return call === 1 ? { id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' } : { firstname: 'Jane' }
-      },
-    },
-    response: {
-      ok: (body: any) => {
-        result.status = 200
-        result.body = body
-      },
-      notFound: (body: any) => {
-        result.status = 404
-        result.body = body
-      },
-    },
-  } as any)
-
-  assert.equal(result.status, 404)
-  assert.equal(result.body.error, 'USER_NOT_FOUND')
+  await assert.rejects(
+    () =>
+      controller.handle({
+        request: {
+          params: () => ({ id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' }),
+          validateUsing: async () => {
+            call += 1
+            return call === 1
+              ? { id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' }
+              : { firstname: 'Jane' }
+          },
+        },
+        response: {
+          ok: () => {},
+        },
+      } as any),
+    InvalidUserNotFoundError
+  )
 })

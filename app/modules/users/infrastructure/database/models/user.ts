@@ -9,6 +9,9 @@ export default class UserModel extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
+  @column({ columnName: 'firebase_uid' })
+  declare firebaseUid: string
+
   @column()
   declare firstname: string
 

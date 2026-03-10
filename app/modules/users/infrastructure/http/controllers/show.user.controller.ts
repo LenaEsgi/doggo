@@ -15,14 +15,6 @@ export default class ShowUserController {
 
     const user = await this.useCase.execute(id)
 
-    if (!user) {
-      response.notFound({
-        error: 'USER_NOT_FOUND',
-        message: 'User not found',
-      })
-      return
-    }
-
     response.ok({
       user: UserSerializer.toJson(user),
     })

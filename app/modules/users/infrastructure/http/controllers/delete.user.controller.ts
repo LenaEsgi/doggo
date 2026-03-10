@@ -12,15 +12,7 @@ export default class DeleteUserController {
       data: request.params(),
     })
 
-    const isDeleted = await this.useCase.execute(id)
-
-    if (!isDeleted) {
-      response.notFound({
-        error: 'USER_NOT_FOUND',
-        message: 'User not found',
-      })
-      return
-    }
+    await this.useCase.execute(id)
 
     response.ok({
       message: 'User deleted successfully',

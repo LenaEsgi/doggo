@@ -3,13 +3,15 @@ import UserModel from '#users/infrastructure/database/models/user'
 
 export class LocalUserRepositoryImplementation extends LocalUserRepository {
   async ensureUserProfile(payload: {
+    firebaseUid: string
     firstname: string
     lastname: string
     email: string
   }): Promise<void> {
-    await UserModel.firstOrCreate(
-      { email: payload.email },
+    await UserModel.updateOrCreate(
+      { firebaseUid: payload.firebaseUid },
       {
+        firebaseUid: payload.firebaseUid,
         firstname: payload.firstname,
         lastname: payload.lastname,
         email: payload.email,

@@ -1,6 +1,7 @@
 import { inject } from '@adonisjs/core'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
+import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 
 @inject()
 export class DeleteUserUseCase {
@@ -9,14 +10,13 @@ export class DeleteUserUseCase {
     private readonly userWriteRepository: UserWriteRepository
   ) {}
 
-  async execute(id: string): Promise<boolean> {
+  async execute(id: string): Promise<void> {
     const user = await this.userReadRepository.findById(id)
 
     if (!user) {
-      return false
+      throw new InvalidUserNotFoundError(id)
     }
 
     await this.userWriteRepository.delete(id)
-    return true
   }
 }

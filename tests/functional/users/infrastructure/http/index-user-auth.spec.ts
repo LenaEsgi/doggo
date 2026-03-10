@@ -55,6 +55,7 @@ test.group('GET /users auth', (group) => {
     cleanup(() => app.container.restore(FirebaseTokenVerifier))
 
     await UserModel.create({
+      firebaseUid: 'firebase-uid-1',
       firstname: 'John',
       lastname: 'Doe',
       email: 'john@example.com',
@@ -68,6 +69,7 @@ test.group('GET /users auth', (group) => {
     const body = response.body()
 
     assert.lengthOf(body.users, 1)
+    assert.equal(body.users[0].firebaseUid, 'firebase-uid-1')
     assert.equal(body.users[0].email, 'john@example.com')
     assert.equal(body.users[0].firstname, 'John')
     assert.equal(body.users[0].lastname, 'Doe')

@@ -5,6 +5,7 @@ export class UserSerializer {
   static toJson(user: User) {
     return {
       id: user.id,
+      //firebaseUid: user.firebaseUid,
       email: user.email,
       firstname: user.firstname,
       lastname: user.lastname,
