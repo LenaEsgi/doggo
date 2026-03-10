@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { type RegisterDto } from '#auth/application/dto/register.dto'
 import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
 import { RegisterAuthProvider } from '#auth/domain/contracts/register.auth.provider'
@@ -12,6 +13,7 @@ export class RegisterAuthUseCase {
   ) {}
 
   async execute(payload: RegisterDto): Promise<AuthTokens> {
+    logger.info({ email: payload.email }, 'RegisterAuthUseCase started')
     const authUser = await this.authProvider.register(payload.email, payload.password)
 
     await this.localUserRepository.ensureUserProfile({
@@ -20,6 +22,11 @@ export class RegisterAuthUseCase {
       lastname: payload.lastname,
       email: payload.email,
     })
+
+    logger.info(
+      { firebaseUid: authUser.localId, email: payload.email },
+      'RegisterAuthUseCase completed successfully'
+    )
 
     return authUser
   }

@@ -8,10 +8,12 @@ import { loginAuthValidator } from '#auth/infrastructure/http/validators/login.a
 export default class LoginAuthController {
   constructor(private readonly useCase: LoginAuthUseCase) {}
 
-  async handle({ request, response }: HttpContext) {
+  async handle({ request, response, logger }: HttpContext) {
     const payload = await request.validateUsing(loginAuthValidator)
+    logger.info({ email: payload.email }, 'LoginAuthController called')
     const result = await this.useCase.execute(payload)
 
+    logger.info({ email: payload.email }, 'LoginAuthController completed successfully')
     return response.ok(AuthSerializer.loginResult(result))
   }
 }

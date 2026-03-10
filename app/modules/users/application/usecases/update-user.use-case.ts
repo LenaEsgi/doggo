@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { type UpdateUserDto } from '#users/application/dto/update.user.dto'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
@@ -14,9 +15,11 @@ export class UpdateUserUseCase {
   ) {}
 
   async execute(id: string, payload: UpdateUserDto): Promise<User> {
+    logger.info({ userId: id }, 'UpdateUserUseCase started')
     const current = await this.userReadRepository.findById(id)
 
     if (!current) {
+      logger.warn({ userId: id }, 'User not found in UpdateUserUseCase')
       throw new InvalidUserNotFoundError(id)
     }
 
@@ -35,6 +38,8 @@ export class UpdateUserUseCase {
       role
     )
 
-    return this.userWriteRepository.update(updated)
+    const user = await this.userWriteRepository.update(updated)
+    logger.info({ userId: id }, 'UpdateUserUseCase completed successfully')
+    return user
   }
 }

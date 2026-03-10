@@ -8,10 +8,15 @@ import { AuthSerializer } from '#auth/infrastructure/serializers/auth.serializer
 export default class ListMfaEnrollmentsAuthController {
   constructor(private readonly useCase: ListMfaEnrollmentsAuthUseCase) {}
 
-  async handle({ request, response }: HttpContext) {
+  async handle({ request, response, logger }: HttpContext) {
+    logger.info({}, 'ListMfaEnrollmentsAuthController called')
     const payload = { idToken: extractBearerToken(request) }
     const enrollments = await this.useCase.execute(payload)
 
+    logger.info(
+      { count: enrollments.length },
+      'ListMfaEnrollmentsAuthController completed successfully'
+    )
     return response.ok(AuthSerializer.mfaEnrollments(enrollments))
   }
 }

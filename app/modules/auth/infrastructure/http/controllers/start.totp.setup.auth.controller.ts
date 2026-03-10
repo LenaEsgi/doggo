@@ -7,10 +7,12 @@ import { extractBearerToken } from '#auth/infrastructure/http/helpers/extract-be
 export default class StartTotpSetupAuthController {
   constructor(private readonly useCase: StartTotpSetupAuthUseCase) {}
 
-  async handle({ request, response }: HttpContext) {
+  async handle({ request, response, logger }: HttpContext) {
+    logger.info({}, 'StartTotpSetupAuthController called')
     const payload = { idToken: extractBearerToken(request) }
     const result = await this.useCase.execute(payload)
 
+    logger.info({}, 'StartTotpSetupAuthController completed successfully')
     return response.ok({
       message: 'Scan the QR URI in Aegis and confirm with a generated code',
       setup: result,

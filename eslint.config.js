@@ -19,11 +19,7 @@ export default [
     },
   }),
   {
-    files: [
-      'database/migrations/**/*.ts',
-      'providers/*.ts',
-      'app/middleware/*.ts'
-    ],
+    files: ['database/migrations/**/*.ts', 'providers/*.ts', 'app/middleware/*.ts'],
     rules: {
       'unicorn/filename-case': 'off',
     },
