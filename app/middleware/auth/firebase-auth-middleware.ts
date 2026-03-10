@@ -1,7 +1,11 @@
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-import { getAuth } from 'firebase-admin/auth'
+import { FirebaseTokenVerifier } from '#middleware/auth/contracts/firebase-token-verifier'
 
+@inject()
 export default class FirebaseAuthMiddleware {
+  constructor(private readonly tokenVerifier: FirebaseTokenVerifier) {}
+
   async handle(ctx: HttpContext, next: () => Promise<void>) {
     const authHeader = ctx.request.header('authorization')
     const bearerMatch = authHeader?.match(/^Bearer\s+(.+)$/i)
@@ -13,7 +17,7 @@ export default class FirebaseAuthMiddleware {
     const idToken = bearerMatch[1].trim()
 
     try {
-      ;(ctx as any).firebaseUser = await getAuth().verifyIdToken(idToken)
+      ;(ctx as any).firebaseUser = await this.tokenVerifier.handle(idToken)
 
       await next()
     } catch (error) {

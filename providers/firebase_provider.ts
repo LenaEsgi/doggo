@@ -1,6 +1,7 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { DeleteAccountAuthService } from '#auth/application/contracts/delete.account.auth.service'
 import { DisableMfaAuthService } from '#auth/application/contracts/disable.mfa.auth.service'
+import { FirebaseTokenVerifier } from '#middleware/auth/contracts/firebase-token-verifier'
 import { FinalizeTotpSetupAuthService } from '#auth/application/contracts/finalize.totp.setup.auth.service'
 import { ListMfaEnrollmentsAuthService } from '#auth/application/contracts/list.mfa.enrollments.auth.service'
 import { LoginAuthService } from '#auth/application/contracts/login.auth.service'
@@ -28,6 +29,7 @@ import { RegisterAuth } from '#auth/application/services/register.auth.service'
 import { StartTotpSetupAuth } from '#auth/application/services/start.totp.setup.auth.service'
 import { FirebaseDeleteAccountAuthProvider } from '#auth/infrastructure/providers/firebase-delete-account-auth.provider'
 import { FirebaseDisableMfaAuthProvider } from '#auth/infrastructure/providers/firebase-disable-mfa-auth.provider'
+import { FirebaseAdminTokenVerifier } from '#middleware/auth/contracts/firebase-admin-token-verifier'
 import { FirebaseFinalizeTotpSetupAuthProvider } from '#auth/infrastructure/providers/firebase-finalize-totp-setup-auth.provider'
 import { FirebaseListMfaEnrollmentsAuthProvider } from '#auth/infrastructure/providers/firebase-list-mfa-enrollments-auth.provider'
 import { FirebaseLoginAuthProvider } from '#auth/infrastructure/providers/firebase-login-auth.provider'
@@ -43,6 +45,10 @@ export default class FirebaseProvider {
    * Register bindings to the container
    */
   register() {
+    this.app.container.bind(FirebaseTokenVerifier, () => {
+      return this.app.container.make(FirebaseAdminTokenVerifier)
+    })
+
     this.app.container.bind(RegisterAuthProvider, () => {
       return this.app.container.make(FirebaseRegisterAuthProvider)
     })
@@ -99,5 +105,4 @@ export default class FirebaseProvider {
       return this.app.container.make(DeleteAccountAuth)
     })
   }
-
 }
