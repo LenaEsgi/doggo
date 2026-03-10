@@ -12,6 +12,10 @@ export default class RobotDogProvider {
     this.app.container.bind(RobotDogRepository, () => {
       return this.app.container.make(RobotDogRepositoryImplementation)
     })
+
+    this.app.container.bind(RobotDogRepository, () => {
+      return this.app.container.make(RobotDogRepositoryImplementation)
+    })
   }
 
   /**

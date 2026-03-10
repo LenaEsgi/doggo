@@ -1,4 +1,5 @@
 import router from '@adonisjs/core/services/router'
+import { middleware } from '#start/kernel'
 
 const IndexUserController = () =>
   import('#app/modules/users/infrastructure/http/controllers/index.user.controller')
@@ -11,7 +12,7 @@ const DeleteUserController = () =>
 
 router
   .group(() => {
-    router.get('/', [IndexUserController, 'handle'])
+    router.get('/', [IndexUserController, 'handle']).use(middleware.firebaseAuth())
     router.get('/:id', [ShowUserController, 'handle'])
     router.patch('/:id', [UpdateUserController, 'handle'])
     router.delete('/:id', [DeleteUserController, 'handle'])
