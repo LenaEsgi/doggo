@@ -1,4 +1,11 @@
 import type { ApplicationService } from '@adonisjs/core/types'
+import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
+import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/user-ownership.gateway'
+import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
+import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
+import { OwnershipRepositoryImplementation } from '#app/modules/users/ownerships/infrastructure/database/repositories/ownership.repository.implementation'
+import { RobotDogOwnershipGatewayImplementation } from '#app/modules/users/ownerships/infrastructure/gateways/robot-dog-ownership.gateway.implementation'
+import { UserOwnershipGatewayImplementation } from '#app/modules/users/ownerships/infrastructure/gateways/user-ownership.gateway.implementation'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
 import { UserRepositoryImplementation } from '#users/infrastructure/database/repositories/user.repository.implementation'
@@ -22,6 +29,22 @@ export default class UserProvider {
 
     this.app.container.bind(LocalUserRepository, () => {
       return this.app.container.make(LocalUserRepositoryImplementation)
+    })
+
+    this.app.container.bind(UserOwnershipGateway, () => {
+      return this.app.container.make(UserOwnershipGatewayImplementation)
+    })
+
+    this.app.container.bind(RobotDogOwnershipGateway, () => {
+      return this.app.container.make(RobotDogOwnershipGatewayImplementation)
+    })
+
+    this.app.container.bind(OwnershipReadRepository, () => {
+      return this.app.container.make(OwnershipRepositoryImplementation)
+    })
+
+    this.app.container.bind(OwnershipWriteRepository, () => {
+      return this.app.container.make(OwnershipRepositoryImplementation)
     })
   }
 

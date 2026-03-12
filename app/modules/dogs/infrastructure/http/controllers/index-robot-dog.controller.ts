@@ -2,13 +2,13 @@ import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { IndexRobotDogsUseCase } from '#dogs/application/usecases/index-robot-dogs.use-case'
-import RobotDogTransformer from '#dogs/infrastructure/http/transformers/robot-dog.transformer'
+import { RobotDogSerializer } from '#dogs/infrastructure/http/serializers/robot-dog.serializer'
 
 @inject()
 export default class ListRobotDogsController {
   constructor(private listRobotDogs: IndexRobotDogsUseCase) {}
 
-  public async handle({ response, request, logger, serialize }: HttpContext) {
+  public async handle({ response, request, logger }: HttpContext) {
     logger.info({}, 'ListRobotDogsController called')
 
     const params: PaginationDto = {
@@ -18,10 +18,8 @@ export default class ListRobotDogsController {
 
     const robots = await this.listRobotDogs.execute(params)
 
-    const { data } = await serialize(RobotDogTransformer.transform(robots.data))
-
     response.ok({
-      data,
+      data: RobotDogSerializer.collection(robots.data),
       meta: robots.meta,
     })
   }

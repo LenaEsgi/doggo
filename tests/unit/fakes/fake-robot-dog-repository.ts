@@ -1,6 +1,6 @@
 import { type RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
-import { type RobotDogId } from '../../../app/modules/dogs/domain/value-objects/robot-dog-id.js'
+import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
@@ -9,6 +9,10 @@ export class FakeRobotDogRepository extends RobotDogRepository {
 
   async findById(id: RobotDogId) {
     return this.storedDogs.find((d) => d.id.equals(id)) ?? null
+  }
+
+  async findByIds(ids: string[]) {
+    return this.storedDogs.filter((dog) => ids.includes(dog.id.value))
   }
 
   async findAll(options?: FindAllOptions): Promise<PaginatedResult<RobotDog>> {

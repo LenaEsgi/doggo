@@ -1,5 +1,7 @@
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
+import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
+import type { UserWithDogsSummaryDto } from '#users/application/dto/user-with-dogs-summary.dto'
 import { type UpdateUserDto } from '#users/application/dto/update.user.dto'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { UserWriteRepository } from '#users/domain/contracts/user.write.repository'
@@ -11,10 +13,11 @@ import { User } from '#users/domain/user.entity'
 export class UpdateUserUseCase {
   constructor(
     private readonly userReadRepository: UserReadRepository,
-    private readonly userWriteRepository: UserWriteRepository
+    private readonly userWriteRepository: UserWriteRepository,
+    private readonly ownershipReadRepository: OwnershipReadRepository
   ) {}
 
-  async execute(id: string, payload: UpdateUserDto): Promise<User> {
+  async execute(id: string, payload: UpdateUserDto): Promise<UserWithDogsSummaryDto> {
     logger.info({ userId: id }, 'UpdateUserUseCase started')
     const current = await this.userReadRepository.findById(id)
 
@@ -39,7 +42,11 @@ export class UpdateUserUseCase {
     )
 
     const user = await this.userWriteRepository.update(updated)
+    const dogsCountByUserId = await this.ownershipReadRepository.countActiveDogsByUserIds([id])
     logger.info({ userId: id }, 'UpdateUserUseCase completed successfully')
-    return user
+    return {
+      user,
+      dogsCount: dogsCountByUserId[id] ?? 0,
+    }
   }
 }

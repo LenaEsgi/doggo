@@ -1,19 +1,22 @@
-import { type User } from '#users/domain/user.entity'
+import type { UserWithDogsSummaryDto } from '#users/application/dto/user-with-dogs-summary.dto'
 import { UserRole } from '#users/domain/enums/user.role'
 
 export class UserSerializer {
-  static toJson(user: User) {
+  static toJson(summary: UserWithDogsSummaryDto) {
     return {
-      id: user.id,
-      //firebaseUid: user.firebaseUid,
-      email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      role: user.role === UserRole.ADMIN ? 'admin' : 'user',
+      id: summary.user.id,
+      email: summary.user.email,
+      firstname: summary.user.firstname,
+      lastname: summary.user.lastname,
+      role: summary.user.role === UserRole.ADMIN ? 'admin' : 'user',
+      dogs: {
+        count: summary.dogsCount,
+        href: `/dogs/users/${summary.user.id}`,
+      },
     }
   }
 
-  static collection(users: User[]) {
+  static collection(users: UserWithDogsSummaryDto[]) {
     return users.map((user) => this.toJson(user))
   }
 }

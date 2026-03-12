@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { RobotDogState } from '../../../domain/enums/robot-dog.state.js'
+import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import UserModel from '#users/infrastructure/database/models/user'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 
 export default class RobotDogModel extends BaseModel {
   public static table = 'robot_dogs'
@@ -22,6 +24,14 @@ export default class RobotDogModel extends BaseModel {
 
   @column()
   declare batteryLevel: number
+
+  @manyToMany(() => UserModel, {
+    pivotTable: 'ownerships',
+    pivotForeignKey: 'robot_dog_id',
+    pivotRelatedForeignKey: 'user_id',
+    pivotColumns: ['start_date', 'end_date'],
+  })
+  declare users: ManyToMany<typeof UserModel>
 
   @column.dateTime({ autoCreate: false, autoUpdate: false })
   declare lastHeartbeat?: DateTime

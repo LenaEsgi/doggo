@@ -1,15 +1,19 @@
 import { RobotDogRepository } from '../../domain/contracts/robot-dog.repository.js'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
+import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
+import type { RobotDogWithOwnersSummaryDto } from '#dogs/application/DTO/robot-dog-with-owners-summary.dto'
 import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
-import { RobotDog } from '#dogs/domain/robot-dog.entity'
 
 @inject()
 export class IndexRobotDogsUseCase {
-  constructor(private readonly robotDogRepository: RobotDogRepository) {}
+  constructor(
+    private readonly robotDogRepository: RobotDogRepository,
+    private readonly ownershipReadRepository: OwnershipReadRepository
+  ) {}
 
-  async execute(params: PaginationDto): Promise<PaginatedResult<RobotDog>> {
+  async execute(params: PaginationDto): Promise<PaginatedResult<RobotDogWithOwnersSummaryDto>> {
     logger.info({}, 'IndexRobotDogsUseCase started')
 
     const page = Math.max(1, params.page ?? 1)
@@ -18,9 +22,16 @@ export class IndexRobotDogsUseCase {
     logger.info({ page, limit }, 'page and limit')
 
     const { data, meta } = await this.robotDogRepository.findAll({ page, limit })
+    const usersCountByDogId = await this.ownershipReadRepository.countActiveUsersByRobotDogIds(
+      data.map((robotDog) => robotDog.id.value)
+    )
+    const result = data.map((robotDog) => ({
+      robotDog,
+      usersCount: usersCountByDogId[robotDog.id.value] ?? 0,
+    }))
 
-    logger.info({ count: data.length }, 'IndexRobotDogsUseCase completed successfully')
+    logger.info({ count: result.length }, 'IndexRobotDogsUseCase completed successfully')
 
-    return { data, meta }
+    return { data: result, meta }
   }
 }

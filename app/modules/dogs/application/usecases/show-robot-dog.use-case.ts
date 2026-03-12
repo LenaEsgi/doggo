@@ -4,13 +4,17 @@ import { ShowRobotDogDto } from '../DTO/show-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
-import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
+import type { RobotDogWithOwnersSummaryDto } from '#dogs/application/DTO/robot-dog-with-owners-summary.dto'
 
 @inject()
 export class ShowRobotDogUseCase {
-  constructor(private readonly robotDogRepository: RobotDogRepository) {}
+  constructor(
+    private readonly robotDogRepository: RobotDogRepository,
+    private readonly ownershipReadRepository: OwnershipReadRepository
+  ) {}
 
-  async execute(dto: ShowRobotDogDto): Promise<RobotDog> {
+  async execute(dto: ShowRobotDogDto): Promise<RobotDogWithOwnersSummaryDto> {
     logger.info({ robotDogId: dto.id }, 'ShowRobotDogUseCase started')
 
     const id = RobotDogId.fromString(dto.id)
@@ -24,6 +28,13 @@ export class ShowRobotDogUseCase {
 
     logger.info({ robotDogId: dto.id }, 'ShowRobotDogUseCase completed successfully')
 
-    return robotDog
+    const usersCountByDogId = await this.ownershipReadRepository.countActiveUsersByRobotDogIds([
+      dto.id,
+    ])
+
+    return {
+      robotDog,
+      usersCount: usersCountByDogId[dto.id] ?? 0,
+    }
   }
 }

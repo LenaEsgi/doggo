@@ -1,11 +1,11 @@
 import { test } from '@japa/runner'
-import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
+import { User } from '#users/domain/user.entity'
 import ShowUserController from '#users/infrastructure/http/controllers/show.user.controller'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 
 class FakeShowUserUseCase {
-  constructor(private readonly user: User | null) {}
+  constructor(private readonly user: { user: User; dogsCount: number } | null) {}
 
   async execute() {
     if (!this.user) {
@@ -18,9 +18,17 @@ class FakeShowUserUseCase {
 
 test('ShowUserController returns 200 when found', async ({ assert }) => {
   const controller = new ShowUserController(
-    new FakeShowUserUseCase(
-      User.rehydrate('u1', 'firebase-uid-john', 'john@example.com', 'John', 'Doe', UserRole.USER)
-    ) as any
+    new FakeShowUserUseCase({
+      user: User.rehydrate(
+        'u1',
+        'firebase-uid-john',
+        'john@example.com',
+        'John',
+        'Doe',
+        UserRole.USER
+      ),
+      dogsCount: 1,
+    }) as any
   )
 
   const result: { status?: number; body?: any } = {}
@@ -41,6 +49,7 @@ test('ShowUserController returns 200 when found', async ({ assert }) => {
 
   assert.equal(result.status, 200)
   assert.equal(result.body.user.email, 'john@example.com')
+  assert.equal(result.body.user.dogs.count, 1)
 })
 
 test('ShowUserController returns 404 when missing', async ({ assert }) => {

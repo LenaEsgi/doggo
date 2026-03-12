@@ -5,6 +5,7 @@ import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dt
 
 export abstract class RobotDogRepository {
   abstract findById(id: RobotDogId): Promise<RobotDog | null>
+  abstract findByIds(ids: string[]): Promise<RobotDog[]>
   abstract findAll(options?: FindAllOptions): Promise<PaginatedResult<RobotDog>>
   abstract save(dog: RobotDog): Promise<void>
   abstract delete(id: RobotDogId): Promise<void>

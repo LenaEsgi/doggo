@@ -226,6 +226,244 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /dogs/users/{id}:
+    get:
+      tags:
+        - Dogs
+      summary: List active dogs owned by a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User dogs list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDogsResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/{id}/dogs/adopt:
+    post:
+      tags:
+        - Users
+      summary: Attach a dog to a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManageUserDogRequest'
+      responses:
+        '200':
+          description: Dog adopted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: User or dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /users/{id}/dogs/abandon:
+    post:
+      tags:
+        - Users
+      summary: Detach a dog from a user
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManageUserDogRequest'
+      responses:
+        '200':
+          description: Dog abandoned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Active ownership, user or dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /dogs:
+    get:
+      tags:
+        - Dogs
+      summary: List robot dogs
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Dogs list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogsListResponse'
+    post:
+      tags:
+        - Dogs
+      summary: Create a robot dog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRobotDogRequest'
+      responses:
+        '201':
+          description: Dog created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RobotDogCreatedResponse'
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /dogs/{id}:
+    get:
+      tags:
+        - Dogs
+      summary: Get one robot dog by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Dog found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogResponse'
+        '404':
+          description: Dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Dogs
+      summary: Update a robot dog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRobotDogRequest'
+      responses:
+        '204':
+          description: Dog updated
+        '404':
+          description: Dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    delete:
+      tags:
+        - Dogs
+      summary: Delete a robot dog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Dog deleted
+        '404':
+          description: Dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /users/dogs/{id}:
+    get:
+      tags:
+        - Users
+      summary: List active owners of a robot dog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Dog owners list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RobotDogOwnersResponse'
+        '404':
+          description: Dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -318,6 +556,43 @@ components:
         mfaEnrollmentId:
           type: string
           example: enrollment-id
+    ManageUserDogRequest:
+      type: object
+      required:
+        - robotDogId
+      properties:
+        robotDogId:
+          type: string
+          format: uuid
+    CreateRobotDogRequest:
+      type: object
+      required:
+        - serialNumber
+        - name
+        - batteryLevel
+      properties:
+        serialNumber:
+          type: string
+          minLength: 3
+          example: SN-001
+        name:
+          type: string
+          minLength: 2
+          example: Rex
+        batteryLevel:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 80
+    UpdateRobotDogRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          example: Bolt
     AuthTokens:
       type: object
       required:
@@ -490,27 +765,51 @@ components:
           enum:
             - user
             - admin
-    CreateUserRequest:
+        dogs:
+          $ref: '#/components/schemas/RelatedCollectionLink'
+    RelatedCollectionLink:
       type: object
       required:
-        - firstname
-        - lastname
-        - email
+        - count
+        - href
       properties:
-        firstname:
+        count:
+          type: integer
+          example: 3
+        href:
           type: string
-          minLength: 2
-          maxLength: 100
-          example: Jane
-        lastname:
+          example: /dogs/users/7b27cc5b-e591-48f2-85ba-f29f96eb9971
+    RobotDog:
+      type: object
+      required:
+        - id
+        - serialNumber
+        - name
+        - state
+        - batteryLevel
+        - lastHeartbeat
+        - users
+      properties:
+        id:
           type: string
-          minLength: 2
-          maxLength: 100
-          example: Doe
-        email:
+          format: uuid
+        serialNumber:
           type: string
-          format: email
-          example: jane.doe@example.com
+          example: SN-001
+        name:
+          type: string
+          example: Rex
+        state:
+          type: string
+          example: IDLE
+        batteryLevel:
+          type: integer
+          example: 80
+        lastHeartbeat:
+          type: string
+          format: date-time
+        users:
+          $ref: '#/components/schemas/RelatedCollectionLink'
     UsersListResponse:
       type: object
       required:
@@ -560,17 +859,68 @@ components:
           example: User updated successfully
         user:
           $ref: '#/components/schemas/User'
-    UserCreatedResponse:
+    UserDogsResponse:
+      type: object
+      required:
+        - dogs
+      properties:
+        dogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/RobotDog'
+    DogsListResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RobotDog'
+        meta:
+          type: object
+          required:
+            - total
+            - perPage
+            - currentPage
+            - firstPage
+            - lastPage
+          properties:
+            total:
+              type: integer
+            perPage:
+              type: integer
+            currentPage:
+              type: integer
+            firstPage:
+              type: integer
+            lastPage:
+              type: integer
+    DogResponse:
+      type: object
+      required:
+        - dog
+      properties:
+        dog:
+          $ref: '#/components/schemas/RobotDog'
+    RobotDogCreatedResponse:
       type: object
       required:
         - message
-        - user
       properties:
         message:
           type: string
-          example: Created user
-        user:
-          $ref: '#/components/schemas/User'
+          example: RobotDog created
+    RobotDogOwnersResponse:
+      type: object
+      required:
+        - users
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
     ErrorResponse:
       type: object
       required:

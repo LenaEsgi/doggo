@@ -1,9 +1,9 @@
-import { type RobotDogRepository } from '../../../domain/contracts/robot-dog.repository.js'
-import { RobotDog } from '../../../domain/robot-dog.entity.js'
+import { type RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
+import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import RobotDogModel from '../models/robot-dog.js'
-import { type RobotDogState } from '../../../domain/enums/robot-dog.state.js'
+import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
-import { type RobotDogId } from '../../../domain/value-objects/robot-dog-id.js'
+import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
@@ -23,6 +23,27 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       row.lastHeartbeat?.toJSDate() ? row.lastHeartbeat?.toJSDate() : DateTime.now().toJSDate()
     )
   }
+
+  async findByIds(ids: string[]): Promise<RobotDog[]> {
+    if (ids.length === 0) {
+      return []
+    }
+
+    const rows = await RobotDogModel.query().whereIn('id', ids)
+
+    return rows.map((row) =>
+      RobotDog.rehydrate(
+        row.id,
+        row.serialNumber,
+        row.key,
+        row.name,
+        row.state as RobotDogState,
+        row.batteryLevel,
+        row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+      )
+    )
+  }
+
   async findAll({ page = 1, limit = 20 }: FindAllOptions = {}): Promise<PaginatedResult<RobotDog>> {
     const paginated = await RobotDogModel.query().paginate(page, limit)
 

@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import { IndexUserUseCase } from '#users/application/usecases/index-user.use-case'
 import { ShowUserUseCase } from '#users/application/usecases/show-user.use-case'
 import { UpdateUserUseCase } from '#users/application/usecases/update-user.use-case'
@@ -17,12 +18,44 @@ class FakeUserReadRepository extends UserReadRepository {
     return this.users.find((user) => user.id === id) ?? null
   }
 
+  async findByIds(ids: string[]): Promise<User[]> {
+    return this.users.filter((user) => ids.includes(user.id))
+  }
+
   async findByFirebaseUid(firebaseUid: string): Promise<User | null> {
     return this.users.find((user) => user.firebaseUid === firebaseUid) ?? null
   }
 
   async findAll(): Promise<User[]> {
     return this.users
+  }
+}
+
+class FakeOwnershipReadRepository extends OwnershipReadRepository {
+  constructor(private readonly counts: Record<string, number>) {
+    super()
+  }
+
+  async countActiveDogsByUserIds(userIds: string[]): Promise<Record<string, number>> {
+    return userIds.reduce(
+      (acc, userId) => {
+        acc[userId] = this.counts[userId] ?? 0
+        return acc
+      },
+      {} as Record<string, number>
+    )
+  }
+
+  async countActiveUsersByRobotDogIds(_robotDogIds: string[]): Promise<Record<string, number>> {
+    return {}
+  }
+
+  async findActiveDogIdsByUserId(_userId: string): Promise<string[]> {
+    return []
+  }
+
+  async findActiveUserIdsByRobotDogId(_robotDogId: string): Promise<string[]> {
+    return []
   }
 }
 
@@ -49,14 +82,21 @@ class FakeUserWriteRepository extends UserWriteRepository {
 test.group('User use cases', () => {
   test('IndexUserUseCase returns all users', async ({ assert }) => {
     const users = [User.rehydrate('1', 'firebase-uid-1', 'a@a.com', 'A', 'A', UserRole.USER)]
-    const useCase = new IndexUserUseCase(new FakeUserReadRepository(users))
+    const useCase = new IndexUserUseCase(
+      new FakeUserReadRepository(users),
+      new FakeOwnershipReadRepository({ '1': 2 })
+    )
 
     const result = await useCase.execute()
-    assert.deepEqual(result, users)
+    assert.equal(result[0].user.id, users[0].id)
+    assert.equal(result[0].dogsCount, 2)
   })
 
   test('ShowUserUseCase throws when user does not exist', async ({ assert }) => {
-    const useCase = new ShowUserUseCase(new FakeUserReadRepository([]))
+    const useCase = new ShowUserUseCase(
+      new FakeUserReadRepository([]),
+      new FakeOwnershipReadRepository({})
+    )
     await assert.rejects(() => useCase.execute('missing'), InvalidUserNotFoundError)
   })
 
@@ -71,7 +111,8 @@ test.group('User use cases', () => {
     )
     const readRepo = new FakeUserReadRepository([existing])
     const writeRepo = new FakeUserWriteRepository()
-    const useCase = new UpdateUserUseCase(readRepo, writeRepo)
+    const ownershipReadRepository = new FakeOwnershipReadRepository({ '1': 3 })
+    const useCase = new UpdateUserUseCase(readRepo, writeRepo, ownershipReadRepository)
 
     const updated = await useCase.execute('1', {
       firstname: 'New',
@@ -79,11 +120,12 @@ test.group('User use cases', () => {
     })
 
     assert.isNotNull(updated)
-    assert.equal(updated!.firstname, 'New')
-    assert.equal(updated!.lastname, 'Name')
-    assert.equal(updated!.firebaseUid, 'firebase-uid-1')
-    assert.equal(updated!.email, 'old@mail.com')
-    assert.equal(updated!.role, UserRole.ADMIN)
+    assert.equal(updated!.user.firstname, 'New')
+    assert.equal(updated!.user.lastname, 'Name')
+    assert.equal(updated!.user.firebaseUid, 'firebase-uid-1')
+    assert.equal(updated!.user.email, 'old@mail.com')
+    assert.equal(updated!.user.role, UserRole.ADMIN)
+    assert.equal(updated!.dogsCount, 3)
     assert.lengthOf(writeRepo.updated, 1)
   })
 })

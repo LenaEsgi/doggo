@@ -18,6 +18,15 @@ export class UserRepositoryImplementation
     return UserMapper.toEntity(user)
   }
 
+  async findByIds(ids: string[]): Promise<User[]> {
+    if (ids.length === 0) {
+      return []
+    }
+
+    const users = await UserModel.query().whereIn('id', ids)
+    return users.map((user) => UserMapper.toEntity(user))
+  }
+
   async findByFirebaseUid(firebaseUid: string): Promise<User | null> {
     const user = await UserModel.query().where('firebase_uid', firebaseUid).first()
 

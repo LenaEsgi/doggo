@@ -1,15 +1,18 @@
 import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
+import { FakeOwnershipRepository } from '#tests/unit/fakes/fake-ownership-repository'
 import { IndexRobotDogsUseCase } from '#dogs/application/usecases/index-robot-dogs.use-case'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 
 test.group('ListRobotDogsUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
+  let fakeOwnershipRepository: FakeOwnershipRepository
   let useCase: IndexRobotDogsUseCase
 
   group.each.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
-    useCase = new IndexRobotDogsUseCase(fakeRepo)
+    fakeOwnershipRepository = new FakeOwnershipRepository()
+    useCase = new IndexRobotDogsUseCase(fakeRepo, fakeOwnershipRepository)
   })
 
   test('should return paginated robot dogs', async ({ assert }) => {
@@ -22,8 +25,9 @@ test.group('ListRobotDogsUseCase', (group) => {
     const result = await useCase.execute({ page: 1, limit: 10 })
 
     assert.lengthOf(result.data, 2)
-    assert.equal(result.data[0].serialNumber, 'SN-001')
-    assert.equal(result.data[1].serialNumber, 'SN-002')
+    assert.equal(result.data[0].robotDog.serialNumber, 'SN-001')
+    assert.equal(result.data[1].robotDog.serialNumber, 'SN-002')
+    assert.equal(result.data[0].usersCount, 0)
 
     assert.equal(result.meta.total, 2)
     assert.equal(result.meta.currentPage, 1)

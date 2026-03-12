@@ -1,12 +1,22 @@
 import { test } from '@japa/runner'
-import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
+import { User } from '#users/domain/user.entity'
 import IndexUserController from '#users/infrastructure/http/controllers/index.user.controller'
 
 class FakeIndexUserUseCase {
   async execute() {
     return [
-      User.rehydrate('u1', 'firebase-uid-john', 'john@example.com', 'John', 'Doe', UserRole.USER),
+      {
+        user: User.rehydrate(
+          'u1',
+          'firebase-uid-john',
+          'john@example.com',
+          'John',
+          'Doe',
+          UserRole.USER
+        ),
+        dogsCount: 2,
+      },
     ]
   }
 }
@@ -29,4 +39,5 @@ test('IndexUserController returns users list', async ({ assert }) => {
   assert.equal(result.status, 200)
   assert.lengthOf(result.body.users, 1)
   assert.equal(result.body.users[0].email, 'john@example.com')
+  assert.equal(result.body.users[0].dogs.count, 2)
 })
