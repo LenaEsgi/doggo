@@ -22,8 +22,7 @@ export default class extends BaseSchema {
       table.primary(['mission_id', 'robot_dog_id'])
       table.index(['robot_dog_id', 'mission_id'])
 
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.timestamps(true, true)
     })
   }
 

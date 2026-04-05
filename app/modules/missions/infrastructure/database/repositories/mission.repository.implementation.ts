@@ -112,4 +112,9 @@ export class MissionRepositoryImplementation implements MissionRepository {
       },
     }
   }
+
+  async assignToDog(missionId: string, dogId: string): Promise<void> {
+    const mission = await MissionModel.findOrFail(missionId)
+    await mission.related('robotDogs').attach([dogId])
+  }
 }
