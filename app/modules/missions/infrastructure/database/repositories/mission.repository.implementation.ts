@@ -51,7 +51,6 @@ export class MissionRepositoryImplementation implements MissionRepository {
   }
 
   async save(mission: Mission): Promise<void> {
-    // On crée la transaction
     await db.transaction(async (trx) => {
       const missionRow = await MissionModel.updateOrCreate(
         { id: mission.id.value },
@@ -86,5 +85,31 @@ export class MissionRepositoryImplementation implements MissionRepository {
   async delete(missionId: MissionId): Promise<void> {
     const row = await MissionModel.findOrFail(missionId.value)
     await row.delete()
+  }
+
+  async listByRobotDog(dogId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>> {
+    const page = options?.page ?? 1
+    const limit = options?.limit ?? 10
+
+    const paginator = await MissionModel.query()
+      .whereHas('robotDogs', (q) => {
+        q.where('robot_dog_id', dogId)
+      })
+      .paginate(page, limit)
+
+    const missions = paginator.all().map((row) => {
+      return Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
+    })
+
+    return {
+      data: missions,
+      meta: {
+        total: paginator.total,
+        perPage: paginator.perPage,
+        currentPage: paginator.currentPage,
+        firstPage: paginator.firstPage,
+        lastPage: paginator.lastPage,
+      },
+    }
   }
 }

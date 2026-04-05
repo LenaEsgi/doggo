@@ -8,4 +8,5 @@ export abstract class MissionRepository {
   abstract index(options?: PaginationDto): Promise<PaginatedResult<Mission>>
   abstract save(mission: Mission): Promise<void>
   abstract delete(missionId: MissionId): Promise<void>
+  abstract listByRobotDog(dogId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>>
 }

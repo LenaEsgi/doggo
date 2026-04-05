@@ -18,7 +18,13 @@ export default class MissionModel extends BaseModel {
   @column()
   declare status: MissionStatus
 
-  @manyToMany(() => RobotDogModel)
+  @manyToMany(() => RobotDogModel, {
+    pivotTable: 'mission_robot_dog',
+    localKey: 'id',
+    pivotForeignKey: 'mission_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'robot_dog_id',
+  })
   declare robotDogs: ManyToMany<typeof RobotDogModel>
 
   @hasMany(() => MissionStepModel, {

@@ -14,8 +14,6 @@ export default class ShowRobotDogController {
 
     logger.info({ robotDogId: params.id }, 'ShowRobotDogController completed successfully')
 
-    return response.ok({
-      dog: RobotDogSerializer.toJson(robot),
-    })
+    return response.ok(RobotDogSerializer.toJson(robot))
   }
 }
