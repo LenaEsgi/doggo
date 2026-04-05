@@ -1,0 +1,29 @@
+import { MissionRepository } from '../../domain/contracts/mission.repository.ts'
+import { inject } from '@adonisjs/core'
+import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
+import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
+import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
+import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+
+@inject()
+export class RemoveMissionToDogUseCase {
+  constructor(
+    private missionRepository: MissionRepository,
+    private dogRepository: RobotDogGateway
+  ) {}
+
+  async execute(missionId: string, dogId: string): Promise<void> {
+    const dog = await this.dogRepository.findBy(RobotDogId.fromString(dogId))
+    if (!dog) {
+      throw new RobotDogNotFoundError(`Robot Dog with id ${dogId} not found`)
+    }
+    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
+
+    if (!mission) {
+      throw new MissionNotFoundError(missionId)
+    }
+
+    await this.missionRepository.removeFromDog(missionId, dogId)
+  }
+}

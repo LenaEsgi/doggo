@@ -35,6 +35,7 @@ export type ScannedRoutes = {
     'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'list_missions_by_dog_use_case': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'assign_to_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'remove_from_dog': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'missionId': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -93,6 +94,7 @@ export type ScannedRoutes = {
     'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'remove_from_dog': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'missionId': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {

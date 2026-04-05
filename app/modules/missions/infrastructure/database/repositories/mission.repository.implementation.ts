@@ -117,4 +117,9 @@ export class MissionRepositoryImplementation implements MissionRepository {
     const mission = await MissionModel.findOrFail(missionId)
     await mission.related('robotDogs').attach([dogId])
   }
+
+  async removeFromDog(missionId: string, dogId: string): Promise<void> {
+    const mission = await MissionModel.findOrFail(missionId)
+    await mission.related('robotDogs').detach([dogId])
+  }
 }

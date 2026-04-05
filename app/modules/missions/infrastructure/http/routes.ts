@@ -24,6 +24,9 @@ const ListMissionsByDogUseCase = () =>
 const AssignToDogController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/assign-to-dog.controller')
 
+const RemoveFromDogController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/remove-from-dog.controller')
+
 router
   .group(() => {
     router.post('/', [CreateMissionController])
@@ -40,3 +43,4 @@ router
 
 router.get('/dogs/:id/missions', [ListMissionsByDogUseCase])
 router.post('/dogs/:id/assign', [AssignToDogController])
+router.delete('/dogs/:id/missions/:missionId', [RemoveFromDogController])
