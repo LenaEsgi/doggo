@@ -25,9 +25,7 @@ router
     router.post('/register', [RegisterAuthController, 'handle'])
     router.post('/login', [LoginAuthController, 'handle'])
     router.post('/login/2fa', [LoginWithTotpAuthController, 'handle'])
-    router
-      .post('/password-reset', [PasswordResetAuthController, 'handle'])
-      .use(middleware.firebaseAuth())
+    router.post('/password-reset', [PasswordResetAuthController, 'handle'])
     router
       .post('/2fa/setup', [StartTotpSetupAuthController, 'handle'])
       .use(middleware.firebaseAuth())
