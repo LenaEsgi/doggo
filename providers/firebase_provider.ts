@@ -19,6 +19,8 @@ import { FirebaseLoginWithTotpAuthProvider } from '#auth/infrastructure/provider
 import { FirebasePasswordResetAuthProvider } from '#auth/infrastructure/providers/firebase-password-reset-auth.provider'
 import { FirebaseRegisterAuthProvider } from '#auth/infrastructure/providers/firebase-register-auth.provider'
 import { FirebaseStartTotpSetupAuthProvider } from '#auth/infrastructure/providers/firebase-start-totp-setup-auth.provider'
+import { GoogleLoginAuthProvider } from '#auth/domain/contracts/google.login.auth.provider'
+import { FirebaseGoogleLoginAuthProvider } from '#auth/infrastructure/providers/firebase-google-login-auth.provider'
 
 export default class FirebaseProvider {
   constructor(protected app: ApplicationService) {}
@@ -57,6 +59,9 @@ export default class FirebaseProvider {
     })
     this.app.container.bind(DeleteAccountAuthProvider, () => {
       return this.app.container.make(FirebaseDeleteAccountAuthProvider)
+    })
+    this.app.container.bind(GoogleLoginAuthProvider, () => {
+      return this.app.container.make(FirebaseGoogleLoginAuthProvider)
     })
   }
 }

@@ -19,6 +19,8 @@ const DisableMfaAuthController = () =>
   import('#auth/infrastructure/http/controllers/disable.mfa.auth.controller')
 const DeleteAccountAuthController = () =>
   import('#auth/infrastructure/http/controllers/delete.account.auth.controller')
+const GoogleLoginAuthController = () =>
+  import('#auth/infrastructure/http/controllers/google.login.auth.controller')
 
 router
   .group(() => {
@@ -26,6 +28,7 @@ router
     router.post('/login', [LoginAuthController, 'handle'])
     router.post('/login/2fa', [LoginWithTotpAuthController, 'handle'])
     router.post('/password-reset', [PasswordResetAuthController, 'handle'])
+    router.post('/google', [GoogleLoginAuthController, 'handle'])
     router
       .post('/2fa/setup', [StartTotpSetupAuthController, 'handle'])
       .use(middleware.firebaseAuth())
