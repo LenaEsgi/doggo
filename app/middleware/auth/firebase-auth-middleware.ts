@@ -20,6 +20,10 @@ export default class FirebaseAuthMiddleware {
     try {
       const decodedToken = await this.tokenVerifier.handle(idToken)
 
+      if (!decodedToken.email_verified) {
+        return ctx.response.forbidden({ message: 'Email not verified' })
+      }
+
       ;(ctx as any).firebaseUser = {
         uid: decodedToken.uid,
         email: decodedToken.email ?? null,

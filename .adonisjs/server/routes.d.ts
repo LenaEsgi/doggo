@@ -15,6 +15,7 @@ export type ScannedRoutes = {
     'login_with_totp_auth': { paramsTuple?: []; params?: {} }
     'password_reset_auth': { paramsTuple?: []; params?: {} }
     'google_login_auth': { paramsTuple?: []; params?: {} }
+    'send_email_verification_auth': { paramsTuple?: []; params?: {} }
     'start_totp_setup_auth': { paramsTuple?: []; params?: {} }
     'finalize_totp_setup_auth': { paramsTuple?: []; params?: {} }
     'list_mfa_enrollments_auth': { paramsTuple?: []; params?: {} }
@@ -79,6 +80,7 @@ export type ScannedRoutes = {
     'login_with_totp_auth': { paramsTuple?: []; params?: {} }
     'password_reset_auth': { paramsTuple?: []; params?: {} }
     'google_login_auth': { paramsTuple?: []; params?: {} }
+    'send_email_verification_auth': { paramsTuple?: []; params?: {} }
     'start_totp_setup_auth': { paramsTuple?: []; params?: {} }
     'finalize_totp_setup_auth': { paramsTuple?: []; params?: {} }
     'list_mfa_enrollments_auth': { paramsTuple?: []; params?: {} }

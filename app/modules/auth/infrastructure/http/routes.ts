@@ -21,6 +21,8 @@ const DeleteAccountAuthController = () =>
   import('#auth/infrastructure/http/controllers/delete.account.auth.controller')
 const GoogleLoginAuthController = () =>
   import('#auth/infrastructure/http/controllers/google.login.auth.controller')
+const SendEmailVerificationAuthController = () =>
+  import('#auth/infrastructure/http/controllers/send.email.verification.auth.controller')
 
 router
   .group(() => {
@@ -29,6 +31,7 @@ router
     router.post('/login/2fa', [LoginWithTotpAuthController, 'handle'])
     router.post('/password-reset', [PasswordResetAuthController, 'handle'])
     router.post('/google', [GoogleLoginAuthController, 'handle'])
+    router.post('/send-email-verification', [SendEmailVerificationAuthController, 'handle'])
     router
       .post('/2fa/setup', [StartTotpSetupAuthController, 'handle'])
       .use(middleware.firebaseAuth())

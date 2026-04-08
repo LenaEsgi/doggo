@@ -21,6 +21,8 @@ import { FirebaseRegisterAuthProvider } from '#auth/infrastructure/providers/fir
 import { FirebaseStartTotpSetupAuthProvider } from '#auth/infrastructure/providers/firebase-start-totp-setup-auth.provider'
 import { GoogleLoginAuthProvider } from '#auth/domain/contracts/google.login.auth.provider'
 import { FirebaseGoogleLoginAuthProvider } from '#auth/infrastructure/providers/firebase-google-login-auth.provider'
+import { SendEmailVerificationAuthProvider } from '#auth/domain/contracts/send.email.verification.auth.provider'
+import { FirebaseSendEmailVerificationAuthProvider } from '#auth/infrastructure/providers/firebase-send-email-verification-auth.provider'
 
 export default class FirebaseProvider {
   constructor(protected app: ApplicationService) {}
@@ -62,6 +64,9 @@ export default class FirebaseProvider {
     })
     this.app.container.bind(GoogleLoginAuthProvider, () => {
       return this.app.container.make(FirebaseGoogleLoginAuthProvider)
+    })
+    this.app.container.bind(SendEmailVerificationAuthProvider, () => {
+      return this.app.container.make(FirebaseSendEmailVerificationAuthProvider)
     })
   }
 }
