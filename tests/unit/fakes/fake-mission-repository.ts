@@ -5,6 +5,7 @@ import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
 export class FakeMissionRepository implements MissionRepository {
   public storedMissions: Mission[] = []
+  private readonly missionDogs = new Map<string, Set<string>>()
 
   async findById(id: MissionId): Promise<Mission | null> {
     return this.storedMissions.find((m) => m.id.equals(id)) || null
@@ -43,5 +44,52 @@ export class FakeMissionRepository implements MissionRepository {
 
   async delete(id: MissionId): Promise<void> {
     this.storedMissions = this.storedMissions.filter((m) => !m.id.equals(id))
+    this.missionDogs.delete(id.value)
+  }
+
+  async listByRobotDog(dogId: string, options?: PaginationDto) {
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 10
+
+    const filtered = this.storedMissions.filter((mission) => {
+      return this.missionDogs.get(mission.id.value)?.has(dogId) ?? false
+    })
+
+    const total = filtered.length
+    const lastPage = Math.ceil(total / perPage)
+    const start = (page - 1) * perPage
+    const end = start + perPage
+
+    return {
+      data: filtered.slice(start, end),
+      meta: {
+        total,
+        perPage,
+        currentPage: page,
+        firstPage: 1,
+        lastPage,
+      },
+    }
+  }
+
+  async assignToDog(missionId: string, dogId: string): Promise<void> {
+    const linkedDogs = this.missionDogs.get(missionId) ?? new Set<string>()
+    linkedDogs.add(dogId)
+    this.missionDogs.set(missionId, linkedDogs)
+  }
+
+  async removeFromDog(missionId: string, dogId: string): Promise<void> {
+    const linkedDogs = this.missionDogs.get(missionId)
+    if (!linkedDogs) {
+      return
+    }
+
+    linkedDogs.delete(dogId)
+    if (linkedDogs.size === 0) {
+      this.missionDogs.delete(missionId)
+      return
+    }
+
+    this.missionDogs.set(missionId, linkedDogs)
   }
 }
