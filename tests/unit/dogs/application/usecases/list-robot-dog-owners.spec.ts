@@ -57,11 +57,13 @@ test.group('ListRobotDogOwnersUseCase', () => {
       new UserOwnershipGatewayImplementation(userRepository),
       ownershipRepository
     )
-    const result = await useCase.execute(dog.id.value)
+    const result = await useCase.execute(dog.id.value, { page: 1, limit: 10 })
 
-    assert.lengthOf(result, 1)
-    assert.equal(result[0].user.id, owner.id)
-    assert.equal(result[0].dogsCount, 2)
+    assert.lengthOf(result.data, 1)
+    assert.equal(result.meta.total, 1)
+    assert.equal(result.meta.currentPage, 1)
+    assert.equal(result.data[0].user.id, owner.id)
+    assert.equal(result.data[0].dogsCount, 2)
   })
 
   test('throws when robot dog does not exist', async ({ assert }) => {
@@ -72,7 +74,7 @@ test.group('ListRobotDogOwnersUseCase', () => {
     )
 
     await assert.rejects(
-      () => useCase.execute('56a39d4d-b05d-42fb-a402-6782fc66dc3d'),
+      () => useCase.execute('56a39d4d-b05d-42fb-a402-6782fc66dc3d', { page: 1, limit: 10 }),
       RobotDogNotFoundError
     )
   })
