@@ -57,8 +57,9 @@ export class ListRobotDogOwnersUseCase {
       { robotDogId, count: result.length },
       'ListRobotDogOwnersUseCase completed successfully'
     )
+
     return {
-      ...paginateUsers,
+      meta: paginateUsers.meta,
       data: result,
     }
   }

@@ -79,8 +79,10 @@ export class OwnershipRepositoryImplementation
       .select('user_id')
       .paginate(page, perPage)
 
+    const userIds = rows.all().map((row) => String(row.user_id))
+
     return {
-      data: rows.map((row) => String(row.user_id)),
+      data: userIds,
       meta: {
         total: rows.total,
         perPage: rows.perPage,
