@@ -3,6 +3,8 @@ import db from '@adonisjs/lucid/services/db'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import type { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
 import OwnershipModel from '#app/modules/users/ownerships/infrastructure/database/models/ownership'
+import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
 export class OwnershipRepositoryImplementation
   extends OwnershipReadRepository
@@ -63,15 +65,30 @@ export class OwnershipRepositoryImplementation
     return rows.map((row) => String(row.robot_dog_id))
   }
 
-  async findActiveUserIdsByRobotDogId(robotDogId: string): Promise<string[]> {
+  async findActiveUserIdsByRobotDogId(
+    robotDogId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 10
+
     const rows = await db
       .from('ownerships')
       .where('robot_dog_id', robotDogId)
       .whereNull('end_date')
       .select('user_id')
-      .orderBy('start_date', 'desc')
+      .paginate(page, perPage)
 
-    return rows.map((row) => String(row.user_id))
+    return {
+      data: rows.map((row) => String(row.user_id)),
+      meta: {
+        total: rows.total,
+        perPage: rows.perPage,
+        currentPage: rows.currentPage,
+        firstPage: rows.firstPage,
+        lastPage: rows.lastPage,
+      },
+    }
   }
 
   async adopt(userId: string, robotDogId: string, startDate: Date): Promise<void> {

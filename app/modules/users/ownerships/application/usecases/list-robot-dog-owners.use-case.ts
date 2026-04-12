@@ -5,6 +5,8 @@ import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/applicat
 import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/user-ownership.gateway'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
+import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
 @inject()
 export class ListRobotDogOwnersUseCase {
@@ -14,7 +16,10 @@ export class ListRobotDogOwnersUseCase {
     private readonly ownershipReadRepository: OwnershipReadRepository
   ) {}
 
-  async execute(robotDogId: string): Promise<UserReferenceDto[]> {
+  async execute(
+    robotDogId: string,
+    params: PaginationDto
+  ): Promise<PaginatedResult<UserReferenceDto>> {
     logger.info({ robotDogId }, 'ListRobotDogOwnersUseCase started')
 
     const robotDogExists = await this.robotDogGateway.existsById(robotDogId)
@@ -23,12 +28,18 @@ export class ListRobotDogOwnersUseCase {
       throw new RobotDogNotFoundError(robotDogId)
     }
 
-    const userIds = await this.ownershipReadRepository.findActiveUserIdsByRobotDogId(robotDogId)
-    const users = await this.userGateway.findByIds(userIds)
-    const dogsCountByUserId = await this.ownershipReadRepository.countActiveDogsByUserIds(userIds)
+    const paginateUsers = await this.ownershipReadRepository.findActiveUserIdsByRobotDogId(
+      robotDogId,
+      params
+    )
+
+    const users = await this.userGateway.findByIds(paginateUsers.data)
+    const dogsCountByUserId = await this.ownershipReadRepository.countActiveDogsByUserIds(
+      paginateUsers.data
+    )
     const usersById = new Map(users.map((user) => [user.id, user]))
 
-    const result = userIds.flatMap((userId) => {
+    const result = paginateUsers.data.flatMap((userId) => {
       const user = usersById.get(userId)
       if (!user) {
         return []
@@ -46,6 +57,9 @@ export class ListRobotDogOwnersUseCase {
       { robotDogId, count: result.length },
       'ListRobotDogOwnersUseCase completed successfully'
     )
-    return result
+    return {
+      ...paginateUsers,
+      data: result,
+    }
   }
 }
