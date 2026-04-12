@@ -70,4 +70,3 @@ test.group('ListMissionsByDogUseCase', (group) => {
     assert.equal(result.meta.total, 0)
   })
 })
-

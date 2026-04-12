@@ -51,4 +51,3 @@ test.group('AssignMissionToDogUseCase', (group) => {
     )
   })
 })
-
