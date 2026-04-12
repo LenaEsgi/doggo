@@ -1,5 +1,7 @@
 import { test } from '@japa/runner'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
+import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import type { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { IndexUserUseCase } from '#users/application/usecases/index-user.use-case'
 import { ShowUserUseCase } from '#users/application/usecases/show-user.use-case'
 import { UpdateUserUseCase } from '#users/application/usecases/update-user.use-case'
@@ -54,8 +56,23 @@ class FakeOwnershipReadRepository extends OwnershipReadRepository {
     return []
   }
 
-  async findActiveUserIdsByRobotDogId(_robotDogId: string): Promise<string[]> {
-    return []
+  async findActiveUserIdsByRobotDogId(
+    _robotDogId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const perPage = options?.limit ?? 10
+    const currentPage = options?.page ?? 1
+
+    return {
+      data: [],
+      meta: {
+        total: 0,
+        perPage,
+        currentPage,
+        firstPage: 1,
+        lastPage: 1,
+      },
+    }
   }
 }
 
