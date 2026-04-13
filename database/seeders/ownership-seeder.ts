@@ -51,5 +51,3 @@ export default class extends BaseSeeder {
     return RobotDogFactory.createMany(6)
   }
 }
-
-
