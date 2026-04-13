@@ -58,7 +58,7 @@ test.group('User ownership use cases', () => {
       new RobotDogOwnershipGatewayImplementation(dogRepository),
       ownershipRepository
     )
-    await useCase.execute(user.id, dog.id.value)
+    await useCase.execute(user.id, dog.serialNumber)
 
     const dogIds = await ownershipRepository.findActiveDogIdsByUserId(user.id)
     assert.deepEqual(dogIds, [dog.id.value])
