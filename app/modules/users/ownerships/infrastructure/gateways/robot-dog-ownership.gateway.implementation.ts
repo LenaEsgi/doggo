@@ -10,6 +10,10 @@ export class RobotDogOwnershipGatewayImplementation extends RobotDogOwnershipGat
     super()
   }
 
+  async findBySerialNumber(serialNumber: string): Promise<RobotDog | null> {
+    return await this.robotDogRepository.findBySerialNumber(serialNumber)
+  }
+
   async existsById(robotDogId: string): Promise<boolean> {
     return (await this.robotDogRepository.findById(RobotDogId.fromString(robotDogId))) !== null
   }

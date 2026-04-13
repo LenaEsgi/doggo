@@ -8,6 +8,6 @@ export const manageUserDogsParamsValidator = vine.compile(
 
 export const manageUserDogsBodyValidator = vine.compile(
   vine.object({
-    robotDogId: vine.string().uuid(),
+    serialNumber: vine.string().trim(),
   })
 )

@@ -14,23 +14,23 @@ export class AdoptRobotDogUseCase {
     private readonly ownershipWriteRepository: OwnershipWriteRepository
   ) {}
 
-  async execute(userId: string, robotDogId: string): Promise<void> {
-    logger.info({ userId, robotDogId }, 'AdoptRobotDogUseCase started')
+  async execute(userId: string, serialNumber: string): Promise<void> {
+    logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase started')
 
     const userExists = await this.userGateway.existsById(userId)
     if (!userExists) {
-      logger.warn({ userId, robotDogId }, 'User not found in AdoptRobotDogUseCase')
+      logger.warn({ userId, serialNumber }, 'User not found in AdoptRobotDogUseCase')
       throw new InvalidUserNotFoundError(userId)
     }
 
-    const robotDogExists = await this.robotDogGateway.existsById(robotDogId)
-    if (!robotDogExists) {
-      logger.warn({ userId, robotDogId }, 'RobotDog not found in AdoptRobotDogUseCase')
-      throw new RobotDogNotFoundError(robotDogId)
+    const robotDog = await this.robotDogGateway.findBySerialNumber(serialNumber)
+    if (!robotDog) {
+      logger.warn({ userId, serialNumber }, 'RobotDog not found in AdoptRobotDogUseCase')
+      throw new RobotDogNotFoundError(serialNumber)
     }
 
-    await this.ownershipWriteRepository.adopt(userId, robotDogId, new Date())
+    await this.ownershipWriteRepository.adopt(userId, robotDog.id.value, new Date())
 
-    logger.info({ userId, robotDogId }, 'AdoptRobotDogUseCase completed successfully')
+    logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase completed successfully')
   }
 }

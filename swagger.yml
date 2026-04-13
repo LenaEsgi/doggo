@@ -8,14 +8,14 @@ servers:
   - url: http://localhost:3333
     description: Local server
 security:
-  - BearerAuth: []
+  - BearerAuth: [ ]
 paths:
   /auth/register:
     post:
       tags:
         - Authentication
       summary: Create an account
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -34,7 +34,7 @@ paths:
       tags:
         - Authentication
       summary: Login with email/password
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -73,7 +73,7 @@ paths:
       tags:
         - Authentication
       summary: Send password reset email
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -559,11 +559,10 @@ components:
     ManageUserDogRequest:
       type: object
       required:
-        - robotDogId
+        - serialNumber
       properties:
-        robotDogId:
+        serialNumber:
           type: string
-          format: uuid
     CreateRobotDogRequest:
       type: object
       required:

@@ -14,11 +14,11 @@ export default class AdoptUserDogController {
     const { id } = await request.validateUsing(manageUserDogsParamsValidator, {
       data: request.params(),
     })
-    const { robotDogId } = await request.validateUsing(manageUserDogsBodyValidator)
+    const { serialNumber } = await request.validateUsing(manageUserDogsBodyValidator)
 
-    logger.info({ userId: id, robotDogId }, 'AdoptUserDogController called')
-    await this.useCase.execute(id, robotDogId)
-    logger.info({ userId: id, robotDogId }, 'AdoptUserDogController completed successfully')
+    logger.info({ userId: id, serialNumber }, 'AdoptUserDogController called')
+    await this.useCase.execute(id, serialNumber)
+    logger.info({ userId: id, serialNumber }, 'AdoptUserDogController completed successfully')
 
     response.ok({
       message: 'RobotDog adopted successfully',
