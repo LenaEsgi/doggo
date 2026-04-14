@@ -11,3 +11,9 @@ export const manageUserDogsBodyValidator = vine.compile(
     serialNumber: vine.string().trim(),
   })
 )
+
+export const manageUserDogsBodyValidatorForAbandon = vine.compile(
+  vine.object({
+    robotDogId: vine.string().uuid(),
+  })
+)
