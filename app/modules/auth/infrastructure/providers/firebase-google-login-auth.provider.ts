@@ -1,8 +1,6 @@
 import { getAuth } from 'firebase-admin/auth'
-import {
-  type GoogleLoginAuthProvider,
-  type GoogleUserInfo,
-} from '#auth/domain/contracts/google.login.auth.provider'
+import { type GoogleLoginAuthProvider } from '#auth/domain/contracts/google.login.auth.provider'
+import type { GoogleUserInfo } from '#auth/domain/types/google.user.info'
 
 export class FirebaseGoogleLoginAuthProvider implements GoogleLoginAuthProvider {
   async verifyGoogleToken(idToken: string): Promise<GoogleUserInfo> {

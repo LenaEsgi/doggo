@@ -3,7 +3,7 @@ import logger from '@adonisjs/core/services/logger'
 import { type GoogleLoginDto } from '#auth/application/dto/google-login.dto'
 import { GoogleLoginAuthProvider } from '#auth/domain/contracts/google.login.auth.provider'
 import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
-import type { GoogleUserInfo } from '#auth/domain/contracts/google.login.auth.provider'
+import type { GoogleUserInfo } from '#auth/domain/types/google.user.info'
 
 @inject()
 export class GoogleLoginAuthUseCase {

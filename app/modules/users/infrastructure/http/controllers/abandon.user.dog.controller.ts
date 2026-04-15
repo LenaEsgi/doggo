@@ -14,11 +14,11 @@ export default class AbandonUserDogController {
     const { id } = await request.validateUsing(manageUserDogsParamsValidator, {
       data: request.params(),
     })
-    const { robotDogId } = await request.validateUsing(manageUserDogsBodyValidator)
+    const robotDog = await request.validateUsing(manageUserDogsBodyValidator)
 
-    logger.info({ userId: id, robotDogId }, 'AbandonUserDogController called')
-    await this.useCase.execute(id, robotDogId)
-    logger.info({ userId: id, robotDogId }, 'AbandonUserDogController completed successfully')
+    logger.info({ userId: id, robotDog }, 'AbandonUserDogController called')
+    await this.useCase.execute(id, robotDog.serialNumber)
+    logger.info({ userId: id, robotDog }, 'AbandonUserDogController completed successfully')
 
     response.ok({
       message: 'RobotDog abandoned successfully',
