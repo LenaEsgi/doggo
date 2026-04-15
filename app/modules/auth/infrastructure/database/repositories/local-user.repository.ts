@@ -1,5 +1,6 @@
 import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
 import UserModel from '#users/infrastructure/database/models/user'
+import { UserRole } from '#users/domain/enums/user.role'
 
 export class LocalUserRepositoryImplementation extends LocalUserRepository {
   async ensureUserProfile(payload: {
@@ -15,7 +16,7 @@ export class LocalUserRepositoryImplementation extends LocalUserRepository {
         firstname: payload.firstname,
         lastname: payload.lastname,
         email: payload.email,
-        role: 'User' as unknown as UserModel['role'],
+        role: UserRole.USER,
       }
     )
   }
