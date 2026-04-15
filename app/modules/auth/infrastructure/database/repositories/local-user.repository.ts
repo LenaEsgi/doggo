@@ -15,7 +15,7 @@ export class LocalUserRepositoryImplementation extends LocalUserRepository {
         firstname: payload.firstname,
         lastname: payload.lastname,
         email: payload.email,
-        role: 'user' as unknown as UserModel['role'],
+        role: 'User' as unknown as UserModel['role'],
       }
     )
   }
