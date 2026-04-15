@@ -15,10 +15,29 @@ export default class extends BaseSeeder {
 
     const ownerships = []
     const pairCount = Math.min(12, users.length * robotDogs.length)
+    const usedPairs = new Set<string>()
 
     for (let index = 0; index < pairCount; index++) {
-      const user = users[index % users.length]
-      const robotDog = robotDogs[(index * 2) % robotDogs.length]
+      let pairIndex = 0
+      let userIdx = 0
+      let dogIdx = 0
+      let pair = ''
+
+      // Find a unique pair
+      while (pairIndex <= users.length * robotDogs.length) {
+        userIdx = (index + pairIndex) % users.length
+        dogIdx = Math.floor((index + pairIndex) / users.length) % robotDogs.length
+        pair = `${userIdx}-${dogIdx}`
+
+        if (!usedPairs.has(pair)) {
+          usedPairs.add(pair)
+          break
+        }
+        pairIndex++
+      }
+
+      const user = users[userIdx]
+      const robotDog = robotDogs[dogIdx]
       const startDate = DateTime.now().minus({ days: 60 + index * 3 })
       const endDate = index % 2 === 0 ? null : startDate.plus({ days: 14 })
 
