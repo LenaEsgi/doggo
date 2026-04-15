@@ -7,7 +7,8 @@ export class User {
     public readonly email: string,
     private _firstname: string,
     private _lastname: string,
-    private _role: UserRole
+    private _role: UserRole,
+    private _emailVerified: boolean
   ) {}
 
   public static create(
@@ -15,10 +16,11 @@ export class User {
     firebaseUid: string,
     email: string,
     firstname: string,
-    lastname: string
+    lastname: string,
+    emailVerified: boolean = false
     // role: UserRole --- A voir si on peut créer direct un admin
   ): User {
-    return new User(id, firebaseUid, email, firstname, lastname, UserRole.USER)
+    return new User(id, firebaseUid, email, firstname, lastname, UserRole.USER, emailVerified)
   }
 
   public static rehydrate(
@@ -27,9 +29,10 @@ export class User {
     email: string,
     firstname: string,
     lastname: string,
-    role: UserRole
+    role: UserRole,
+    emailVerified: boolean
   ): User {
-    return new User(id, firebaseUid, email, firstname, lastname, role)
+    return new User(id, firebaseUid, email, firstname, lastname, role, emailVerified)
   }
 
   // -------------------
@@ -46,5 +49,9 @@ export class User {
 
   public get lastname(): string {
     return this._lastname
+  }
+
+  public get emailVerified(): boolean {
+    return this._emailVerified
   }
 }
