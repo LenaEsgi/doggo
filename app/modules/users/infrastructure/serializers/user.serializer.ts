@@ -6,6 +6,7 @@ export class UserSerializer {
     return {
       id: summary.user.id,
       email: summary.user.email,
+      emailVerified: summary.user.emailVerified,
       firstname: summary.user.firstname,
       lastname: summary.user.lastname,
       role: summary.user.role === UserRole.ADMIN ? 'admin' : 'user',

@@ -44,7 +44,8 @@ test.group('User ownership use cases', () => {
       'john@example.com',
       'John',
       'Doe',
-      UserRole.USER
+      UserRole.USER,
+      false
     )
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     const userRepository = new FakeUserReadRepository([user])
@@ -90,7 +91,8 @@ test.group('User ownership use cases', () => {
       'john@example.com',
       'John',
       'Doe',
-      UserRole.USER
+      UserRole.USER,
+      false
     )
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     const userRepository = new FakeUserReadRepository([user])
@@ -120,7 +122,8 @@ test.group('User ownership use cases', () => {
       'john@example.com',
       'John',
       'Doe',
-      UserRole.USER
+      UserRole.USER,
+      false
     )
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     const userRepository = new FakeUserReadRepository([user])
@@ -145,7 +148,8 @@ test.group('User ownership use cases', () => {
       'john@example.com',
       'John',
       'Doe',
-      UserRole.USER
+      UserRole.USER,
+      false
     )
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     const userRepository = new FakeUserReadRepository([user])

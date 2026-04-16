@@ -13,7 +13,8 @@ class FakeIndexUserUseCase {
           'john@example.com',
           'John',
           'Doe',
-          UserRole.USER
+          UserRole.USER,
+          false
         ),
         dogsCount: 2,
       },

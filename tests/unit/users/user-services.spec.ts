@@ -98,7 +98,7 @@ class FakeUserWriteRepository extends UserWriteRepository {
 
 test.group('User use cases', () => {
   test('IndexUserUseCase returns all users', async ({ assert }) => {
-    const users = [User.rehydrate('1', 'firebase-uid-1', 'a@a.com', 'A', 'A', UserRole.USER)]
+    const users = [User.rehydrate('1', 'firebase-uid-1', 'a@a.com', 'A', 'A', UserRole.USER, false)]
     const useCase = new IndexUserUseCase(
       new FakeUserReadRepository(users),
       new FakeOwnershipReadRepository({ '1': 2 })
@@ -124,7 +124,8 @@ test.group('User use cases', () => {
       'old@mail.com',
       'Old',
       'Name',
-      UserRole.USER
+      UserRole.USER,
+      false
     )
     const readRepo = new FakeUserReadRepository([existing])
     const writeRepo = new FakeUserWriteRepository()

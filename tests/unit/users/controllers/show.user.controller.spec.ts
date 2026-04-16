@@ -25,7 +25,8 @@ test('ShowUserController returns 200 when found', async ({ assert }) => {
         'john@example.com',
         'John',
         'Doe',
-        UserRole.USER
+        UserRole.USER,
+        false
       ),
       dogsCount: 1,
     }) as any

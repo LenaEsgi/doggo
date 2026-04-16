@@ -25,7 +25,8 @@ test('UpdateUserController returns 200 when updated', async ({ assert }) => {
         'jane@example.com',
         'Jane',
         'Doe',
-        UserRole.ADMIN
+        UserRole.ADMIN,
+        true
       ),
       dogsCount: 4,
     }) as any
