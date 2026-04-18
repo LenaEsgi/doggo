@@ -9,4 +9,5 @@ export abstract class OwnershipReadRepository {
     robotDogId: string,
     options?: PaginationDto
   ): Promise<PaginatedResult<string>>
+  abstract isOwner(userId: string, robotDogId: string): Promise<boolean>
 }

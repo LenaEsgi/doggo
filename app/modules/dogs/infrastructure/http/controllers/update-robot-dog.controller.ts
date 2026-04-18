@@ -4,12 +4,15 @@ import { UpdateRobotDogValidator } from '../validators/update-robot-dog.validato
 import { UpdateRobotDogDto } from '../../../application/DTO/update-robot-dog.dto.js'
 import { RobotDogNotFoundError } from '../../../domain/exceptions/robot-dog-not-found.error.js'
 import { UpdateRobotDogUseCase } from '#dogs/application/usecases/update-robot-dog.use-case'
+import RobotDogPolicy from '#dogs/application/policies/robot-dog.policy'
 
 @inject()
 export default class UpdateRobotDogController {
   constructor(private updateRobotDog: UpdateRobotDogUseCase) {}
 
-  public async handle({ request, params, response, logger }: HttpContext) {
+  public async handle({ request, params, response, logger, bouncer }: HttpContext) {
+    await bouncer.with(RobotDogPolicy).authorize('update', params.id)
+
     const payload = await request.validateUsing(UpdateRobotDogValidator)
 
     const dto: UpdateRobotDogDto = {
