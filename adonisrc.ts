@@ -9,7 +9,7 @@ export default defineConfig({
       indexEntities({
         transformers: { enabled: true },
       }),
-      indexPolicies()
+      indexPolicies(),
     ],
   },
   /*
@@ -39,7 +39,11 @@ export default defineConfig({
   | will be scanned automatically from the "./commands" directory.
   |
   */
-  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands'), () => import('@adonisjs/bouncer/commands')],
+  commands: [
+    () => import('@adonisjs/core/commands'),
+    () => import('@adonisjs/lucid/commands'),
+    () => import('@adonisjs/bouncer/commands'),
+  ],
 
   /*
   |--------------------------------------------------------------------------
@@ -68,7 +72,7 @@ export default defineConfig({
     () => import('#providers/user_provider'),
     () => import('#providers/action_provider'),
     () => import('#providers/firebase_provider'),
-    () => import('@adonisjs/bouncer/bouncer_provider')
+    () => import('@adonisjs/bouncer/bouncer_provider'),
   ],
 
   /*
