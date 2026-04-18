@@ -31,33 +31,6 @@ export class AdoptRobotDogUseCase {
 
     await this.ownershipWriteRepository.adopt(userId, robotDog.id.value, new Date())
 
-    try {
-      const cloudFunctionUrl = 'https://email-doggo-711913037876.europe-west1.run.app/sendEmail'
-
-      const tokenResponse = await fetch(
-        `http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${cloudFunctionUrl}`,
-        { headers: { 'Metadata-Flavor': 'Google' } }
-      )
-      const token = await tokenResponse.text()
-
-      await fetch(cloudFunctionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          to: 'arthur.morelon@gmail.com',
-          subject: 'Félicitations pour votre adoption !',
-          html: `<h1>Bienvenue !</h1><p>Vous avez bien adopté votre robot dog. Profitez-en bien !</p>`,
-        }),
-      })
-
-      logger.info({ userId }, 'Email envoyé avec succès')
-    } catch (error) {
-      logger.warn({ userId, error }, 'Échec envoi email, adoption toujours valide')
-    }
-
     logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase completed successfully')
   }
 }
