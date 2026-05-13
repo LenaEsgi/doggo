@@ -5,6 +5,7 @@ type ParamValue = string | number | bigint | boolean
 export type ScannedRoutes = {
   ALL: {
     'index_user': { paramsTuple?: []; params?: {} }
+    'me_user': { paramsTuple?: []; params?: {} }
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -46,6 +47,7 @@ export type ScannedRoutes = {
   }
   GET: {
     'index_user': { paramsTuple?: []; params?: {} }
+    'me_user': { paramsTuple?: []; params?: {} }
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
@@ -59,6 +61,7 @@ export type ScannedRoutes = {
   }
   HEAD: {
     'index_user': { paramsTuple?: []; params?: {} }
+    'me_user': { paramsTuple?: []; params?: {} }
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
