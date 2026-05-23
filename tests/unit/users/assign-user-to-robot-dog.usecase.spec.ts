@@ -31,26 +31,21 @@ class FakeUserReadRepository extends UserReadRepository {
   }
 }
 
-const CALLER_ID = 'caller-00000000-0000-0000-0000-000000000001'
 const TARGET_ID = 'target-00000000-0000-0000-0000-000000000002'
 
 test.group('AssignUserToRobotDogUseCase', () => {
-  test('creates ownership when caller is owner and target user exists', async ({ assert }) => {
-    const caller = User.rehydrate(CALLER_ID, 'fb-caller', 'caller@test.com', 'Caller', 'User', UserRole.USER)
+  test('creates ownership when robot dog and target user exist', async ({ assert }) => {
     const target = User.rehydrate(TARGET_ID, 'fb-target', 'target@test.com', 'Target', 'User', UserRole.USER)
     const dog = RobotDog.create('SN-001', 'Rex', 80)
 
     const dogRepo = new FakeRobotDogRepository()
     await dogRepo.save(dog)
 
-    const ownershipRepo = new FakeOwnershipRepository(
-      { [CALLER_ID]: [dog.id.value] },
-      { [dog.id.value]: [CALLER_ID] }
-    )
+    const ownershipRepo = new FakeOwnershipRepository()
 
     const useCase = new AssignUserToRobotDogUseCase(
       new RobotDogOwnershipGatewayImplementation(dogRepo),
-      new UserOwnershipGatewayImplementation(new FakeUserReadRepository([caller, target])),
+      new UserOwnershipGatewayImplementation(new FakeUserReadRepository([target])),
       ownershipRepo,
       ownershipRepo
     )
@@ -62,18 +57,17 @@ test.group('AssignUserToRobotDogUseCase', () => {
   })
 
   test('throws RobotDogNotFoundError when robot dog does not exist', async ({ assert }) => {
-    const caller = User.rehydrate(CALLER_ID, 'fb-caller', 'caller@test.com', 'Caller', 'User', UserRole.USER)
     const target = User.rehydrate(TARGET_ID, 'fb-target', 'target@test.com', 'Target', 'User', UserRole.USER)
 
     const useCase = new AssignUserToRobotDogUseCase(
       new RobotDogOwnershipGatewayImplementation(new FakeRobotDogRepository()),
-      new UserOwnershipGatewayImplementation(new FakeUserReadRepository([caller, target])),
+      new UserOwnershipGatewayImplementation(new FakeUserReadRepository([target])),
       new FakeOwnershipRepository(),
       new FakeOwnershipRepository()
     )
 
     await assert.rejects(
-      () => useCase.execute('non-existent-dog-id', TARGET_ID),
+      () => useCase.execute('00000000-0000-4000-8000-000000000099', TARGET_ID),
       RobotDogNotFoundError
     )
   })
