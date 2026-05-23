@@ -1,11 +1,21 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { FirebaseTokenVerifier } from '#middleware/auth/contracts/firebase-token-verifier'
-import { AuthenticatedFirebaseUser } from '#middleware/auth/types/authenticated-firebase-user'
+import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
+import type { User } from '#users/domain/user.entity'
+
+declare module '@adonisjs/core/http' {
+  interface HttpContext {
+    authenticatedUser: User
+  }
+}
 
 @inject()
 export default class FirebaseAuthMiddleware {
-  constructor(private readonly tokenVerifier: FirebaseTokenVerifier) {}
+  constructor(
+    private readonly tokenVerifier: FirebaseTokenVerifier,
+    private readonly userRepository: UserReadRepository
+  ) {}
 
   async handle(ctx: HttpContext, next: () => Promise<void>) {
     const authHeader = ctx.request.header('authorization')
@@ -24,10 +34,13 @@ export default class FirebaseAuthMiddleware {
         return ctx.response.unauthorized({ message: 'Email not verified' })
       }
 
-      ;(ctx as any).firebaseUser = {
-        uid: decodedToken.uid,
-        email: decodedToken.email ?? null,
-      } satisfies AuthenticatedFirebaseUser
+      const user = await this.userRepository.findByFirebaseUid(decodedToken.uid)
+
+      if (!user) {
+        return ctx.response.unauthorized({ message: 'User not found' })
+      }
+
+      ctx.authenticatedUser = user
 
       await next()
     } catch (error) {

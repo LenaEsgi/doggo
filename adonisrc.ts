@@ -1,5 +1,6 @@
 import { defineConfig } from '@adonisjs/core/app'
 import { indexEntities } from '@adonisjs/core'
+import { indexPolicies } from '@adonisjs/bouncer'
 
 export default defineConfig({
   hooks: {
@@ -8,6 +9,7 @@ export default defineConfig({
       indexEntities({
         transformers: { enabled: true },
       }),
+      indexPolicies(),
     ],
   },
   /*
@@ -37,7 +39,11 @@ export default defineConfig({
   | will be scanned automatically from the "./commands" directory.
   |
   */
-  commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands')],
+  commands: [
+    () => import('@adonisjs/core/commands'),
+    () => import('@adonisjs/lucid/commands'),
+    () => import('@adonisjs/bouncer/commands'),
+  ],
 
   /*
   |--------------------------------------------------------------------------
@@ -66,6 +72,7 @@ export default defineConfig({
     () => import('#providers/user_provider'),
     () => import('#providers/action_provider'),
     () => import('#providers/firebase_provider'),
+    () => import('@adonisjs/bouncer/bouncer_provider'),
   ],
 
   /*

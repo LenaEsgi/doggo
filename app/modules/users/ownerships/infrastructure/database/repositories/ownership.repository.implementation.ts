@@ -93,6 +93,17 @@ export class OwnershipRepositoryImplementation
     }
   }
 
+  async isOwner(userId: string, robotDogId: string): Promise<boolean> {
+    const row = await db
+      .from('ownerships')
+      .where('user_id', userId)
+      .where('robot_dog_id', robotDogId)
+      .whereNull('end_date')
+      .first()
+
+    return row !== null
+  }
+
   async adopt(userId: string, robotDogId: string, startDate: Date): Promise<void> {
     await OwnershipModel.updateOrCreate(
       { userId, robotDogId },
