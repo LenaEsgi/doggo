@@ -62,6 +62,10 @@ export class FakeOwnershipRepository
     }
   }
 
+  async isOwner(userId: string, robotDogId: string): Promise<boolean> {
+    return (this.userToDogs[userId] ?? []).includes(robotDogId)
+  }
+
   async adopt(userId: string, robotDogId: string): Promise<void> {
     const dogs = new Set(this.userToDogs[userId] ?? [])
     dogs.add(robotDogId)
