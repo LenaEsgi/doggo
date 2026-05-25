@@ -7,7 +7,8 @@ export default class DogAssignedMail extends BaseMail {
 
   constructor(
     public readonly user: User,
-    public readonly robotDog: RobotDog
+    public readonly robotDog: RobotDog,
+    public readonly robotDogUrl: string
   ) {
     super()
     this.subject = `Vous avez été assigné au robot dog ${this.robotDog.name}`
@@ -15,10 +16,12 @@ export default class DogAssignedMail extends BaseMail {
 
   prepare() {
     this.message
+      .from('onboarding@resend.dev')
       .to(this.user.email)
       .htmlView('mails/dog-assigned', {
         user: this.user,
         robotDog: this.robotDog,
+        robotDogUrl: this.robotDogUrl,
       })
   }
 }

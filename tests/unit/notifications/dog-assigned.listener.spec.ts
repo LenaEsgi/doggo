@@ -59,6 +59,7 @@ test.group('DogAssignedListener', () => {
     assert.lengthOf(listener.sentMails, 1)
     assert.equal(listener.sentMails[0].user.email, 'john@example.com')
     assert.equal(listener.sentMails[0].robotDog.name, 'Rex')
+    assert.include(listener.sentMails[0].robotDogUrl, DOG_ID)
   })
 
   test('ne plante pas si user introuvable', async ({ assert }) => {

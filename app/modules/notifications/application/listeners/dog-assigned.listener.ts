@@ -1,6 +1,7 @@
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import mail from '@adonisjs/mail/services/main'
+import env from '#start/env'
 import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/user-ownership.gateway'
 import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
 import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
@@ -40,10 +41,17 @@ export class DogAssignedListener {
         return
       }
 
-      await this.doSendMail(new DogAssignedMail(user, robotDog))
+      const robotDogUrl = `${env.get('FRONTEND_URL')}/robots/${robotDog.id.value}`
+      await this.doSendMail(new DogAssignedMail(user, robotDog, robotDogUrl))
       logger.info({ to: user.email }, 'DogAssignedListener: mail sent successfully')
     } catch (error) {
-      logger.error({ error, userId: event.userId }, 'DogAssignedListener: failed to send mail')
+      logger.error(
+        {
+          err: error,
+          userId: event.userId,
+        },
+        'DogAssignedListener: failed to send mail'
+      )
     }
   }
 }
