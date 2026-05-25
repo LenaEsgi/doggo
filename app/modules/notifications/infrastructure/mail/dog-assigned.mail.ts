@@ -15,13 +15,10 @@ export default class DogAssignedMail extends BaseMail {
   }
 
   prepare() {
-    this.message
-      .from('onboarding@resend.dev')
-      .to(this.user.email)
-      .htmlView('mails/dog-assigned', {
-        user: this.user,
-        robotDog: this.robotDog,
-        robotDogUrl: this.robotDogUrl,
-      })
+    this.message.from('onboarding@resend.dev').to(this.user.email).htmlView('mails/dog-assigned', {
+      user: this.user,
+      robotDog: this.robotDog,
+      robotDogUrl: this.robotDogUrl,
+    })
   }
 }
