@@ -6,6 +6,7 @@ import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/c
 import { ActiveOwnershipNotFoundError } from '#app/modules/users/ownerships/domain/exceptions/active-ownership-not-found.error'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import OwnershipRevokedEvent from '#users/ownerships/domain/events/ownership-revoked.event'
 
 @inject()
 export class AbandonRobotDogUseCase {
@@ -35,6 +36,8 @@ export class AbandonRobotDogUseCase {
       logger.warn({ userId, robotDogId }, 'Active ownership not found in AbandonRobotDogUseCase')
       throw new ActiveOwnershipNotFoundError(userId, robotDogId)
     }
+
+    void OwnershipRevokedEvent.dispatch(userId, robotDogId)
 
     logger.info({ userId, robotDogId }, 'AbandonRobotDogUseCase completed successfully')
   }
