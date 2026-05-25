@@ -31,4 +31,6 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   FIREBASE_API_KEY: Env.schema.string(),
   FIREBASE_SERVICE_ACCOUNT_KEYS: Env.schema.string.optional(),
+
+  RESEND_API_KEY: Env.schema.string(),
 })

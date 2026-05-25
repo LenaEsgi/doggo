@@ -73,6 +73,7 @@ export default defineConfig({
     () => import('#providers/action_provider'),
     () => import('#providers/firebase_provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
+    () => import('@adonisjs/mail/mail_provider'),
   ],
 
   /*

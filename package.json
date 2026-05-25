@@ -63,6 +63,7 @@
     "@adonisjs/core": "^7.0.0",
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/lucid": "^22.0.0",
+    "@adonisjs/mail": "^10.2.1",
     "@vinejs/vine": "^4.3.0",
     "adonis-autoswagger": "^3.73.0",
     "eslint-plugin-unicorn": "^63.0.0",
