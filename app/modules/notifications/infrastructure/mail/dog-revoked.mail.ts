@@ -14,12 +14,9 @@ export default class DogRevokedMail extends BaseMail {
   }
 
   prepare() {
-    this.message
-      .from('onboarding@resend.dev')
-      .to(this.user.email)
-      .htmlView('mails/dog-revoked', {
-        user: this.user,
-        robotDog: this.robotDog,
-      })
+    this.message.from('onboarding@resend.dev').to(this.user.email).htmlView('mails/dog-revoked', {
+      user: this.user,
+      robotDog: this.robotDog,
+    })
   }
 }
