@@ -14,14 +14,15 @@ export default class ListUserRobotDogsController {
     })
 
     logger.info({ userId: id }, 'ListUserRobotDogsController called')
-    const dogs = await this.useCase.execute(id)
+    const result = await this.useCase.execute(id)
     logger.info(
-      { userId: id, count: dogs.length },
+      { userId: id, count: result.data.length },
       'ListUserRobotDogsController completed successfully'
     )
 
     response.ok({
-      dogs: RobotDogSerializer.collection(dogs),
+      data: RobotDogSerializer.collection(result.data),
+      meta: result.meta,
     })
   }
 }

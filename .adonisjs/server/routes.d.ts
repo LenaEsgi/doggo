@@ -7,8 +7,10 @@ export type ScannedRoutes = {
     'index_user': { paramsTuple?: []; params?: {} }
     'me_user': { paramsTuple?: []; params?: {} }
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'assign_user_dog': { paramsTuple?: []; params?: {} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_user_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'adopt_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'abandon_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'register_auth': { paramsTuple?: []; params?: {} }
@@ -50,6 +52,7 @@ export type ScannedRoutes = {
     'me_user': { paramsTuple?: []; params?: {} }
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_user_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'list_user_robot_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -64,6 +67,7 @@ export type ScannedRoutes = {
     'me_user': { paramsTuple?: []; params?: {} }
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_user_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'list_user_robot_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -73,11 +77,8 @@ export type ScannedRoutes = {
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
-  PATCH: {
-    'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
   POST: {
+    'assign_user_dog': { paramsTuple?: []; params?: {} }
     'adopt_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'abandon_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'register_auth': { paramsTuple?: []; params?: {} }
@@ -94,6 +95,10 @@ export type ScannedRoutes = {
     'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'assign_to_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
+  }
+  PATCH: {
+    'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
     'disable_mfa_auth': { paramsTuple?: []; params?: {} }

@@ -34,8 +34,28 @@ export class FakeOwnershipRepository
     )
   }
 
-  async findActiveDogIdsByUserId(userId: string): Promise<string[]> {
-    return this.userToDogs[userId] ?? []
+  async findActiveDogIdsByUserId(
+    userId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const allDogIds = this.userToDogs[userId] ?? []
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 20
+    const start = (page - 1) * perPage
+    const data = allDogIds.slice(start, start + perPage)
+    const total = allDogIds.length
+    const lastPage = Math.max(1, Math.ceil(total / perPage))
+
+    return {
+      data,
+      meta: {
+        total,
+        perPage,
+        currentPage: page,
+        firstPage: 1,
+        lastPage,
+      },
+    }
   }
 
   async findActiveUserIdsByRobotDogId(

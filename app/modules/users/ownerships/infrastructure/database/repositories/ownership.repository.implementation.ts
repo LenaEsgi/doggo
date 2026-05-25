@@ -54,15 +54,31 @@ export class OwnershipRepositoryImplementation
     )
   }
 
-  async findActiveDogIdsByUserId(userId: string): Promise<string[]> {
+  async findActiveDogIdsByUserId(
+    userId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 20
+
     const rows = await db
       .from('ownerships')
       .where('user_id', userId)
       .whereNull('end_date')
       .select('robot_dog_id')
       .orderBy('start_date', 'desc')
+      .paginate(page, perPage)
 
-    return rows.map((row) => String(row.robot_dog_id))
+    return {
+      data: rows.all().map((row) => String(row.robot_dog_id)),
+      meta: {
+        total: rows.total,
+        perPage: rows.perPage,
+        currentPage: rows.currentPage,
+        firstPage: rows.firstPage,
+        lastPage: rows.lastPage,
+      },
+    }
   }
 
   async findActiveUserIdsByRobotDogId(
