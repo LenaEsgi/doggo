@@ -35,7 +35,10 @@ export class AssignUserToRobotDogUseCase {
 
     const alreadyOwner = await this.ownershipReadRepository.isOwner(targetUserId, robotDogId)
     if (alreadyOwner) {
-      logger.warn({ robotDogId, targetUserId }, 'Ownership already exists in AssignUserToRobotDogUseCase')
+      logger.warn(
+        { robotDogId, targetUserId },
+        'Ownership already exists in AssignUserToRobotDogUseCase'
+      )
       throw new OwnershipAlreadyExistsError(targetUserId, robotDogId)
     }
 

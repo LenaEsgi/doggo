@@ -35,7 +35,14 @@ const TARGET_ID = 'target-00000000-0000-0000-0000-000000000002'
 
 test.group('AssignUserToRobotDogUseCase', () => {
   test('creates ownership when robot dog and target user exist', async ({ assert }) => {
-    const target = User.rehydrate(TARGET_ID, 'fb-target', 'target@test.com', 'Target', 'User', UserRole.USER)
+    const target = User.rehydrate(
+      TARGET_ID,
+      'fb-target',
+      'target@test.com',
+      'Target',
+      'User',
+      UserRole.USER
+    )
     const dog = RobotDog.create('SN-001', 'Rex', 80)
 
     const dogRepo = new FakeRobotDogRepository()
@@ -57,7 +64,14 @@ test.group('AssignUserToRobotDogUseCase', () => {
   })
 
   test('throws RobotDogNotFoundError when robot dog does not exist', async ({ assert }) => {
-    const target = User.rehydrate(TARGET_ID, 'fb-target', 'target@test.com', 'Target', 'User', UserRole.USER)
+    const target = User.rehydrate(
+      TARGET_ID,
+      'fb-target',
+      'target@test.com',
+      'Target',
+      'User',
+      UserRole.USER
+    )
 
     const useCase = new AssignUserToRobotDogUseCase(
       new RobotDogOwnershipGatewayImplementation(new FakeRobotDogRepository()),
@@ -90,8 +104,17 @@ test.group('AssignUserToRobotDogUseCase', () => {
     )
   })
 
-  test('throws OwnershipAlreadyExistsError when target user is already an owner', async ({ assert }) => {
-    const target = User.rehydrate(TARGET_ID, 'fb-target', 'target@test.com', 'Target', 'User', UserRole.USER)
+  test('throws OwnershipAlreadyExistsError when target user is already an owner', async ({
+    assert,
+  }) => {
+    const target = User.rehydrate(
+      TARGET_ID,
+      'fb-target',
+      'target@test.com',
+      'Target',
+      'User',
+      UserRole.USER
+    )
     const dog = RobotDog.create('SN-003', 'Bolt', 70)
     const dogRepo = new FakeRobotDogRepository()
     await dogRepo.save(dog)
