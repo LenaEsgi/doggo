@@ -143,8 +143,12 @@ export class OwnershipRepositoryImplementation
       return false
     }
 
-    ownership.endDate = DateTime.fromJSDate(endDate)
-    await ownership.save()
+    await db
+      .from('ownerships')
+      .where('user_id', userId)
+      .where('robot_dog_id', robotDogId)
+      .whereNull('end_date')
+      .update({ end_date: DateTime.fromJSDate(endDate).toSQL() })
 
     return true
   }
