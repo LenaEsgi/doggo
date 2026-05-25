@@ -6,8 +6,8 @@ export default class DogAssignedMail extends BaseMail {
   subject: string
 
   constructor(
-    private readonly user: User,
-    private readonly robotDog: RobotDog
+    public readonly user: User,
+    public readonly robotDog: RobotDog
   ) {
     super()
     this.subject = `Vous avez été assigné au robot dog ${this.robotDog.name}`
