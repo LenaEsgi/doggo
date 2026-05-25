@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import { DogAssignedListener } from '#app/modules/notifications/application/listeners/dog-assigned.listener'
+import DogAssignedMail from '#app/modules/notifications/infrastructure/mail/dog-assigned.mail'
 import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
@@ -15,48 +16,64 @@ const user = User.rehydrate(USER_ID, 'firebase-u1', 'john@example.com', 'John', 
 const dog = RobotDog.rehydrate(DOG_ID, 'SN-001', 'ABCDEFGHIJKLMNOPQR', 'Rex', RobotDogState.IDLE, 80, new Date())
 
 class FakeUserGateway implements UserOwnershipGateway {
-  async existsById(_id: string) { return true }
-  async findByIds(_ids: string[]) { return [user] }
+  async existsById(_id: string) {
+    return true
+  }
+  async findByIds(_ids: string[]) {
+    return [user]
+  }
 }
 
 class FakeRobotDogGateway implements RobotDogOwnershipGateway {
-  async existsById(_id: string) { return true }
-  async findBySerialNumber(_sn: string) { return null }
-  async findByIds(_ids: string[]) { return [dog] }
+  async existsById(_id: string) {
+    return true
+  }
+  async findBySerialNumber(_sn: string) {
+    return null
+  }
+  async findByIds(_ids: string[]) {
+    return [dog]
+  }
+}
+
+class SpyDogAssignedListener extends DogAssignedListener {
+  readonly sentMails: DogAssignedMail[] = []
+
+  protected async doSendMail(mailInstance: DogAssignedMail): Promise<void> {
+    this.sentMails.push(mailInstance)
+  }
+}
+
+class ThrowingDogAssignedListener extends DogAssignedListener {
+  protected async doSendMail(_mailInstance: DogAssignedMail): Promise<void> {
+    throw new Error('ne doit pas être appelé')
+  }
 }
 
 test.group('DogAssignedListener', () => {
   test('envoie un mail quand user et dog sont trouvés', async ({ assert }) => {
-    const sentMails: { to: string; dogName: string }[] = []
+    const listener = new SpyDogAssignedListener(new FakeUserGateway(), new FakeRobotDogGateway())
 
-    const fakeSend = async (mail: any) => {
-      sentMails.push({ to: mail.user.email, dogName: mail.robotDog.name })
-    }
+    await listener.handle(new OwnershipAssignedEvent(USER_ID, DOG_ID))
 
-    const listener = new DogAssignedListener(
-      new FakeUserGateway(),
-      new FakeRobotDogGateway(),
-      fakeSend as any
-    )
-
-    const event = new OwnershipAssignedEvent(USER_ID, DOG_ID)
-    await listener.handle(event)
-
-    assert.lengthOf(sentMails, 1)
-    assert.equal(sentMails[0].to, 'john@example.com')
-    assert.equal(sentMails[0].dogName, 'Rex')
+    assert.lengthOf(listener.sentMails, 1)
+    assert.equal(listener.sentMails[0].user.email, 'john@example.com')
+    assert.equal(listener.sentMails[0].robotDog.name, 'Rex')
   })
 
   test('ne plante pas si user introuvable', async ({ assert }) => {
     class EmptyUserGateway implements UserOwnershipGateway {
-      async existsById(_id: string) { return false }
-      async findByIds(_ids: string[]) { return [] }
+      async existsById(_id: string) {
+        return false
+      }
+      async findByIds(_ids: string[]) {
+        return []
+      }
     }
 
-    const listener = new DogAssignedListener(
+    const listener = new ThrowingDogAssignedListener(
       new EmptyUserGateway(),
-      new FakeRobotDogGateway(),
-      async () => { throw new Error('ne doit pas être appelé') }
+      new FakeRobotDogGateway()
     )
 
     await assert.doesNotReject(() =>
