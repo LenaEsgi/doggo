@@ -1,5 +1,5 @@
 import { test } from '@japa/runner'
-import { DogAssignedListener } from '#app/modules/notifications/application/listeners/dog-assigned.listener'
+import DogAssignedListener from '#app/modules/notifications/application/listeners/dog-assigned.listener'
 import type DogAssignedMail from '#app/modules/notifications/infrastructure/mail/dog-assigned.mail'
 import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
 import { User } from '#users/domain/user.entity'

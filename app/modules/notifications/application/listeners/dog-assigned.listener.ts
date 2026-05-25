@@ -8,7 +8,7 @@ import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-as
 import DogAssignedMail from '#app/modules/notifications/infrastructure/mail/dog-assigned.mail'
 
 @inject()
-export class DogAssignedListener {
+export default class DogAssignedListener {
   constructor(
     private readonly userGateway: UserOwnershipGateway,
     private readonly robotDogGateway: RobotDogOwnershipGateway
