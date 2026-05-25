@@ -1,6 +1,5 @@
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
-import emitter from '@adonisjs/core/services/emitter'
 import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
 import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/user-ownership.gateway'
 import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
@@ -33,7 +32,7 @@ export class AdoptRobotDogUseCase {
 
     await this.ownershipWriteRepository.adopt(userId, robotDog.id.value, new Date())
 
-    void emitter.emit(OwnershipAssignedEvent, new OwnershipAssignedEvent(userId, robotDog.id.value))
+    void OwnershipAssignedEvent.dispatch(userId, robotDog.id.value)
 
     logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase completed successfully')
   }

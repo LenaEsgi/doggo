@@ -1,11 +1,14 @@
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
-import emitter from '@adonisjs/core/services/emitter'
-import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
+import {
+  RobotDogOwnershipGateway
+} from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
 import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/user-ownership.gateway'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
-import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
+import {
+  OwnershipAlreadyExistsError
+} from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
@@ -45,7 +48,7 @@ export class AssignUserToRobotDogUseCase {
 
     await this.ownershipWriteRepository.adopt(targetUserId, robotDogId, new Date())
 
-    void emitter.emit(OwnershipAssignedEvent, new OwnershipAssignedEvent(targetUserId, robotDogId))
+    void OwnershipAssignedEvent.dispatch(targetUserId, robotDogId)
 
     logger.info({ robotDogId, targetUserId }, 'AssignUserToRobotDogUseCase completed successfully')
   }
