@@ -8,5 +8,11 @@ const DogAssignedListener = () =>
 const DogRevokedListener = () =>
   import('#app/modules/notifications/application/listeners/dog-revoked.listener')
 
-emitter.on(OwnershipAssignedEvent, [DogAssignedListener])
-emitter.on(OwnershipRevokedEvent, [DogRevokedListener])
+const DogAssignedSseListener = () =>
+  import('#app/modules/notifications/application/listeners/dog-assigned-sse.listener')
+
+const DogRevokedSseListener = () =>
+  import('#app/modules/notifications/application/listeners/dog-revoked-sse.listener')
+
+emitter.on(OwnershipAssignedEvent, [DogAssignedListener, DogAssignedSseListener])
+emitter.on(OwnershipRevokedEvent, [DogRevokedListener, DogRevokedSseListener])
