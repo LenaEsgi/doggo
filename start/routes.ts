@@ -12,7 +12,7 @@ import { middleware } from '#start/kernel'
 
 transmit.registerRoutes((route) => {
   if (route.getPattern() === '__transmit/events') {
-    route.middleware(middleware.auth())
+    route.middleware(middleware.firebaseAuth())
   }
 })
 
