@@ -7,7 +7,9 @@ import { CreateActionUseCase } from '#app/modules/actions/application/usecases/c
 export default class CreateActionController {
   constructor(private readonly useCase: CreateActionUseCase) {}
 
-  async handle({ request, response, logger }: HttpContext) {
+  async handle({ request, response, logger, bouncer }: HttpContext) {
+    await bouncer.with('ActionPolicy').authorize('create')
+
     const validatedData = await request.validateUsing(CreateActionValidator)
 
     logger.info('Starting Action creation', { data: validatedData })

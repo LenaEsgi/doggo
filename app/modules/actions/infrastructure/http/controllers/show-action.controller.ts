@@ -7,7 +7,9 @@ import { ShowActionUseCase } from '#app/modules/actions/application/usecases/sho
 export default class ShowActionController {
   constructor(private readonly useCase: ShowActionUseCase) {}
 
-  async handle({ serialize, params }: HttpContext) {
+  async handle({ serialize, params, bouncer }: HttpContext) {
+    await bouncer.with('ActionPolicy').authorize('show')
+
     const result = await this.useCase.execute({ id: params.id })
 
     return serialize(ActionTransformer.transform(result))

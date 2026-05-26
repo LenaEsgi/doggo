@@ -1,4 +1,5 @@
 import router from '@adonisjs/core/services/router'
+import { middleware } from '#start/kernel'
 
 const CreateMissionController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/create-mission.controller')
@@ -40,7 +41,12 @@ router
     router.put('/:missionId/steps/:stepId', [MoveMissionStepController])
   })
   .prefix('/missions')
+  .use(middleware.firebaseAuth())
 
-router.get('/dogs/:id/missions', [ListMissionsByDogUseCase])
-router.post('/dogs/:id/assign', [AssignToDogController])
-router.delete('/dogs/:id/missions/:missionId', [RemoveFromDogController])
+router
+  .group(() => {
+    router.get('/dogs/:id/missions', [ListMissionsByDogUseCase])
+    router.post('/dogs/:id/assign', [AssignToDogController])
+    router.delete('/dogs/:id/missions/:missionId', [RemoveFromDogController])
+  })
+  .use(middleware.firebaseAuth())

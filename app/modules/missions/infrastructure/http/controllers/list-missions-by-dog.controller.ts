@@ -8,7 +8,9 @@ import { ListMissionsByDogUseCase } from '#app/modules/missions/application/usec
 export default class ListMissionsByDogController {
   constructor(private listMissionsByDogUseCase: ListMissionsByDogUseCase) {}
 
-  async handle({ request, serialize, response, params }: HttpContext) {
+  async handle({ request, serialize, response, params, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('listByDog', params.id)
+
     const pagination: PaginationDto = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 20)),

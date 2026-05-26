@@ -8,7 +8,9 @@ import { IndexActionUseCase } from '#app/modules/actions/application/usecases/in
 export default class IndexActionController {
   constructor(private readonly useCase: IndexActionUseCase) {}
 
-  async handle({ request, serialize, response }: HttpContext) {
+  async handle({ request, serialize, response, bouncer }: HttpContext) {
+    await bouncer.with('ActionPolicy').authorize('index')
+
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 20)),

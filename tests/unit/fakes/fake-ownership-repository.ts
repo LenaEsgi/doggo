@@ -72,6 +72,11 @@ export class FakeOwnershipRepository
     this.dogToUsers[robotDogId] = [...users]
   }
 
+  async isOwner(userId: string, robotDogId: string): Promise<boolean> {
+    const dogs = this.userToDogs[userId] ?? []
+    return dogs.includes(robotDogId)
+  }
+
   async abandon(userId: string, robotDogId: string): Promise<boolean> {
     const userDogs = this.userToDogs[userId] ?? []
 

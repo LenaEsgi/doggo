@@ -26,13 +26,17 @@ export class MissionRepositoryImplementation implements MissionRepository {
     return Mission.rehydrate(row.id, row.name, row.userId, row.status, steps)
   }
 
-  async index(options?: PaginationDto): Promise<PaginatedResult<Mission>> {
+  async index(options?: PaginationDto, userId?: string): Promise<PaginatedResult<Mission>> {
     const page = options?.page ?? 1
     const perPage = options?.limit ?? 10
 
-    const paginator = await MissionModel.query()
-      .orderBy('created_at', 'desc')
-      .paginate(page, perPage)
+    const query = MissionModel.query().orderBy('created_at', 'desc')
+
+    if (userId) {
+      query.where('user_id', userId)
+    }
+
+    const paginator = await query.paginate(page, perPage)
 
     const missions = paginator.all().map((row) => {
       return Mission.rehydrate(row.id, row.name, row.userId, row.status, [])

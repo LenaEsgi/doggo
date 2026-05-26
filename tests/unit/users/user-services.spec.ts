@@ -74,6 +74,10 @@ class FakeOwnershipReadRepository extends OwnershipReadRepository {
       },
     }
   }
+
+  async isOwner(_userId: string, _robotDogId: string): Promise<boolean> {
+    return false
+  }
 }
 
 class FakeUserWriteRepository extends UserWriteRepository {

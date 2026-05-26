@@ -9,8 +9,8 @@ import Mission from '#app/modules/missions/domain/entities/mission.entity'
 export class IndexMissionUseCase {
   constructor(private missionRepository: MissionRepository) {}
 
-  async execute(params: PaginationDto): Promise<PaginatedResult<Mission>> {
-    logger.info('IndexMissionUseCase started', { params })
-    return this.missionRepository.index(params)
+  async execute(params: PaginationDto, userId?: string): Promise<PaginatedResult<Mission>> {
+    logger.info('IndexMissionUseCase started', { params, userId })
+    return this.missionRepository.index(params, userId)
   }
 }

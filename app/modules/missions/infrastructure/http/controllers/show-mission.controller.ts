@@ -7,7 +7,9 @@ import { ShowMissionUseCase } from '#app/modules/missions/application/usecases/s
 export default class ShowMissionController {
   constructor(private showMissionUseCase: ShowMissionUseCase) {}
 
-  async handle({ serialize, params }: HttpContext) {
+  async handle({ serialize, params, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('show', params.id)
+
     const mission = await this.showMissionUseCase.execute(params.id)
 
     return serialize(MissionTransformer.transform(mission))

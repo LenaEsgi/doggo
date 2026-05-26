@@ -7,7 +7,9 @@ import { UpdateActionUseCase } from '#app/modules/actions/application/usecases/u
 export default class UpdateActionController {
   constructor(private readonly useCase: UpdateActionUseCase) {}
 
-  async handle({ request, params, response }: HttpContext) {
+  async handle({ request, params, response, bouncer }: HttpContext) {
+    await bouncer.with('ActionPolicy').authorize('update')
+
     const payload = await request.validateUsing(UpdateActionValidator)
 
     await this.useCase.execute({

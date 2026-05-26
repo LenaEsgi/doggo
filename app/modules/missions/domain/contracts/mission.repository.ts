@@ -5,7 +5,7 @@ import { type MissionId } from '#app/modules/missions/domain/value-objects/missi
 
 export abstract class MissionRepository {
   abstract findById(id: MissionId): Promise<Mission | null>
-  abstract index(options?: PaginationDto): Promise<PaginatedResult<Mission>>
+  abstract index(options?: PaginationDto, userId?: string): Promise<PaginatedResult<Mission>>
   abstract save(mission: Mission): Promise<void>
   abstract delete(missionId: MissionId): Promise<void>
   abstract listByRobotDog(dogId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>>

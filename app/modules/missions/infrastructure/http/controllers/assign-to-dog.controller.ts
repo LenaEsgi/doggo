@@ -6,7 +6,9 @@ import { AssignMissionToDogUseCase } from '#app/modules/missions/application/use
 @inject()
 export default class AssignToDogController {
   constructor(private assignMissionToDogUseCase: AssignMissionToDogUseCase) {}
-  public async handle({ request, params }: HttpContext) {
+  public async handle({ request, params, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('assignToDog', params.id)
+
     const payload = await request.validateUsing(AssignMissionToDogValidator)
 
     await this.assignMissionToDogUseCase.execute(payload.missionId, params.id)

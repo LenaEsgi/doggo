@@ -10,10 +10,13 @@ import {
 export default class AbandonUserDogController {
   constructor(private readonly useCase: AbandonRobotDogUseCase) {}
 
-  async handle({ request, response, logger }: HttpContext): Promise<void> {
+  async handle({ request, response, logger, bouncer }: HttpContext): Promise<void> {
     const { id } = await request.validateUsing(manageUserDogsParamsValidator, {
       data: request.params(),
     })
+
+    await bouncer.with('UserPolicy').authorize('abandon', id)
+
     const { robotDogId } = await request.validateUsing(manageUserDogsBodyValidatorForAbandon)
 
     logger.info({ userId: id, robotDogId }, 'AbandonUserDogController called')

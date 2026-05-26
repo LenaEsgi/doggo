@@ -6,7 +6,9 @@ import { AddMissionStepUseCase } from '#app/modules/missions/application/usecase
 @inject()
 export default class AddStepController {
   constructor(private addStepUseCase: AddMissionStepUseCase) {}
-  public async handle({ request, params }: HttpContext) {
+  public async handle({ request, params, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('addStep', params.id)
+
     const payload = await request.validateUsing(AddStepValidator)
     await this.addStepUseCase.execute({ ...payload, missionId: params.id })
   }

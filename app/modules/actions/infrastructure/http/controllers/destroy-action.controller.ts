@@ -6,7 +6,9 @@ import { DestroyActionUseCase } from '#app/modules/actions/application/usecases/
 export default class DestroyActionController {
   constructor(private readonly useCase: DestroyActionUseCase) {}
 
-  async handle({ params, response, logger }: HttpContext) {
+  async handle({ params, response, logger, bouncer }: HttpContext) {
+    await bouncer.with('ActionPolicy').authorize('destroy')
+
     const id = params.id
 
     logger.info('Starting Action deletion', { id })
