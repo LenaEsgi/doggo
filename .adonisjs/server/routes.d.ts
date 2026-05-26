@@ -46,6 +46,9 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'event_stream': { paramsTuple?: []; params?: {} }
+    'subscribe': { paramsTuple?: []; params?: {} }
+    'unsubscribe': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'index_mission': { paramsTuple?: []; params?: {} }
@@ -61,6 +64,7 @@ export type ScannedRoutes = {
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'event_stream': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'index_mission': { paramsTuple?: []; params?: {} }
@@ -76,6 +80,7 @@ export type ScannedRoutes = {
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'event_stream': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'create_mission': { paramsTuple?: []; params?: {} }
@@ -95,6 +100,8 @@ export type ScannedRoutes = {
     'list_mfa_enrollments_auth': { paramsTuple?: []; params?: {} }
     'create_robot_dog': { paramsTuple?: []; params?: {} }
     'create_action': { paramsTuple?: []; params?: {} }
+    'subscribe': { paramsTuple?: []; params?: {} }
+    'unsubscribe': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'update_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

@@ -11,7 +11,12 @@ import transmit from '@adonisjs/transmit/services/main'
 import { middleware } from '#start/kernel'
 
 transmit.registerRoutes((route) => {
-  if (route.getPattern() === '__transmit/events') {
+  // EventSource (GET) ne supporte pas les headers custom — pas d'auth ici
+  // L'authentification se fait sur les routes POST (subscribe/unsubscribe)
+  if (
+    route.getPattern() === '__transmit/subscribe' ||
+    route.getPattern() === '__transmit/unsubscribe'
+  ) {
     route.middleware(middleware.firebaseAuth())
   }
 })
