@@ -7,6 +7,15 @@
 |
 */
 
+import transmit from '@adonisjs/transmit/services/main'
+import { middleware } from '#start/kernel'
+
+transmit.registerRoutes((route) => {
+  if (route.getPattern() === '__transmit/events') {
+    route.middleware(middleware.auth())
+  }
+})
+
 import './routes/swagger.js'
 import '../app/modules/users/infrastructure/http/routes.js'
 import '../app/modules/auth/infrastructure/http/routes.js'
