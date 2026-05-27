@@ -4,7 +4,7 @@ import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robo
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 
-test.group('GET /dogs/:id', (group) => {
+test.group('GET /api/v1/dogs/:id', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
   test('should return robot dog if found', async ({ client, assert }) => {
@@ -18,7 +18,7 @@ test.group('GET /dogs/:id', (group) => {
       lastHeartbeat: DateTime.now(),
     })
 
-    const response = await client.get(`/dogs/${dog.id}`)
+    const response = await client.get(`/api/v1/dogs/${dog.id}`)
     response.assertStatus(200)
 
     const body = response.body()
@@ -29,7 +29,7 @@ test.group('GET /dogs/:id', (group) => {
   })
 
   test('should return 404 if robot dog not found', async ({ client }) => {
-    const response = await client.get('/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
+    const response = await client.get('/api/v1/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
 
     response.assertStatus(404)
     response.assertBodyContains({

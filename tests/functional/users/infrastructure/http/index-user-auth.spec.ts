@@ -14,11 +14,11 @@ class FakeFirebaseTokenVerifier extends FirebaseTokenVerifier {
   }
 }
 
-test.group('GET /users auth', (group) => {
+test.group('GET /api/v1/users auth', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
   test('should return 401 when no bearer token is provided', async ({ client }) => {
-    const response = await client.get('/users')
+    const response = await client.get('/api/v1/users')
 
     response.assertStatus(401)
     response.assertBodyContains({
@@ -52,7 +52,7 @@ test.group('GET /users auth', (group) => {
 
     cleanup(() => app.container.restore(FirebaseTokenVerifier))
 
-    const response = await client.get('/users').header('Authorization', 'Bearer valid-id-token')
+    const response = await client.get('/api/v1/users').header('Authorization', 'Bearer valid-id-token')
 
     response.assertStatus(200)
 

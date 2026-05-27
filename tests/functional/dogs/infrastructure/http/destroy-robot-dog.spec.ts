@@ -4,7 +4,7 @@ import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 import testUtils from '@adonisjs/core/services/test_utils'
 
-test.group('DELETE /dogs/:id', (group) => {
+test.group('DELETE /api/v1/dogs/:id', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
   test('should return 204 when robot dog is deleted', async ({ client, assert }) => {
@@ -17,7 +17,7 @@ test.group('DELETE /dogs/:id', (group) => {
       lastHeartbeat: DateTime.now(),
     })
 
-    const response = await client.delete(`/dogs/${dog.id}`)
+    const response = await client.delete(`/api/v1/dogs/${dog.id}`)
 
     response.assertStatus(204)
 
@@ -26,7 +26,7 @@ test.group('DELETE /dogs/:id', (group) => {
   })
 
   test('should return 404 when robot dog does not exist', async ({ client }) => {
-    const response = await client.delete('/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
+    const response = await client.delete('/api/v1/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
 
     response.assertStatus(404)
 

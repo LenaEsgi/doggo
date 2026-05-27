@@ -4,7 +4,7 @@ import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 import testUtils from '@adonisjs/core/services/test_utils'
 
-test.group('GET /dogs', (group) => {
+test.group('GET /api/v1/dogs', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
   test('should return paginated robot dogs', async ({ client, assert }) => {
@@ -26,7 +26,7 @@ test.group('GET /dogs', (group) => {
       lastHeartbeat: DateTime.now(),
     })
 
-    const response = await client.get('/dogs?page=1&limit=10')
+    const response = await client.get('/api/v1/dogs?page=1&limit=10')
     response.assertStatus(200)
 
     const body = response.body()
@@ -45,7 +45,7 @@ test.group('GET /dogs', (group) => {
   })
 
   test('should return empty pagination if no robot dogs', async ({ client, assert }) => {
-    const response = await client.get('/dogs?page=1&limit=10')
+    const response = await client.get('/api/v1/dogs?page=1&limit=10')
     response.assertStatus(200)
 
     const body = response.body()

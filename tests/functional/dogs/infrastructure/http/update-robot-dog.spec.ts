@@ -4,7 +4,7 @@ import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robo
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 
-test.group('PUT /dogs/:id', (group) => {
+test.group('PUT /api/v1/dogs/:id', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
   test('should update robot dog name and return 204', async ({ client, assert }) => {
@@ -17,7 +17,7 @@ test.group('PUT /dogs/:id', (group) => {
       lastHeartbeat: DateTime.now(),
     })
 
-    const response = await client.put(`/dogs/${dog.id}`).json({ name: 'NewName' })
+    const response = await client.put(`/api/v1/dogs/${dog.id}`).json({ name: 'NewName' })
 
     response.assertStatus(204)
 
@@ -28,7 +28,7 @@ test.group('PUT /dogs/:id', (group) => {
 
   test('should return 404 if robot dog does not exist', async ({ client }) => {
     const response = await client
-      .put('/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
+      .put('/api/v1/dogs/56a39d4d-b05d-42fb-a402-6782fc66dc3d')
       .json({ name: 'NewName' })
 
     response.assertStatus(404)
