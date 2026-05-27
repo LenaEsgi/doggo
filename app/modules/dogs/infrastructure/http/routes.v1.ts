@@ -1,6 +1,5 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
-//import { middleware } from '#start/kernel'
 const CreateRobotDogController = () => import('./controllers/create-robot-dog.controller.js')
 const DestroyRobotDogController = () => import('./controllers/destroy-robot-dog.controller.js')
 const ShowRobotDogController = () => import('./controllers/show-robot-dog.controller.js')
