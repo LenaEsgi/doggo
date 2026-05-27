@@ -1,7 +1,5 @@
 import { defineConfig } from '@adonisjs/core/app'
 import { indexEntities } from '@adonisjs/core'
-import { indexPolicies } from '@adonisjs/bouncer'
-
 export default defineConfig({
   hooks: {
     init: [
@@ -9,7 +7,8 @@ export default defineConfig({
       indexEntities({
         transformers: { enabled: true },
       }),
-      indexPolicies(),
+      // Policies are manually maintained in .adonisjs/server/policies.ts
+      // because indexPolicies() doesn't support modular directory structure
     ],
   },
   /*

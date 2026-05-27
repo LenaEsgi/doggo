@@ -3,6 +3,11 @@ import { UserRole } from '#users/domain/enums/user.role'
 import { User } from '#users/domain/user.entity'
 import ShowUserController from '#users/infrastructure/http/controllers/show.user.controller'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import {
+  fakeBouncer,
+  fakeAuthenticatedUser,
+  fakeSerialize,
+} from '#tests/unit/helpers/controller-mocks'
 
 class FakeShowUserUseCase {
   constructor(private readonly user: { user: User; dogsCount: number } | null) {}
@@ -45,6 +50,9 @@ test('ShowUserController returns 200 when found', async ({ assert }) => {
       },
     },
     logger: { info: () => {} },
+    bouncer: fakeBouncer(),
+    authenticatedUser: fakeAuthenticatedUser(UserRole.ADMIN),
+    serialize: fakeSerialize,
   } as any)
 
   assert.equal(result.status, 200)
@@ -66,6 +74,9 @@ test('ShowUserController returns 404 when missing', async ({ assert }) => {
           ok: () => {},
         },
         logger: { info: () => {} },
+        bouncer: fakeBouncer(),
+        authenticatedUser: fakeAuthenticatedUser(UserRole.ADMIN),
+        serialize: fakeSerialize,
       } as any),
     InvalidUserNotFoundError
   )

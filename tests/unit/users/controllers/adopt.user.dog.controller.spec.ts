@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import AdoptUserDogController from '#users/infrastructure/http/controllers/adopt.user.dog.controller'
+import { fakeBouncer } from '#tests/unit/helpers/controller-mocks'
 
 class FakeAdoptDogUseCase {
   async execute(_userId: string, _robotDogId: string): Promise<void> {}
@@ -17,11 +18,12 @@ test('AdoptUserDogController returns success payload', async ({ assert }) => {
         call += 1
         return call === 1
           ? { id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' }
-          : { robotDogId: '56a39d4d-b05d-42fb-a402-6782fc66dc3d' }
+          : { serialNumber: 'SN-123' }
       },
     },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
     logger: { info: () => {} },
+    bouncer: fakeBouncer(),
   } as any)
 
   assert.equal(out.status, 200)

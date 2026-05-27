@@ -1,20 +1,13 @@
 import { test } from '@japa/runner'
-import app from '@adonisjs/core/services/app'
-import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
 import { ActionAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-already-exists.error'
 import Action from '#app/modules/actions/domain/action.entity'
 import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
 import { CreateActionUseCase } from '#app/modules/actions/application/usecases/create-action.use-case'
 
 test.group('Unit | Actions | CreateActionUseCase', () => {
-  test('it should create and save an action when code is unique', async ({ assert, cleanup }) => {
+  test('it should create and save an action when code is unique', async ({ assert }) => {
     const fakeRepository = new FakeActionRepository()
-
-    app.container.swap(ActionRepository, () => fakeRepository)
-
-    cleanup(() => app.container.restore(ActionRepository))
-
-    const useCase = await app.container.make(CreateActionUseCase)
+    const useCase = new CreateActionUseCase(fakeRepository)
 
     const dto = {
       code: 'NEW_ACT',
@@ -29,18 +22,11 @@ test.group('Unit | Actions | CreateActionUseCase', () => {
     assert.equal(fakeRepository.actions[0].code, 'NEW_ACT')
   })
 
-  test('it should throw ActionAlreadyExistsError when code already exists', async ({
-    assert,
-    cleanup,
-  }) => {
+  test('it should throw ActionAlreadyExistsError when code already exists', async ({ assert }) => {
     const fakeRepository = new FakeActionRepository()
-
     fakeRepository.actions.push(Action.create('EXISTING', 'Name', 'slug', null))
 
-    app.container.swap(ActionRepository, () => fakeRepository)
-    cleanup(() => app.container.restore(ActionRepository))
-
-    const useCase = await app.container.make(CreateActionUseCase)
+    const useCase = new CreateActionUseCase(fakeRepository)
 
     await assert.rejects(async () => {
       await useCase.execute({

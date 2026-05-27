@@ -2,6 +2,11 @@ import { test } from '@japa/runner'
 import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import ListRobotDogOwnersController from '#users/infrastructure/http/controllers/list.robot.dog.owners.controller'
+import {
+  fakeBouncer,
+  fakeAuthenticatedUser,
+  fakeSerialize,
+} from '#tests/unit/helpers/controller-mocks'
 
 class FakeListRobotDogOwnersUseCase {
   public lastArgs?: { id: string; page: number; limit: number }
@@ -57,6 +62,9 @@ test('ListRobotDogOwnersController returns owners list', async ({ assert }) => {
       },
     },
     logger: { info: () => {} },
+    bouncer: fakeBouncer(),
+    authenticatedUser: fakeAuthenticatedUser(UserRole.ADMIN),
+    serialize: fakeSerialize,
   } as any)
 
   assert.equal(out.status, 200)

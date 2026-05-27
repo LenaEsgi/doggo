@@ -9,7 +9,14 @@ import { UserRole } from '#users/domain/enums/user.role'
 export default class ShowUserController {
   constructor(private readonly useCase: ShowUserUseCase) {}
 
-  async handle({ request, response, logger, bouncer, authenticatedUser, serialize }: HttpContext): Promise<void> {
+  async handle({
+    request,
+    response,
+    logger,
+    bouncer,
+    authenticatedUser,
+    serialize,
+  }: HttpContext): Promise<void> {
     const { id } = await request.validateUsing(showUserParamValidator, {
       data: request.params(),
     })

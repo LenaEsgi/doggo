@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import AbandonUserDogController from '#users/infrastructure/http/controllers/abandon.user.dog.controller'
+import { fakeBouncer } from '#tests/unit/helpers/controller-mocks'
 
 class FakeAbandonDogUseCase {
   async execute(_userId: string, _robotDogId: string): Promise<void> {}
@@ -22,6 +23,7 @@ test('AbandonUserDogController returns success payload', async ({ assert }) => {
     },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
     logger: { info: () => {} },
+    bouncer: fakeBouncer(),
   } as any)
 
   assert.equal(out.status, 200)

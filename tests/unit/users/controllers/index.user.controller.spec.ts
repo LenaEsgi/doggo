@@ -2,6 +2,11 @@ import { test } from '@japa/runner'
 import { UserRole } from '#users/domain/enums/user.role'
 import { User } from '#users/domain/user.entity'
 import IndexUserController from '#users/infrastructure/http/controllers/index.user.controller'
+import {
+  fakeBouncer,
+  fakeAuthenticatedUser,
+  fakeSerialize,
+} from '#tests/unit/helpers/controller-mocks'
 
 class FakeIndexUserUseCase {
   async execute() {
@@ -34,6 +39,9 @@ test('IndexUserController returns users list', async ({ assert }) => {
       },
     },
     logger: { info: () => {} },
+    bouncer: fakeBouncer(),
+    authenticatedUser: fakeAuthenticatedUser(UserRole.ADMIN),
+    serialize: fakeSerialize,
   } as any)
 
   assert.equal(result.status, 200)
