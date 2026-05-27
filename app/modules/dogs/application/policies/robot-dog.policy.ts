@@ -15,7 +15,15 @@ export default class RobotDogPolicy extends BasePolicy {
     if (user?.role === UserRole.ADMIN) return true
   }
 
+  index(_user: User): AuthorizerResponse {
+    return false
+  }
+
   async update(user: User, robotDogId: string): Promise<AuthorizerResponse> {
+    return this.ownershipRepository.isOwner(user.id, robotDogId)
+  }
+
+  async assign(user: User, robotDogId: string): Promise<AuthorizerResponse> {
     return this.ownershipRepository.isOwner(user.id, robotDogId)
   }
 }

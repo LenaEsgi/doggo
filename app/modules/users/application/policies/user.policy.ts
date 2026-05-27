@@ -31,4 +31,8 @@ export default class UserPolicy extends BasePolicy {
   listDogOwners(_user: User): AuthorizerResponse {
     return true
   }
+
+  listDogs(user: User, targetUserId: string): AuthorizerResponse {
+    return user.id === targetUserId
+  }
 }

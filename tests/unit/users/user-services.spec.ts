@@ -52,8 +52,16 @@ class FakeOwnershipReadRepository extends OwnershipReadRepository {
     return {}
   }
 
-  async findActiveDogIdsByUserId(_userId: string): Promise<string[]> {
-    return []
+  async findActiveDogIdsByUserId(
+    _userId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const perPage = options?.limit ?? 20
+    const currentPage = options?.page ?? 1
+    return {
+      data: [],
+      meta: { total: 0, perPage, currentPage, firstPage: 1, lastPage: 1 },
+    }
   }
 
   async findActiveUserIdsByRobotDogId(

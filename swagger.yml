@@ -439,6 +439,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
+  /users/dogs/assign:
+    post:
+      tags:
+        - Users
+      summary: Assign a user to a robot dog
+      description: |-
+        Allows an authenticated owner to add another user to a robot dog they own.
+        The caller must have an active ownership of the target robot dog.
+        Admins bypass the ownership check.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignUserDogRequest'
+      responses:
+        '200':
+          description: User assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          description: Missing or invalid Bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Caller does not own this robot dog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Robot dog or target user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Target user is already an owner of this robot dog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /users/dogs/{id}:
     get:
       tags:
@@ -920,6 +966,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+    AssignUserDogRequest:
+      type: object
+      required:
+        - robotDogId
+        - userId
+      properties:
+        robotDogId:
+          type: string
+          format: uuid
+          example: 56a39d4d-b05d-42fb-a402-6782fc66dc3d
+        userId:
+          type: string
+          format: uuid
+          example: 7b27cc5b-e591-48f2-85ba-f29f96eb9971
     ErrorResponse:
       type: object
       required:

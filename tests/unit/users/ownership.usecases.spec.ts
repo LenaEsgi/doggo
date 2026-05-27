@@ -60,7 +60,7 @@ test.group('User ownership use cases', () => {
     )
     await useCase.execute(user.id, dog.serialNumber)
 
-    const dogIds = await ownershipRepository.findActiveDogIdsByUserId(user.id)
+    const { data: dogIds } = await ownershipRepository.findActiveDogIdsByUserId(user.id)
     assert.deepEqual(dogIds, [dog.id.value])
   })
 
@@ -109,7 +109,7 @@ test.group('User ownership use cases', () => {
     )
     await useCase.execute(user.id, dog.id.value)
 
-    const dogIds = await ownershipRepository.findActiveDogIdsByUserId(user.id)
+    const { data: dogIds } = await ownershipRepository.findActiveDogIdsByUserId(user.id)
     assert.deepEqual(dogIds, [])
   })
 
@@ -164,9 +164,9 @@ test.group('User ownership use cases', () => {
     )
     const result = await useCase.execute(user.id)
 
-    assert.lengthOf(result, 1)
-    assert.equal(result[0].robotDog.id.value, dog.id.value)
-    assert.equal(result[0].usersCount, 2)
+    assert.lengthOf(result.data, 1)
+    assert.equal(result.data[0].robotDog.id.value, dog.id.value)
+    assert.equal(result.data[0].usersCount, 2)
   })
 
   test('ListUserDogsUseCase throws when dog does not exist', async ({ assert }) => {
@@ -185,7 +185,7 @@ test.group('User ownership use cases', () => {
     )
 
     const result = await useCase.execute(user.id)
-    assert.lengthOf(result, 0)
+    assert.lengthOf(result.data, 0)
   })
 
   test('AdoptDogUseCase throws when dog does not exist', async ({ assert }) => {

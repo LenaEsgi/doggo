@@ -5,6 +5,7 @@ import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/
 import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
 
 @inject()
 export class AdoptRobotDogUseCase {
@@ -30,6 +31,8 @@ export class AdoptRobotDogUseCase {
     }
 
     await this.ownershipWriteRepository.adopt(userId, robotDog.id.value, new Date())
+
+    void OwnershipAssignedEvent.dispatch(userId, robotDog.id.value)
 
     logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase completed successfully')
   }

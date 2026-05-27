@@ -5,6 +5,7 @@ import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/
 import { DomainError } from '#app/modules/share/exceptions/domain-error'
 import { HttpError } from '#app/modules/share/exceptions/http-error'
 import { ActiveOwnershipNotFoundError } from '#app/modules/users/ownerships/domain/exceptions/active-ownership-not-found.error'
+import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
@@ -37,6 +38,13 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     if (error instanceof ActiveOwnershipNotFoundError) {
       return ctx.response.status(404).json({
         error: 'ACTIVE_OWNERSHIP_NOT_FOUND',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof OwnershipAlreadyExistsError) {
+      return ctx.response.status(409).json({
+        error: 'OWNERSHIP_ALREADY_EXISTS',
         message: error.message,
       })
     }
