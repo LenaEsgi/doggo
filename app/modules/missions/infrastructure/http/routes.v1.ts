@@ -43,6 +43,8 @@ router
   .prefix('/api/v1/missions')
   .use(middleware.firebaseAuth())
 
+// Cross-resource routes: dog-mission relationship lives under /api/v1/dogs/:id
+// When adding v2, create a second group here with .prefix('/api/v2')
 router
   .group(() => {
     router.get('/dogs/:id/missions', [ListMissionsByDogUseCase])
