@@ -9,7 +9,7 @@ export default {
   title: 'Foo', // use info instead
   version: '1.0.0', // use info instead
   description: '', // use info instead
-  tagIndex: 2,
+  tagIndex: 3,
   productionEnv: 'production', // optional
   info: {
     title: 'title',
