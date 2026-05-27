@@ -40,7 +40,7 @@ router
     router.delete('/:missionId/steps/:stepId', [DestroyMissionStepController])
     router.put('/:missionId/steps/:stepId', [MoveMissionStepController])
   })
-  .prefix('/missions')
+  .prefix('/api/v1/missions')
   .use(middleware.firebaseAuth())
 
 router
@@ -49,4 +49,5 @@ router
     router.post('/dogs/:id/assign', [AssignToDogController])
     router.delete('/dogs/:id/missions/:missionId', [RemoveFromDogController])
   })
+  .prefix('/api/v1')
   .use(middleware.firebaseAuth())

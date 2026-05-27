@@ -31,5 +31,5 @@ router
     router.post('/:id/dogs/adopt', [AdoptUserDogController, 'handle'])
     router.post('/:id/dogs/abandon', [AbandonUserDogController, 'handle'])
   })
-  .prefix('/users')
+  .prefix('/api/v1/users')
   .use(middleware.firebaseAuth())

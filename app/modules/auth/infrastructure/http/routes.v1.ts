@@ -46,4 +46,4 @@ router
       .delete('/account', [DeleteAccountAuthController, 'handle'])
       .use(middleware.firebaseAuth())
   })
-  .prefix('/auth')
+  .prefix('/api/v1/auth')

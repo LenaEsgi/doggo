@@ -17,5 +17,5 @@ router
     router.delete('/:id', [DestroyRobotDogController])
     router.put('/:id', [UpdateRobotDogController])
   })
-  .prefix('/dogs')
+  .prefix('/api/v1/dogs')
   .use(middleware.firebaseAuth())

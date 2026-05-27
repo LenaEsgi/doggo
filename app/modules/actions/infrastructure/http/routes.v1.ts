@@ -24,5 +24,5 @@ router
     router.delete('/:id', [DestroyController])
     router.patch('/:id', [UpdateController])
   })
-  .prefix('/actions')
+  .prefix('/api/v1/actions')
   .use(middleware.firebaseAuth)
