@@ -10,7 +10,7 @@ servers:
 security:
   - BearerAuth: [ ]
 paths:
-  /auth/register:
+  /api/v1/auth/register:
     post:
       tags:
         - Authentication
@@ -29,7 +29,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthSuccessResponse'
-  /auth/login:
+  /api/v1/auth/login:
     post:
       tags:
         - Authentication
@@ -50,7 +50,7 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/AuthSuccessResponse'
                   - $ref: '#/components/schemas/MfaChallengeResponse'
-  /auth/login/2fa:
+  /api/v1/auth/login/2fa:
     post:
       tags:
         - Authentication
@@ -68,7 +68,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthSuccessResponse'
-  /auth/password-reset:
+  /api/v1/auth/password-reset:
     post:
       tags:
         - Authentication
@@ -87,7 +87,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
-  /auth/2fa/setup:
+  /api/v1/auth/2fa/setup:
     post:
       tags:
         - Authentication
@@ -99,7 +99,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TotpSetupResponse'
-  /auth/2fa/verify:
+  /api/v1/auth/2fa/verify:
     post:
       tags:
         - Authentication
@@ -117,7 +117,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TotpVerifyResponse'
-  /auth/2fa/enrollments:
+  /api/v1/auth/2fa/enrollments:
     post:
       tags:
         - Authentication
@@ -129,7 +129,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EnrollmentsResponse'
-  /auth/2fa:
+  /api/v1/auth/2fa:
     delete:
       tags:
         - Authentication
@@ -147,7 +147,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TotpVerifyResponse'
-  /auth/account:
+  /api/v1/auth/account:
     delete:
       tags:
         - Authentication
@@ -159,7 +159,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
-  /users:
+  /api/v1/users:
     get:
       tags:
         - Users
@@ -171,7 +171,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsersListResponse'
-  /users/{id}:
+  /api/v1/users/{id}:
     get:
       tags:
         - Users
@@ -226,7 +226,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dogs/users/{id}:
+  /api/v1/dogs/users/{id}:
     get:
       tags:
         - Dogs
@@ -251,7 +251,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/{id}/dogs/adopt:
+  /api/v1/users/{id}/dogs/adopt:
     post:
       tags:
         - Users
@@ -282,7 +282,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/{id}/dogs/abandon:
+  /api/v1/users/{id}/dogs/abandon:
     post:
       tags:
         - Users
@@ -313,7 +313,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dogs:
+  /api/v1/dogs:
     get:
       tags:
         - Dogs
@@ -362,7 +362,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dogs/{id}:
+  /api/v1/dogs/{id}:
     get:
       tags:
         - Dogs
@@ -439,7 +439,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
-  /users/dogs/assign:
+  /api/v1/users/dogs/assign:
     post:
       tags:
         - Users
@@ -485,7 +485,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/dogs/{id}:
+  /api/v1/users/dogs/{id}:
     get:
       tags:
         - Users
