@@ -523,8 +523,12 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateMissionRequest'
       responses:
-        '204':
+        '201':
           description: Mission created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMissionResponse'
         '400':
           description: Invalid payload
           content:
@@ -1495,22 +1499,21 @@ components:
       type: object
       required:
         - name
-        - robotDogId
-        - userId
       properties:
         name:
           type: string
           minLength: 1
           maxLength: 100
           example: Patrol route A
-        robotDogId:
+    CreateMissionResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
           type: string
           format: uuid
           example: 56a39d4d-b05d-42fb-a402-6782fc66dc3d
-        userId:
-          type: string
-          format: uuid
-          example: 7b27cc5b-e591-48f2-85ba-f29f96eb9971
     UpdateMissionRequest:
       type: object
       required:

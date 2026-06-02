@@ -8,10 +8,14 @@ import { CreateMissionDto } from '#app/modules/missions/application/dto/create-m
 export default class CreateMissionController {
   constructor(private createUseCase: CreateMissionUseCase) {}
 
-  public async handle({ request, bouncer, authenticatedUser }: HttpContext) {
+  public async handle({ request, response, bouncer, authenticatedUser }: HttpContext) {
     await bouncer.with('MissionPolicy').authorize('create')
 
     const payload = await request.validateUsing(CreateMissionValidator)
-    await this.createUseCase.execute(new CreateMissionDto(payload.name, authenticatedUser.id))
+    const result = await this.createUseCase.execute(
+      new CreateMissionDto(payload.name, authenticatedUser.id)
+    )
+
+    return response.status(201).json({ id: result.id })
   }
 }
