@@ -28,4 +28,11 @@ test.group('CreateMissionUseCase', (group) => {
 
     assert.lengthOf(missionRepo.storedMissions[0].robotDogIds, 0)
   })
+
+  test('should return the created mission id', async ({ assert }) => {
+    const result = await useCase.execute(new CreateMissionDto('Alpha Route', 'user-123'))
+
+    assert.isString(result.id)
+    assert.isTrue(result.id.length > 0)
+  })
 })

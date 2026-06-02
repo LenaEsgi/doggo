@@ -8,10 +8,12 @@ import Mission from '#app/modules/missions/domain/entities/mission.entity'
 export class CreateMissionUseCase {
   constructor(private missionRepository: MissionRepository) {}
 
-  async execute(dto: CreateMissionDto) {
+  async execute(dto: CreateMissionDto): Promise<{ id: string }> {
     logger.info('CreateMissionUseCase started', { dto })
 
     const mission = Mission.create(dto.name, dto.userId)
     await this.missionRepository.save(mission)
+
+    return { id: mission.id.value }
   }
 }
