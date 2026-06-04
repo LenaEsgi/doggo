@@ -25,4 +25,4 @@ router
     router.patch('/:id', [UpdateController])
   })
   .prefix('/actions')
-  .use(middleware.firebaseAuth)
+  .use(middleware.firebaseAuth())

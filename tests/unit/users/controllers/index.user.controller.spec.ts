@@ -10,19 +10,22 @@ import {
 
 class FakeIndexUserUseCase {
   async execute() {
-    return [
-      {
-        user: User.rehydrate(
-          'u1',
-          'firebase-uid-john',
-          'john@example.com',
-          'John',
-          'Doe',
-          UserRole.USER
-        ),
-        dogsCount: 2,
-      },
-    ]
+    return {
+      data: [
+        {
+          user: User.rehydrate(
+            'u1',
+            'firebase-uid-john',
+            'john@example.com',
+            'John',
+            'Doe',
+            UserRole.USER
+          ),
+          dogsCount: 2,
+        },
+      ],
+      meta: { total: 1, perPage: 25, currentPage: 1, firstPage: 1, lastPage: 1 },
+    }
   }
 }
 
@@ -38,6 +41,9 @@ test('IndexUserController returns users list', async ({ assert }) => {
         return body
       },
     },
+    request: {
+      input: (key: string, defaultValue: any) => defaultValue,
+    },
     logger: { info: () => {} },
     bouncer: fakeBouncer(),
     authenticatedUser: fakeAuthenticatedUser(UserRole.ADMIN),
@@ -45,7 +51,8 @@ test('IndexUserController returns users list', async ({ assert }) => {
   } as any)
 
   assert.equal(result.status, 200)
-  assert.lengthOf(result.body.users, 1)
-  assert.equal(result.body.users[0].email, 'john@example.com')
-  assert.equal(result.body.users[0].dogs.count, 2)
+  assert.lengthOf(result.body.data, 1)
+  assert.equal(result.body.data[0].email, 'john@example.com')
+  assert.equal(result.body.data[0].dogs.count, 2)
+  assert.exists(result.body.meta)
 })

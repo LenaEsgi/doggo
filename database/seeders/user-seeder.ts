@@ -21,6 +21,6 @@ export default class extends BaseSeeder {
       role: UserRole.USER,
     }).create()
 
-    await UserFactory.merge({ role: UserRole.USER }).createMany(20)
+    await UserFactory.merge({ role: UserRole.USER }).createMany(100)
   }
 }

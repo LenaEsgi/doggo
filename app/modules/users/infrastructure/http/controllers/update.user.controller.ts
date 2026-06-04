@@ -19,6 +19,11 @@ export default class UpdateUserController {
     await bouncer.with('UserPolicy').authorize('update', id)
 
     const payload = await request.validateUsing(updateUserValidator)
+
+    if (payload.role || payload.firebaseUid) {
+      await bouncer.with('UserPolicy').authorize('updateRole')
+    }
+
     logger.info({ userId: id }, 'UpdateUserController called')
     const user = await this.useCase.execute(id, payload)
 
