@@ -42,7 +42,7 @@ test('IndexUserController returns users list', async ({ assert }) => {
       },
     },
     request: {
-      input: (key: string, defaultValue: any) => defaultValue,
+      input: (_key: string, defaultValue: any) => defaultValue,
     },
     logger: { info: () => {} },
     bouncer: fakeBouncer(),

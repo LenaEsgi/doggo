@@ -52,7 +52,9 @@ test.group('GET /api/v1/users auth', (group) => {
 
     cleanup(() => app.container.restore(FirebaseTokenVerifier))
 
-    const response = await client.get('/api/v1/users').header('Authorization', 'Bearer valid-id-token')
+    const response = await client
+      .get('/api/v1/users')
+      .header('Authorization', 'Bearer valid-id-token')
 
     response.assertStatus(200)
 

@@ -11,11 +11,21 @@ export class FirebaseLoginAuthProvider
 {
   async login(email: string, password: string): Promise<LoginResult> {
     try {
-      const payload = await this.request<AuthTokens>('v1/accounts:signInWithPassword', {
+      const payload = await this.request<
+        AuthTokens & { mfaPendingCredential?: string; mfaInfo?: MfaInfo[] }
+      >('v1/accounts:signInWithPassword', {
         email,
         password,
         returnSecureToken: true,
       })
+
+      if (payload.mfaPendingCredential && payload.mfaInfo) {
+        return {
+          mfaRequired: true,
+          pendingCredential: payload.mfaPendingCredential,
+          mfaInfo: payload.mfaInfo,
+        }
+      }
 
       return {
         mfaRequired: false,
