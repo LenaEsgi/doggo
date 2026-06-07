@@ -2,7 +2,7 @@ import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id
 import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import { InvalidMissionNotRunningError } from '../exceptions/invalid-mission-not-running.error.ts'
-import { type MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
+import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
 import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
@@ -141,6 +141,29 @@ export default class Mission {
       })
     }
     stepToMove.changeOrder(newOrder)
+  }
+
+  public syncSteps(
+    desired: Array<{ id?: string; actionId: string; parameters: string }>
+  ): void {
+    this.ensureEditable()
+
+    const newSteps: MissionStep[] = desired.map((item, index) => {
+      const order = index + 1
+
+      if (item.id) {
+        const existing = this._missionSteps.find((s) => s.id.value === item.id)
+        if (!existing) {
+          throw new InvalidMissionStepNotFoundError(MissionStepId.fromString(item.id))
+        }
+        existing.changeOrder(order)
+        return existing
+      }
+
+      return MissionStep.create(item.actionId, order, item.parameters)
+    })
+
+    this._missionSteps = newSteps
   }
 
   public getStepsInOrder(): MissionStep[] {

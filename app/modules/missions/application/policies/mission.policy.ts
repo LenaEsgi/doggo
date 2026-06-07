@@ -61,6 +61,12 @@ export default class MissionPolicy extends BasePolicy {
     return mission.userId === user.id
   }
 
+  async syncSteps(user: User, missionId: string): Promise<AuthorizerResponse> {
+    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
+    if (!mission) return false
+    return mission.userId === user.id
+  }
+
   async listByDog(user: User, dogId: string): Promise<AuthorizerResponse> {
     if (user.role === UserRole.ADMIN) return true
     return this.ownershipRepository.isOwner(user.id, dogId)

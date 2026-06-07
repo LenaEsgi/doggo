@@ -19,6 +19,9 @@ const DestroyMissionStepController = () =>
 const MoveMissionStepController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/move-mission-step.controller')
 
+const SyncMissionStepsController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/sync-mission-steps.controller')
+
 const ListMissionsByDogUseCase = () =>
   import('#app/modules/missions/infrastructure/http/controllers/list-missions-by-dog.controller')
 
@@ -37,6 +40,7 @@ router
     router.delete('/:id', [DestroyMissionController])
 
     router.post('/:id/steps', [AddStepController])
+    router.put('/:id/steps', [SyncMissionStepsController])
     router.delete('/:missionId/steps/:stepId', [DestroyMissionStepController])
     router.put('/:missionId/steps/:stepId', [MoveMissionStepController])
   })
