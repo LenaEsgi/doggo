@@ -26,8 +26,11 @@ class FakeUserReadRepository extends UserReadRepository {
   async findByFirebaseUid(uid: string): Promise<User | null> {
     return this.users.find((u) => u.firebaseUid === uid) ?? null
   }
-  async findAll(): Promise<User[]> {
-    return this.users
+  async findAll() {
+    return {
+      data: this.users,
+      meta: { total: this.users.length, perPage: 25, currentPage: 1, firstPage: 1, lastPage: 1 },
+    }
   }
 }
 

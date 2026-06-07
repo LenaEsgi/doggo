@@ -3,10 +3,7 @@ import { UserRole } from '#users/domain/enums/user.role'
 import { User } from '#users/domain/user.entity'
 import UpdateUserController from '#users/infrastructure/http/controllers/update.user.controller'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
-import {
-  fakeBouncer,
-  fakeSerialize,
-} from '#tests/unit/helpers/controller-mocks'
+import { fakeBouncer, fakeSerialize } from '#tests/unit/helpers/controller-mocks'
 
 class FakeUpdateUserUseCase {
   constructor(private readonly result: { user: User; dogsCount: number } | null) {}

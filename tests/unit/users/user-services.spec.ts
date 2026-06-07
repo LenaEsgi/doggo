@@ -28,8 +28,21 @@ class FakeUserReadRepository extends UserReadRepository {
     return this.users.find((user) => user.firebaseUid === firebaseUid) ?? null
   }
 
-  async findAll(): Promise<User[]> {
-    return this.users
+  async findAll(options?: { page: number; limit: number }): Promise<PaginatedResult<User>> {
+    const page = options?.page ?? 1
+    const limit = options?.limit ?? 25
+    const start = (page - 1) * limit
+    const data = this.users.slice(start, start + limit)
+    return {
+      data,
+      meta: {
+        total: this.users.length,
+        perPage: limit,
+        currentPage: page,
+        firstPage: 1,
+        lastPage: Math.max(1, Math.ceil(this.users.length / limit)),
+      },
+    }
   }
 }
 
@@ -116,9 +129,10 @@ test.group('User use cases', () => {
       new FakeOwnershipReadRepository({ '1': 2 })
     )
 
-    const result = await useCase.execute()
-    assert.equal(result[0].user.id, users[0].id)
-    assert.equal(result[0].dogsCount, 2)
+    const result = await useCase.execute({ page: 1, limit: 25 })
+    assert.equal(result.data[0].user.id, users[0].id)
+    assert.equal(result.data[0].dogsCount, 2)
+    assert.equal(result.meta.total, 1)
   })
 
   test('ShowUserUseCase throws when user does not exist', async ({ assert }) => {

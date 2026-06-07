@@ -9,7 +9,7 @@ export default class UserPolicy extends BasePolicy {
   }
 
   index(_user: User): AuthorizerResponse {
-    return true
+    return false
   }
 
   show(user: User, targetUserId: string): AuthorizerResponse {
@@ -18,6 +18,10 @@ export default class UserPolicy extends BasePolicy {
 
   update(user: User, targetUserId: string): AuthorizerResponse {
     return user.id === targetUserId
+  }
+
+  updateRole(_user: User): AuthorizerResponse {
+    return false
   }
 
   adopt(user: User, targetUserId: string): AuthorizerResponse {
