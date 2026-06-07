@@ -59,36 +59,81 @@ export default class extends BaseSeeder {
   }
 
   private async ensureActions(): Promise<ActionModel[]> {
-    const actions = await ActionModel.query().limit(5)
-    if (actions.length > 0) {
-      return actions
-    }
-
     const seedActions = [
       {
-        id: randomUUID(),
         code: 'MOVE',
         name: 'Move',
         slug: 'move',
         description: 'Move robot dog to target position',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'distance_cm',
+              label: 'Distance',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 5000,
+              defaultValue: 100,
+            },
+          ],
+        },
       },
       {
-        id: randomUUID(),
         code: 'BARK',
         name: 'Bark',
         slug: 'bark',
         description: 'Make robot dog emit bark sound',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'duration_sec',
+              label: 'Durée',
+              type: 'number',
+              required: true,
+              unit: 's',
+              min: 1,
+              max: 30,
+              defaultValue: 2,
+            },
+          ],
+        },
       },
       {
-        id: randomUUID(),
         code: 'WAIT',
         name: 'Wait',
         slug: 'wait',
         description: 'Wait for next mission instruction',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'duration_sec',
+              label: 'Durée',
+              type: 'number',
+              required: true,
+              unit: 's',
+              min: 1,
+              max: 300,
+              defaultValue: 5,
+            },
+          ],
+        },
       },
     ]
 
-    await ActionModel.createMany(seedActions)
-    return ActionModel.query().limit(5)
+    for (const seed of seedActions) {
+      const existing = await ActionModel.query().where('code', seed.code).first()
+      if (existing) {
+        // Mettre à jour le schema si absent
+        if (!existing.parameterSchema) {
+          await existing.merge({ parameterSchema: seed.parameter_schema as any }).save()
+        }
+      } else {
+        await ActionModel.create({ id: randomUUID(), ...seed })
+      }
+    }
+
+    return ActionModel.query().whereIn('code', ['MOVE', 'BARK', 'WAIT'])
   }
 }
