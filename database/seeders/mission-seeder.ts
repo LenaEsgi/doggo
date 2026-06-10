@@ -35,6 +35,7 @@ export default class extends BaseSeeder {
           missionId: mission.id,
           actionId: action.id,
           sequenceOrder,
+          parameters: defaultParametersFor(action.code),
         }).create()
       }
     }
@@ -59,36 +60,139 @@ export default class extends BaseSeeder {
   }
 
   private async ensureActions(): Promise<ActionModel[]> {
-    const actions = await ActionModel.query().limit(5)
-    if (actions.length > 0) {
-      return actions
-    }
+    // Supprime l'ancienne action MOVE (remplacée par MOVE_DISTANCE + MOVE_DURATION).
+    // Les steps qui la référençaient sont cascade-deleted via la FK.
+    await ActionModel.query().where('code', 'MOVE').delete()
 
     const seedActions = [
       {
-        id: randomUUID(),
-        code: 'MOVE',
-        name: 'Move',
-        slug: 'move',
-        description: 'Move robot dog to target position',
+        code: 'MOVE_DISTANCE',
+        name: 'Avancer (distance)',
+        slug: 'move-distance',
+        description: 'Déplacer le robot sur une distance donnée à une vitesse donnée',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'distance_cm',
+              label: 'Distance',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 5000,
+              defaultValue: 100,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
       },
       {
-        id: randomUUID(),
+        code: 'MOVE_DURATION',
+        name: 'Avancer (durée)',
+        slug: 'move-duration',
+        description: 'Déplacer le robot pendant une durée donnée à une vitesse donnée',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'duration_sec',
+              label: 'Durée',
+              type: 'number',
+              required: true,
+              unit: 's',
+              min: 1,
+              max: 300,
+              defaultValue: 5,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
+      {
         code: 'BARK',
-        name: 'Bark',
+        name: 'Aboyer',
         slug: 'bark',
-        description: 'Make robot dog emit bark sound',
+        description: 'Faire aboyer le robot',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'duration_sec',
+              label: 'Durée',
+              type: 'number',
+              required: true,
+              unit: 's',
+              min: 1,
+              max: 30,
+              defaultValue: 2,
+            },
+          ],
+        },
       },
       {
-        id: randomUUID(),
         code: 'WAIT',
-        name: 'Wait',
+        name: 'Attendre',
         slug: 'wait',
-        description: 'Wait for next mission instruction',
+        description: 'Mettre le robot en pause',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'duration_sec',
+              label: 'Durée',
+              type: 'number',
+              required: true,
+              unit: 's',
+              min: 1,
+              max: 300,
+              defaultValue: 5,
+            },
+          ],
+        },
       },
     ]
 
-    await ActionModel.createMany(seedActions)
-    return ActionModel.query().limit(5)
+    for (const seed of seedActions) {
+      const existing = await ActionModel.query().where('code', seed.code).first()
+      if (existing) {
+        // Toujours mettre à jour le schema (peut avoir changé)
+        await existing.merge({ parameterSchema: seed.parameter_schema as any }).save()
+      } else {
+        await ActionModel.create({ id: randomUUID(), ...seed })
+      }
+    }
+
+    return ActionModel.query().whereIn('code', ['MOVE_DISTANCE', 'MOVE_DURATION', 'BARK', 'WAIT'])
+  }
+}
+
+/** Retourne des paramètres valides (conformes au schema) pour une action donnée. */
+function defaultParametersFor(code: string): string {
+  switch (code) {
+    case 'MOVE_DISTANCE':
+      return JSON.stringify({ distance_cm: 100, speed_pct: 50 })
+    case 'MOVE_DURATION':
+      return JSON.stringify({ duration_sec: 5, speed_pct: 50 })
+    case 'BARK':
+      return JSON.stringify({ duration_sec: 2 })
+    case 'WAIT':
+      return JSON.stringify({ duration_sec: 5 })
+    default:
+      return '{}'
   }
 }

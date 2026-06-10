@@ -149,4 +149,75 @@ test.group('Mission entity', () => {
     mission.startMission()
     assert.throws(() => mission.addStep('action', 'params'), InvalidMissionNotEditableError)
   })
+
+  // -------------------
+  // syncSteps
+  // -------------------
+  test('syncSteps reorders existing steps correctly', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    mission.addStep('action-1', 'p1')
+    mission.addStep('action-2', 'p2')
+    const [step1, step2] = mission.missionSteps
+
+    // Inverser l'ordre
+    mission.syncSteps([
+      { id: step2.id.value, actionId: step2.actionId, parameters: step2.parameters },
+      { id: step1.id.value, actionId: step1.actionId, parameters: step1.parameters },
+    ])
+
+    const ordered = mission.getStepsInOrder()
+    assert.equal(ordered[0].id.value, step2.id.value)
+    assert.equal(ordered[0].order, 1)
+    assert.equal(ordered[1].id.value, step1.id.value)
+    assert.equal(ordered[1].order, 2)
+  })
+
+  test('syncSteps creates new steps (no id)', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+
+    mission.syncSteps([
+      { actionId: 'action-new-1', parameters: 'p1' },
+      { actionId: 'action-new-2', parameters: 'p2' },
+    ])
+
+    assert.lengthOf(mission.missionSteps, 2)
+    assert.equal(mission.getStepsInOrder()[0].actionId, 'action-new-1')
+    assert.equal(mission.getStepsInOrder()[0].order, 1)
+    assert.equal(mission.getStepsInOrder()[1].actionId, 'action-new-2')
+    assert.equal(mission.getStepsInOrder()[1].order, 2)
+  })
+
+  test('syncSteps removes steps absent from the list', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    mission.addStep('action-1', 'p1')
+    mission.addStep('action-2', 'p2')
+    mission.addStep('action-3', 'p3')
+    const step1 = mission.missionSteps[0]
+
+    // Ne garder que step1
+    mission.syncSteps([{ id: step1.id.value, actionId: step1.actionId, parameters: step1.parameters }])
+
+    assert.lengthOf(mission.missionSteps, 1)
+    assert.equal(mission.missionSteps[0].id.value, step1.id.value)
+  })
+
+  test('syncSteps throws InvalidMissionStepNotFoundError for unknown id', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    const unknownId = '550e8400-e29b-41d4-a716-446655440000'
+
+    assert.throws(
+      () => mission.syncSteps([{ id: unknownId, actionId: 'action-1', parameters: '' }]),
+      InvalidMissionStepNotFoundError
+    )
+  })
+
+  test('syncSteps throws InvalidMissionNotEditableError if not STAND_BY', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    mission.startMission()
+
+    assert.throws(
+      () => mission.syncSteps([{ actionId: 'action-1', parameters: '' }]),
+      InvalidMissionNotEditableError
+    )
+  })
 })

@@ -19,7 +19,7 @@ export class CreateActionUseCase {
       throw new ActionAlreadyExistsError(dto.code)
     }
 
-    const action = Action.create(dto.code, dto.name, dto.slug, dto.description ?? null)
+    const action = Action.create(dto.code, dto.name, dto.slug, dto.description ?? null, dto.parameterSchema ?? null)
     logger.debug({ actionId: action.id.value }, 'Domain entity instantiated')
 
     await this.actionRepository.save(action)

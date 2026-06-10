@@ -11,25 +11,32 @@ export class FakeMissionRepository implements MissionRepository {
     return this.storedMissions.find((m) => m.id.equals(id)) || null
   }
 
-  async index(options?: PaginationDto) {
+  async findAll(options?: PaginationDto) {
     const page = options?.page ?? 1
-    const perPage = options?.limit ?? 10
+    const perPage = options?.limit ?? 20
 
     const total = this.storedMissions.length
     const lastPage = Math.ceil(total / perPage)
     const start = (page - 1) * perPage
-    const end = start + perPage
-    const paginatedData = this.storedMissions.slice(start, end)
 
     return {
-      data: paginatedData,
-      meta: {
-        total,
-        perPage,
-        currentPage: page,
-        firstPage: 1,
-        lastPage,
-      },
+      data: this.storedMissions.slice(start, start + perPage),
+      meta: { total, perPage, currentPage: page, firstPage: 1, lastPage },
+    }
+  }
+
+  async findByUser(userId: string, options?: PaginationDto) {
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 20
+
+    const filtered = this.storedMissions.filter((m) => m.userId === userId)
+    const total = filtered.length
+    const lastPage = Math.ceil(total / perPage)
+    const start = (page - 1) * perPage
+
+    return {
+      data: filtered.slice(start, start + perPage),
+      meta: { total, perPage, currentPage: page, firstPage: 1, lastPage },
     }
   }
 

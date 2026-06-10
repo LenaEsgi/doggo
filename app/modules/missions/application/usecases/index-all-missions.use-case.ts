@@ -6,11 +6,11 @@ import logger from '@adonisjs/core/services/logger'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 
 @inject()
-export class IndexMissionUseCase {
-  constructor(private missionRepository: MissionRepository) {}
+export class IndexAllMissionsUseCase {
+  constructor(private readonly missionRepository: MissionRepository) {}
 
-  async execute(params: PaginationDto, userId?: string): Promise<PaginatedResult<Mission>> {
-    logger.info('IndexMissionUseCase started', { params, userId })
-    return this.missionRepository.index(params, userId)
+  async execute(params: PaginationDto): Promise<PaginatedResult<Mission>> {
+    logger.info({}, 'IndexAllMissionsUseCase started')
+    return this.missionRepository.findAll(params)
   }
 }

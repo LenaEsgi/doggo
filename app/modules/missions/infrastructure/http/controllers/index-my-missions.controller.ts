@@ -1,16 +1,16 @@
 import { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/core'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import MissionTransformer from '#app/modules/missions/infrastructure/http/transformers/mission.transformer'
-import { inject } from '@adonisjs/core'
-import { IndexMissionUseCase } from '#app/modules/missions/application/usecases/index-mission.use-case'
-import { UserRole } from '#users/domain/enums/user.role'
+import { IndexMyMissionsUseCase } from '#app/modules/missions/application/usecases/index-my-missions.use-case'
+import MissionPolicy from '#app/modules/missions/application/policies/mission.policy'
 
 @inject()
-export default class IndexMissionController {
-  constructor(private indexUseCase: IndexMissionUseCase) {}
+export default class IndexMyMissionsController {
+  constructor(private readonly useCase: IndexMyMissionsUseCase) {}
 
   async handle({ request, serialize, response, bouncer, authenticatedUser }: HttpContext) {
-    await bouncer.with('MissionPolicy').authorize('index')
+    await bouncer.with(MissionPolicy).authorize('indexMine')
 
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),
@@ -18,14 +18,9 @@ export default class IndexMissionController {
       search: request.input('search'),
     }
 
-    const userId = authenticatedUser.role === UserRole.ADMIN ? undefined : authenticatedUser.id
-    const result = await this.indexUseCase.execute(params, userId)
-
+    const result = await this.useCase.execute(authenticatedUser.id, params)
     const { data } = await serialize(MissionTransformer.transform(result.data))
 
-    response.ok({
-      data,
-      meta: result.meta,
-    })
+    response.ok({ data, meta: result.meta })
   }
 }

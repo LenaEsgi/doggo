@@ -27,6 +27,9 @@ export class UpdateActionUseCase {
     if (dto.description !== undefined) {
       action.updateDescription(dto.description)
     }
+    if (dto.parameterSchema !== undefined) {
+      action.updateParameterSchema(dto.parameterSchema ?? null)
+    }
     // 3. Save to repository
     await this.actionRepository.save(action)
   }

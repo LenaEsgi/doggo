@@ -8,6 +8,7 @@ export default class ActionTransformer extends BaseTransformer<Action> {
       code: this.resource.code,
       name: this.resource.name,
       description: this.resource.description,
+      parameterSchema: this.resource.parameterSchema,
     }
   }
 }
