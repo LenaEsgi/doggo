@@ -5,8 +5,10 @@ const CreateMissionController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/create-mission.controller')
 const ShowMissionController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/show-mission.controller')
-const IndexMissionController = () =>
-  import('#app/modules/missions/infrastructure/http/controllers/index-mission.controller')
+const IndexAllMissionsController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/index-all-missions.controller')
+const IndexMyMissionsController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/index-my-missions.controller')
 const UpdateMissionController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/update-mission.controller')
 const DestroyMissionController = () =>
@@ -34,7 +36,8 @@ const RemoveFromDogController = () =>
 router
   .group(() => {
     router.post('/', [CreateMissionController])
-    router.get('/', [IndexMissionController])
+    router.get('/', [IndexAllMissionsController])
+    router.get('/mine', [IndexMyMissionsController])
     router.get('/:id', [ShowMissionController])
     router.put('/:id', [UpdateMissionController])
     router.delete('/:id', [DestroyMissionController])

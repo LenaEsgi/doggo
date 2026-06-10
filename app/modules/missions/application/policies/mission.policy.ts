@@ -20,7 +20,11 @@ export default class MissionPolicy extends BasePolicy {
     return true
   }
 
-  async index(_user: User): Promise<AuthorizerResponse> {
+  index(user: User): AuthorizerResponse {
+    return user.role === UserRole.ADMIN
+  }
+
+  indexMine(_user: User): AuthorizerResponse {
     return true
   }
 

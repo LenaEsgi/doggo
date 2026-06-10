@@ -26,21 +26,40 @@ export class MissionRepositoryImplementation implements MissionRepository {
     return Mission.rehydrate(row.id, row.name, row.userId, row.status, steps)
   }
 
-  async index(options?: PaginationDto, userId?: string): Promise<PaginatedResult<Mission>> {
-    const page = options?.page ?? 1
-    const perPage = options?.limit ?? 10
+  async findAll(options?: PaginationDto): Promise<PaginatedResult<Mission>> {
+    const page = Math.max(1, options?.page ?? 1)
+    const limit = Math.min(options?.limit ?? 20, 100)
 
-    const query = MissionModel.query().orderBy('created_at', 'desc')
+    const paginator = await MissionModel.query().orderBy('created_at', 'desc').paginate(page, limit)
 
-    if (userId) {
-      query.where('user_id', userId)
+    const missions = paginator.all().map((row) =>
+      Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
+    )
+
+    return {
+      data: missions,
+      meta: {
+        total: paginator.total,
+        perPage: paginator.perPage,
+        currentPage: paginator.currentPage,
+        firstPage: paginator.firstPage,
+        lastPage: paginator.lastPage,
+      },
     }
+  }
 
-    const paginator = await query.paginate(page, perPage)
+  async findByUser(userId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>> {
+    const page = Math.max(1, options?.page ?? 1)
+    const limit = Math.min(options?.limit ?? 20, 100)
 
-    const missions = paginator.all().map((row) => {
-      return Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
-    })
+    const paginator = await MissionModel.query()
+      .where('user_id', userId)
+      .orderBy('created_at', 'desc')
+      .paginate(page, limit)
+
+    const missions = paginator.all().map((row) =>
+      Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
+    )
 
     return {
       data: missions,
