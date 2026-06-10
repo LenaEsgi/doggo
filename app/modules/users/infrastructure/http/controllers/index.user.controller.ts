@@ -24,6 +24,7 @@ export default class IndexUserController {
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 25)),
+      search: request.input('search'),
     }
 
     const { data: users, meta } = await this.useCase.execute(params)

@@ -39,9 +39,23 @@ export class UserRepositoryImplementation
   }
 
   async findAll(
-    { page = 1, limit = 25 }: { page: number; limit: number } = { page: 1, limit: 25 }
+    { page = 1, limit = 25, search }: { page: number; limit: number; search?: string } = {
+      page: 1,
+      limit: 25,
+    }
   ): Promise<PaginatedResult<User>> {
-    const paginated = await UserModel.query().orderBy('created_at', 'desc').paginate(page, limit)
+    const query = UserModel.query().orderBy('created_at', 'desc')
+
+    if (search) {
+      const term = `%${search}%`
+      query.where((q) => {
+        q.whereILike('firstname', term)
+          .orWhereILike('lastname', term)
+          .orWhereILike('email', term)
+      })
+    }
+
+    const paginated = await query.paginate(page, limit)
 
     return {
       data: paginated.all().map((user) => UserMapper.toEntity(user)),
