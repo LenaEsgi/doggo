@@ -17,6 +17,7 @@ export default class ListRobotDogsController {
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 20)),
+      search: request.input('search'),
     }
 
     const robots = await this.listRobotDogs.execute(params)

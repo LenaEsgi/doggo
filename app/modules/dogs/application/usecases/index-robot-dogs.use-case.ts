@@ -21,7 +21,11 @@ export class IndexRobotDogsUseCase {
 
     logger.info({ page, limit }, 'page and limit')
 
-    const { data, meta } = await this.robotDogRepository.findAll({ page, limit })
+    const { data, meta } = await this.robotDogRepository.findAll({
+      page,
+      limit,
+      search: params.search,
+    })
     const usersCountByDogId = await this.ownershipReadRepository.countActiveUsersByRobotDogIds(
       data.map((robotDog) => robotDog.id.value)
     )

@@ -36,6 +36,13 @@ export class MissionRepositoryImplementation implements MissionRepository {
       query.where('user_id', userId)
     }
 
+    if (options?.search) {
+      const term = `%${options.search}%`
+      query.where((q) => {
+        q.whereILike('name', term)
+      })
+    }
+
     const paginator = await query.paginate(page, perPage)
 
     const missions = paginator.all().map((row) => {

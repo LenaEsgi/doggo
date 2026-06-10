@@ -15,6 +15,7 @@ export default class IndexMissionController {
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 20)),
+      search: request.input('search'),
     }
 
     const userId = authenticatedUser.role === UserRole.ADMIN ? undefined : authenticatedUser.id
