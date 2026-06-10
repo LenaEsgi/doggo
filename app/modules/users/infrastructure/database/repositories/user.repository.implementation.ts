@@ -49,9 +49,7 @@ export class UserRepositoryImplementation
     if (search) {
       const term = `%${search}%`
       query.where((q) => {
-        q.whereILike('firstname', term)
-          .orWhereILike('lastname', term)
-          .orWhereILike('email', term)
+        q.whereILike('firstname', term).orWhereILike('lastname', term).orWhereILike('email', term)
       })
     }
 

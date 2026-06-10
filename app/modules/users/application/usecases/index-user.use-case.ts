@@ -19,7 +19,11 @@ export class IndexUserUseCase {
     const page = Math.max(1, params.page ?? 1)
     const limit = Math.min(params.limit ?? 25, 100)
 
-    const { data: users, meta } = await this.userRepository.findAll({ page, limit, search: params.search })
+    const { data: users, meta } = await this.userRepository.findAll({
+      page,
+      limit,
+      search: params.search,
+    })
     const dogsCountByUserId = await this.ownershipReadRepository.countActiveDogsByUserIds(
       users.map((user) => user.id)
     )
