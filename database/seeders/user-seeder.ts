@@ -21,6 +21,14 @@ export default class extends BaseSeeder {
       role: UserRole.USER,
     }).create()
 
+    await UserFactory.merge({
+      firstname: 'robo',
+      lastname: 'dog',
+      email: 'robotdogprojetannuel@yopmail.com',
+      firebaseUid: env.get('SEED_ROBO_FIREBASE_UID') ?? 'seed-robo-doggo',
+      role: UserRole.USER,
+    }).create()
+
     await UserFactory.merge({ role: UserRole.USER }).createMany(100)
   }
 }
