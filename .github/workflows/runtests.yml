@@ -48,6 +48,7 @@ jobs:
       APP_KEY: ${{ secrets.ADONIS_APP_KEY }}
       FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
       FIREBASE_SERVICE_ACCOUNT_KEYS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEYS }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
     steps:
       - name: Checkout repo
