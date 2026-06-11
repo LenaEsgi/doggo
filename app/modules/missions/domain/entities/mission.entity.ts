@@ -143,9 +143,7 @@ export default class Mission {
     stepToMove.changeOrder(newOrder)
   }
 
-  public syncSteps(
-    desired: Array<{ id?: string; actionId: string; parameters: string }>
-  ): void {
+  public syncSteps(desired: Array<{ id?: string; actionId: string; parameters: string }>): void {
     this.ensureEditable()
 
     const newSteps: MissionStep[] = desired.map((item, index) => {

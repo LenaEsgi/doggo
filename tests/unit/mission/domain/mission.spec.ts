@@ -195,7 +195,9 @@ test.group('Mission entity', () => {
     const step1 = mission.missionSteps[0]
 
     // Ne garder que step1
-    mission.syncSteps([{ id: step1.id.value, actionId: step1.actionId, parameters: step1.parameters }])
+    mission.syncSteps([
+      { id: step1.id.value, actionId: step1.actionId, parameters: step1.parameters },
+    ])
 
     assert.lengthOf(mission.missionSteps, 1)
     assert.equal(mission.missionSteps[0].id.value, step1.id.value)

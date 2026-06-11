@@ -10,13 +10,27 @@ export class ActionRepositoryImplementation implements ActionRepository {
   async findById(id: ActionId): Promise<Action | null> {
     const row = await ActionModel.find(id.value)
     if (!row) return null
-    return Action.rehydrate(row.id, row.code, row.name, row.slug, row.description, row.parameterSchema ?? null)
+    return Action.rehydrate(
+      row.id,
+      row.code,
+      row.name,
+      row.slug,
+      row.description,
+      row.parameterSchema ?? null
+    )
   }
 
   async findByCode(code: string): Promise<Action | null> {
     const row = await ActionModel.query().where('code', code.toUpperCase()).first()
     if (!row) return null
-    return Action.rehydrate(row.id, row.code, row.name, row.slug, row.description, row.parameterSchema ?? null)
+    return Action.rehydrate(
+      row.id,
+      row.code,
+      row.name,
+      row.slug,
+      row.description,
+      row.parameterSchema ?? null
+    )
   }
 
   async index(options?: PaginationDto): Promise<PaginatedResult<Action>> {
@@ -26,7 +40,14 @@ export class ActionRepositoryImplementation implements ActionRepository {
     const paginator = await ActionModel.query().orderBy('id', 'desc').paginate(page, perPage)
 
     const data = paginator.all().map((row) => {
-      return Action.rehydrate(row.id, row.code, row.name, row.slug, row.description, row.parameterSchema ?? null)
+      return Action.rehydrate(
+        row.id,
+        row.code,
+        row.name,
+        row.slug,
+        row.description,
+        row.parameterSchema ?? null
+      )
     })
 
     return {

@@ -32,9 +32,9 @@ export class MissionRepositoryImplementation implements MissionRepository {
 
     const paginator = await MissionModel.query().orderBy('created_at', 'desc').paginate(page, limit)
 
-    const missions = paginator.all().map((row) =>
-      Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
-    )
+    const missions = paginator
+      .all()
+      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, row.status, []))
 
     return {
       data: missions,
@@ -57,9 +57,9 @@ export class MissionRepositoryImplementation implements MissionRepository {
       .orderBy('created_at', 'desc')
       .paginate(page, limit)
 
-    const missions = paginator.all().map((row) =>
-      Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
-    )
+    const missions = paginator
+      .all()
+      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, row.status, []))
 
     return {
       data: missions,

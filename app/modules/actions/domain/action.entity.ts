@@ -38,7 +38,14 @@ export default class Action {
     description: string | null,
     parameterSchema: ActionParameterSchema | null = null
   ): Action {
-    return new Action(ActionId.fromString(id), code, name, slug, description ?? null, parameterSchema)
+    return new Action(
+      ActionId.fromString(id),
+      code,
+      name,
+      slug,
+      description ?? null,
+      parameterSchema
+    )
   }
 
   // -------------------

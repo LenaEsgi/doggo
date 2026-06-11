@@ -66,7 +66,15 @@ test.group('Unit | Actions | ActionEntity', () => {
 
   const moveSchema: ActionParameterSchema = {
     fields: [
-      { name: 'distance_cm', label: 'Distance', type: 'number', required: true, unit: 'cm', min: 1, max: 5000 },
+      {
+        name: 'distance_cm',
+        label: 'Distance',
+        type: 'number',
+        required: true,
+        unit: 'cm',
+        min: 1,
+        max: 5000,
+      },
     ],
   }
 
@@ -77,10 +85,7 @@ test.group('Unit | Actions | ActionEntity', () => {
 
   test('validateParameters — champ requis absent → InvalidActionParametersError', ({ assert }) => {
     const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
-    assert.throws(
-      () => action.validateParameters('{}'),
-      InvalidActionParametersError
-    )
+    assert.throws(() => action.validateParameters('{}'), InvalidActionParametersError)
   })
 
   test('validateParameters — mauvais type (string au lieu de number) → throw', ({ assert }) => {
@@ -107,16 +112,13 @@ test.group('Unit | Actions | ActionEntity', () => {
     )
   })
 
-  test('validateParameters — sans schema, accepte n\'importe quel JSON', ({ assert }) => {
+  test("validateParameters — sans schema, accepte n'importe quel JSON", ({ assert }) => {
     const action = Action.create('CUSTOM', 'Custom', 'custom', null, null)
     assert.doesNotThrow(() => action.validateParameters('{"anything": true, "foo": 42}'))
   })
 
   test('validateParameters — JSON invalide → throw', ({ assert }) => {
     const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
-    assert.throws(
-      () => action.validateParameters('not-json'),
-      InvalidActionParametersError
-    )
+    assert.throws(() => action.validateParameters('not-json'), InvalidActionParametersError)
   })
 })

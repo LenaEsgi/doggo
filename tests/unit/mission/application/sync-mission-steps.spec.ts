@@ -12,7 +12,15 @@ import type { ActionParameterSchema } from '#app/modules/actions/domain/value-ob
 // Schema de test : action MOVE avec distance_cm requis (1-5000)
 const moveSchema: ActionParameterSchema = {
   fields: [
-    { name: 'distance_cm', label: 'Distance', type: 'number', required: true, unit: 'cm', min: 1, max: 5000 },
+    {
+      name: 'distance_cm',
+      label: 'Distance',
+      type: 'number',
+      required: true,
+      unit: 'cm',
+      min: 1,
+      max: 5000,
+    },
   ],
 }
 
@@ -95,7 +103,9 @@ test.group('SyncMissionStepsUseCase', () => {
     )
   })
 
-  test('lance InvalidActionParametersError si les paramètres ne respectent pas le schema', async ({ assert }) => {
+  test('lance InvalidActionParametersError si les paramètres ne respectent pas le schema', async ({
+    assert,
+  }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
     const useCase = new SyncMissionStepsUseCase(missionRepo, actionRepo)
