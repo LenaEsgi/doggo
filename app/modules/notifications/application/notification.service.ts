@@ -1,0 +1,41 @@
+import { inject } from '@adonisjs/core'
+import transmit from '@adonisjs/transmit/services/main'
+import logger from '@adonisjs/core/services/logger'
+import { NotificationRepository } from '#app/modules/notifications/domain/contracts/notification.repository'
+
+export type NotificationType = 'dog.assigned' | 'dog.revoked' | 'mission.started' | 'mission.completed'
+
+@inject()
+export class NotificationService {
+  constructor(private readonly repo: NotificationRepository) {}
+
+  async create(
+    userId: string,
+    type: NotificationType,
+    payload?: Record<string, unknown>,
+    robotDogId?: string
+  ): Promise<void> {
+    const notification = await this.repo.create({
+      userId,
+      type,
+      payload: payload ?? null,
+      robotDogId: robotDogId ?? null,
+    })
+
+    try {
+      transmit.broadcast(`users/${userId}`, {
+        type: 'notification',
+        notification: {
+          id: notification.id,
+          type: notification.type,
+          payload: notification.payload,
+          robotDogId: notification.robotDogId,
+          isRead: false,
+          createdAt: notification.createdAt,
+        },
+      })
+    } catch (error) {
+      logger.error({ err: error, userId }, 'NotificationService: SSE broadcast failed')
+    }
+  }
+}
