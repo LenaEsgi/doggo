@@ -70,6 +70,7 @@ export default defineConfig({
     () => import('#providers/robot_dog_provider'),
     () => import('#providers/user_provider'),
     () => import('#providers/action_provider'),
+    () => import('#providers/notification_provider'),
     () => import('#providers/firebase_provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/mail/mail_provider'),
