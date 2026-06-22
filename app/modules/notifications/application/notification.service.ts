@@ -30,10 +30,10 @@ export class NotificationService {
           type: notification.type,
           payload: notification.payload,
           robotDogId: notification.robotDogId,
-          isRead: false,
+          isRead: false as const,
           createdAt: notification.createdAt,
         },
-      })
+      } as unknown as Parameters<typeof transmit.broadcast>[1])
     } catch (error) {
       logger.error({ err: error, userId }, 'NotificationService: SSE broadcast failed')
     }
