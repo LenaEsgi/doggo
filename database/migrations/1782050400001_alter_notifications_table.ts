@@ -15,6 +15,7 @@ export default class extends BaseSchema {
     this.schema.alterTable(this.tableName, (table) => {
       table.dropColumn('user_id')
       table.dropColumn('payload')
+      table.uuid('robot_dog_id').references('id').inTable('robot_dogs').onDelete('CASCADE').notNullable().alter()
     })
   }
 }
