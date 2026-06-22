@@ -1,20 +1,30 @@
+import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
-import transmit from '@adonisjs/transmit/services/main'
+import { NotificationService } from '#app/modules/notifications/application/notification.service'
+import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
 import type OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
 
+@inject()
 export default class DogAssignedSseListener {
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly robotDogGateway: RobotDogOwnershipGateway
+  ) {}
+
   async handle(event: OwnershipAssignedEvent): Promise<void> {
     try {
-      transmit.broadcast(`users/${event.userId}`, {
-        type: 'dog.assigned',
-        robotDogId: event.robotDogId,
-      })
-      logger.info(
-        { userId: event.userId, robotDogId: event.robotDogId },
-        'DogAssignedSseListener: broadcasted'
+      const dogs = await this.robotDogGateway.findByIds([event.robotDogId])
+      const robotDogName = dogs[0]?.name ?? 'Robot'
+
+      await this.notificationService.create(
+        event.userId,
+        'dog.assigned',
+        { robotDogName },
+        event.robotDogId
       )
+      logger.info({ userId: event.userId, robotDogId: event.robotDogId }, 'DogAssignedSseListener: notification created')
     } catch (error) {
-      logger.error({ err: error, userId: event.userId }, 'DogAssignedSseListener: broadcast failed')
+      logger.error({ err: error, userId: event.userId }, 'DogAssignedSseListener: failed')
     }
   }
 }
