@@ -4,9 +4,9 @@ import {
   NotificationRepository,
   type NotificationRecord,
   type CreateNotificationData,
+  type FindNotificationsParams,
 } from '#app/modules/notifications/domain/contracts/notification.repository'
 import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
-import type { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
 const FAKE_RECORD: NotificationRecord = {
   id: 'notif-1',
@@ -27,7 +27,7 @@ class FakeNotificationRepository extends NotificationRepository {
     return { ...FAKE_RECORD, ...data, id: 'notif-1', isRead: false, createdAt: '2026-06-22T10:00:00.000Z' }
   }
 
-  async findByUser(_userId: string, _params: PaginationDto): Promise<PaginatedResult<NotificationRecord>> {
+  async findByUser(_userId: string, _params: FindNotificationsParams): Promise<PaginatedResult<NotificationRecord>> {
     return { data: [], meta: { total: 0, perPage: 20, currentPage: 1, firstPage: 1, lastPage: 1 } }
   }
 
