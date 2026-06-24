@@ -16,10 +16,7 @@ export default class NotificationModel extends BaseModel {
   @column()
   declare type: string
 
-  @column({
-    prepare: (value: Record<string, unknown> | null) => (value ? JSON.stringify(value) : null),
-    consume: (value: string | null) => (value ? JSON.parse(value) : null),
-  })
+  @column()
   declare payload: Record<string, unknown> | null
 
   @column()
