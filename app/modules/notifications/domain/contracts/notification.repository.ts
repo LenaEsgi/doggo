@@ -1,10 +1,13 @@
 import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import type { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 
+export type Severity = 'critical' | 'warning' | 'info' | 'success'
+
 export interface NotificationRecord {
   id: string
   userId: string
   type: string
+  severity: Severity
   payload: Record<string, unknown> | null
   robotDogId: string | null
   isRead: boolean
@@ -14,6 +17,7 @@ export interface NotificationRecord {
 export interface CreateNotificationData {
   userId: string
   type: string
+  severity: Severity
   payload: Record<string, unknown> | null
   robotDogId: string | null
 }

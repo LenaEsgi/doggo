@@ -16,12 +16,7 @@ export default class DogAssignedSseListener {
       const dogs = await this.robotDogGateway.findByIds([event.robotDogId])
       const robotDogName = dogs[0]?.name ?? 'Robot'
 
-      await this.notificationService.create(
-        event.userId,
-        'dog.assigned',
-        { robotDogName },
-        event.robotDogId
-      )
+      await this.notificationService.create(event.userId, 'dog.assigned', 'info', { robotDogName }, event.robotDogId)
       logger.info({ userId: event.userId, robotDogId: event.robotDogId }, 'DogAssignedSseListener: notification created')
     } catch (error) {
       logger.error({ err: error, userId: event.userId }, 'DogAssignedSseListener: failed')

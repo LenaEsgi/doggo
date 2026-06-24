@@ -1,5 +1,6 @@
 import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
+import type { Severity } from '#app/modules/notifications/domain/contracts/notification.repository'
 
 export default class NotificationModel extends BaseModel {
   public static table = 'notifications'
@@ -15,6 +16,9 @@ export default class NotificationModel extends BaseModel {
 
   @column()
   declare type: string
+
+  @column()
+  declare severity: Severity
 
   @column()
   declare payload: Record<string, unknown> | null

@@ -12,6 +12,7 @@ const FAKE_RECORD: NotificationRecord = {
   id: 'notif-1',
   userId: 'user-1',
   type: 'dog.assigned',
+  severity: 'info',
   payload: { robotDogName: 'Rex' },
   robotDogId: 'dog-1',
   isRead: false,
@@ -38,11 +39,12 @@ test.group('NotificationService', () => {
     const repo = new FakeNotificationRepository()
     const service = new NotificationService(repo)
 
-    await service.create('user-1', 'dog.assigned', { robotDogName: 'Rex' }, 'dog-1')
+    await service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1')
 
     assert.lengthOf(repo.created, 1)
     assert.equal(repo.created[0].userId, 'user-1')
     assert.equal(repo.created[0].type, 'dog.assigned')
+    assert.equal(repo.created[0].severity, 'info')
     assert.deepEqual(repo.created[0].payload, { robotDogName: 'Rex' })
     assert.equal(repo.created[0].robotDogId, 'dog-1')
   })
@@ -51,9 +53,10 @@ test.group('NotificationService', () => {
     const repo = new FakeNotificationRepository()
     const service = new NotificationService(repo)
 
-    await service.create('user-1', 'dog.revoked')
+    await service.create('user-1', 'dog.revoked', 'warning')
 
     assert.lengthOf(repo.created, 1)
+    assert.equal(repo.created[0].severity, 'warning')
     assert.isNull(repo.created[0].payload)
     assert.isNull(repo.created[0].robotDogId)
   })
@@ -62,6 +65,6 @@ test.group('NotificationService', () => {
     const repo = new FakeNotificationRepository()
     const service = new NotificationService(repo)
 
-    await assert.doesNotReject(() => service.create('user-1', 'dog.assigned', { robotDogName: 'Rex' }, 'dog-1'))
+    await assert.doesNotReject(() => service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1'))
   })
 })
