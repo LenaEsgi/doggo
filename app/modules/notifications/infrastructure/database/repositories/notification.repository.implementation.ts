@@ -20,6 +20,22 @@ export class NotificationRepositoryImplementation extends NotificationRepository
     return this.toRecord(row)
   }
 
+  async createMany(data: CreateNotificationData[]): Promise<NotificationRecord[]> {
+    if (data.length === 0) return []
+    const rows = await NotificationModel.createMany(
+      data.map((d) => ({
+        id: crypto.randomUUID(),
+        userId: d.userId,
+        type: d.type,
+        severity: d.severity,
+        payload: d.payload,
+        robotDogId: d.robotDogId,
+        isRead: false,
+      }))
+    )
+    return rows.map((row) => this.toRecord(row))
+  }
+
   async findByUser(userId: string, params: FindNotificationsParams): Promise<PaginatedResult<NotificationRecord>> {
     const page = Math.max(1, params.page ?? 1)
     const limit = Math.min(params.limit ?? 20, 100)
