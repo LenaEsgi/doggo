@@ -21,15 +21,23 @@ export default class IndexUserController {
 
     logger.info({}, 'IndexUserController called')
 
+    const isAdmin = authenticatedUser.role === UserRole.ADMIN
+    const search: string | undefined = request.input('search')
+
+    if (!isAdmin && (!search || search.trim().length < 3)) {
+      return response.unprocessableEntity({
+        message: 'search is required and must be at least 3 characters',
+      })
+    }
+
     const params: PaginationDto = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 25)),
-      search: request.input('search'),
+      search,
     }
 
     const { data: users, meta } = await this.useCase.execute(params)
 
-    const isAdmin = authenticatedUser.role === UserRole.ADMIN
     const { data } = await serialize(UserTransformer.transform(users, isAdmin))
 
     logger.info({ count: users.length }, 'IndexUserController completed successfully')

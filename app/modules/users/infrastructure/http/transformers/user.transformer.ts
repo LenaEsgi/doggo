@@ -29,6 +29,7 @@ export default class UserTransformer extends BaseTransformer<UserWithDogsSummary
       id: this.resource.user.id,
       firstname: this.resource.user.firstname,
       lastname: this.resource.user.lastname,
+      email: this.resource.user.email,
     }
   }
 }

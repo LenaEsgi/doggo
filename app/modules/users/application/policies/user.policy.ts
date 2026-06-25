@@ -9,7 +9,7 @@ export default class UserPolicy extends BasePolicy {
   }
 
   index(_user: User): AuthorizerResponse {
-    return false
+    return true
   }
 
   show(user: User, targetUserId: string): AuthorizerResponse {
