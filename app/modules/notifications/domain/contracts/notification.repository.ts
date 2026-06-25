@@ -8,6 +8,7 @@ export interface NotificationRecord {
   id: string
   userId: string
   type: string
+  message: string
   severity: Severity
   payload: Record<string, unknown> | null
   robotDogId: string | null
@@ -18,6 +19,7 @@ export interface NotificationRecord {
 export interface CreateNotificationData {
   userId: string
   type: string
+  message: string
   severity: Severity
   payload: Record<string, unknown> | null
   robotDogId: string | null

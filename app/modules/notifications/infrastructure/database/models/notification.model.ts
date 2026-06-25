@@ -18,6 +18,9 @@ export default class NotificationModel extends BaseModel {
   declare type: string
 
   @column()
+  declare message: string
+
+  @column()
   declare severity: Severity
 
   @column()

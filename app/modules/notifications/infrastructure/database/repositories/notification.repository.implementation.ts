@@ -12,6 +12,7 @@ export class NotificationRepositoryImplementation extends NotificationRepository
     const row = await NotificationModel.create({
       userId: data.userId,
       type: data.type,
+      message: data.message,
       severity: data.severity,
       payload: data.payload,
       robotDogId: data.robotDogId,
@@ -27,6 +28,7 @@ export class NotificationRepositoryImplementation extends NotificationRepository
         id: crypto.randomUUID(),
         userId: d.userId,
         type: d.type,
+        message: d.message,
         severity: d.severity,
         payload: d.payload,
         robotDogId: d.robotDogId,
@@ -78,6 +80,7 @@ export class NotificationRepositoryImplementation extends NotificationRepository
       id: row.id,
       userId: row.userId,
       type: row.type,
+      message: row.message,
       severity: row.severity,
       payload: row.payload,
       robotDogId: row.robotDogId,
