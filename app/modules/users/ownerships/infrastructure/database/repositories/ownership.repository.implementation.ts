@@ -120,6 +120,16 @@ export class OwnershipRepositoryImplementation
     return row !== null
   }
 
+  async findAllActiveUserIdsByRobotDogId(robotDogId: string): Promise<string[]> {
+    const rows = await db
+      .from('ownerships')
+      .where('robot_dog_id', robotDogId)
+      .whereNull('end_date')
+      .select('user_id')
+
+    return rows.map((row) => String(row.user_id))
+  }
+
   async adopt(userId: string, robotDogId: string, startDate: Date): Promise<void> {
     await OwnershipModel.updateOrCreate(
       { userId, robotDogId },
