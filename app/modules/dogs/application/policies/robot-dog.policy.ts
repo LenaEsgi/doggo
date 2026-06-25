@@ -19,6 +19,10 @@ export default class RobotDogPolicy extends BasePolicy {
     return false
   }
 
+  async show(user: User, robotDogId: string): Promise<AuthorizerResponse> {
+    return this.ownershipRepository.isOwner(user.id, robotDogId)
+  }
+
   async update(user: User, robotDogId: string): Promise<AuthorizerResponse> {
     return this.ownershipRepository.isOwner(user.id, robotDogId)
   }
