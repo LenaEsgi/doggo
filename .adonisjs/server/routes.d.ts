@@ -19,6 +19,7 @@ export type ScannedRoutes = {
     'me_user': { paramsTuple?: []; params?: {} }
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'assign_user_dog': { paramsTuple?: []; params?: {} }
+    'revoke_user_dog': { paramsTuple?: []; params?: {} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_user_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -48,6 +49,8 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_notifications': { paramsTuple?: []; params?: {} }
+    'mark_notifications_read': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
@@ -67,6 +70,7 @@ export type ScannedRoutes = {
     'list_missions_by_dog_use_case': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_notifications': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -84,6 +88,7 @@ export type ScannedRoutes = {
     'list_missions_by_dog_use_case': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_notifications': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
   }
   POST: {
@@ -97,6 +102,7 @@ export type ScannedRoutes = {
     'finalize_totp_setup_auth': { paramsTuple?: []; params?: {} }
     'list_mfa_enrollments_auth': { paramsTuple?: []; params?: {} }
     'assign_user_dog': { paramsTuple?: []; params?: {} }
+    'revoke_user_dog': { paramsTuple?: []; params?: {} }
     'adopt_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'abandon_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_robot_dog': { paramsTuple?: []; params?: {} }
@@ -119,6 +125,7 @@ export type ScannedRoutes = {
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'mark_notifications_read': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
