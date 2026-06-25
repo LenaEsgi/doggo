@@ -26,6 +26,7 @@ export class NotificationService {
     const notification = await this.repo.create({
       userId,
       type,
+      message: this.buildMessage(type, payload),
       severity,
       payload: payload ?? null,
       robotDogId: robotDogId ?? null,
@@ -42,10 +43,12 @@ export class NotificationService {
   ): Promise<void> {
     if (userIds.length === 0) return
 
+    const message = this.buildMessage(type, payload)
     const notifications = await this.repo.createMany(
       userIds.map((userId) => ({
         userId,
         type,
+        message,
         severity,
         payload: payload ?? null,
         robotDogId: robotDogId ?? null,
@@ -57,6 +60,21 @@ export class NotificationService {
     }
   }
 
+  private buildMessage(type: NotificationType, payload?: Record<string, unknown>): string {
+    const dog = (payload?.robotDogName as string | undefined) ?? 'le robot'
+    const member = (payload?.memberName as string | undefined) ?? 'Un utilisateur'
+    const mission = (payload?.missionName as string | undefined) ?? 'La mission'
+
+    switch (type) {
+      case 'dog.assigned':        return `Le robot ${dog} vous a été assigné`
+      case 'dog.revoked':         return `Vous avez été retiré du robot ${dog}`
+      case 'dog.member.assigned': return `${member} a rejoint le robot ${dog}`
+      case 'dog.member.revoked':  return `${member} a quitté le robot ${dog}`
+      case 'mission.started':     return `${mission} a démarré sur le robot ${dog}`
+      case 'mission.completed':   return `${mission} est terminée sur le robot ${dog}`
+    }
+  }
+
   private broadcast(notification: NotificationRecord): void {
     try {
       transmit.broadcast(`users/${notification.userId}`, {
@@ -64,6 +82,7 @@ export class NotificationService {
         notification: {
           id: notification.id,
           type: notification.type,
+          message: notification.message,
           severity: notification.severity,
           payload: notification.payload,
           robotDogId: notification.robotDogId,
