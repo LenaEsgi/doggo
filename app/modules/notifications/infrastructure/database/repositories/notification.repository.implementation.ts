@@ -54,7 +54,7 @@ export class NotificationRepositoryImplementation extends NotificationRepository
     await NotificationModel.query()
       .where('user_id', userId)
       .where('is_read', false)
-      .update({ isRead: true })
+      .update({ is_read: true })
   }
 
   private toRecord(row: NotificationModel): NotificationRecord {
