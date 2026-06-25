@@ -30,6 +30,7 @@ export default class UserTransformer extends BaseTransformer<UserWithDogsSummary
       firstname: this.resource.user.firstname,
       lastname: this.resource.user.lastname,
       email: this.resource.user.email,
+      role: this.resource.user.role === UserRole.ADMIN ? 'admin' : 'user',
     }
   }
 }

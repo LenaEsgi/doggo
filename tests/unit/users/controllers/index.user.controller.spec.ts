@@ -117,6 +117,6 @@ test('IndexUserController returns users for non-admin with valid search', async 
 
   assert.equal(result.status, 200)
   assert.lengthOf(result.body.data, 1)
-  assert.notExists(result.body.data[0].role)
+  assert.equal(result.body.data[0].role, 'user')
   assert.notExists(result.body.data[0].dogs)
 })
