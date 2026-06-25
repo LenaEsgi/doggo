@@ -16,6 +16,8 @@ const ListRobotDogOwnersController = () =>
   import('#users/infrastructure/http/controllers/list.robot.dog.owners.controller')
 const AssignUserDogController = () =>
   import('#users/infrastructure/http/controllers/assign.user.dog.controller')
+const RevokeUserDogController = () =>
+  import('#users/infrastructure/http/controllers/revoke.user.dog.controller')
 const ListUserDogsController = () =>
   import('#users/infrastructure/http/controllers/list.user.dogs.controller')
 
@@ -25,6 +27,7 @@ router
     router.get('/me', [MeUserController, 'handle'])
     router.get('/dogs/:id', [ListRobotDogOwnersController, 'handle'])
     router.post('/dogs/assign', [AssignUserDogController, 'handle']).use(middleware.firebaseAuth())
+    router.post('/dogs/revoke', [RevokeUserDogController, 'handle']).use(middleware.firebaseAuth())
     router.get('/:id', [ShowUserController, 'handle'])
     router.patch('/:id', [UpdateUserController, 'handle'])
     router.get('/:id/dogs', [ListUserDogsController, 'handle']).use(middleware.firebaseAuth())
