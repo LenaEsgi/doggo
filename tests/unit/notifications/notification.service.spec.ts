@@ -24,10 +24,19 @@ class FakeNotificationRepository extends NotificationRepository {
 
   async create(data: CreateNotificationData): Promise<NotificationRecord> {
     this.created.push(data)
-    return { ...FAKE_RECORD, ...data, id: 'notif-1', isRead: false, createdAt: '2026-06-22T10:00:00.000Z' }
+    return {
+      ...FAKE_RECORD,
+      ...data,
+      id: 'notif-1',
+      isRead: false,
+      createdAt: '2026-06-22T10:00:00.000Z',
+    }
   }
 
-  async findByUser(_userId: string, _params: FindNotificationsParams): Promise<PaginatedResult<NotificationRecord>> {
+  async findByUser(
+    _userId: string,
+    _params: FindNotificationsParams
+  ): Promise<PaginatedResult<NotificationRecord>> {
     return { data: [], meta: { total: 0, perPage: 20, currentPage: 1, firstPage: 1, lastPage: 1 } }
   }
 
@@ -65,6 +74,8 @@ test.group('NotificationService', () => {
     const repo = new FakeNotificationRepository()
     const service = new NotificationService(repo)
 
-    await assert.doesNotReject(() => service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1'))
+    await assert.doesNotReject(() =>
+      service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1')
+    )
   })
 })

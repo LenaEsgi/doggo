@@ -38,13 +38,14 @@ export class NotificationRepositoryImplementation extends NotificationRepository
     return rows.map((row) => this.toRecord(row))
   }
 
-  async findByUser(userId: string, params: FindNotificationsParams): Promise<PaginatedResult<NotificationRecord>> {
+  async findByUser(
+    userId: string,
+    params: FindNotificationsParams
+  ): Promise<PaginatedResult<NotificationRecord>> {
     const page = Math.max(1, params.page ?? 1)
     const limit = Math.min(params.limit ?? 20, 100)
 
-    const query = NotificationModel.query()
-      .where('user_id', userId)
-      .orderBy('created_at', 'desc')
+    const query = NotificationModel.query().where('user_id', userId).orderBy('created_at', 'desc')
 
     if (params.tab === 'unread') {
       query.where('is_read', false)

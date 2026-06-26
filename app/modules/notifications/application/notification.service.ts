@@ -2,7 +2,10 @@ import { inject } from '@adonisjs/core'
 import transmit from '@adonisjs/transmit/services/main'
 import logger from '@adonisjs/core/services/logger'
 import { NotificationRepository } from '#app/modules/notifications/domain/contracts/notification.repository'
-import type { NotificationRecord, Severity } from '#app/modules/notifications/domain/contracts/notification.repository'
+import type {
+  NotificationRecord,
+  Severity,
+} from '#app/modules/notifications/domain/contracts/notification.repository'
 
 export type NotificationType =
   | 'dog.assigned'
@@ -66,12 +69,18 @@ export class NotificationService {
     const mission = (payload?.missionName as string | undefined) ?? 'La mission'
 
     switch (type) {
-      case 'dog.assigned':        return `Le robot ${dog} vous a été assigné`
-      case 'dog.revoked':         return `Vous avez été retiré du robot ${dog}`
-      case 'dog.member.assigned': return `${member} a rejoint le robot ${dog}`
-      case 'dog.member.revoked':  return `${member} a quitté le robot ${dog}`
-      case 'mission.started':     return `${mission} a démarré sur le robot ${dog}`
-      case 'mission.completed':   return `${mission} est terminée sur le robot ${dog}`
+      case 'dog.assigned':
+        return `Le robot ${dog} vous a été assigné`
+      case 'dog.revoked':
+        return `Vous avez été retiré du robot ${dog}`
+      case 'dog.member.assigned':
+        return `${member} a rejoint le robot ${dog}`
+      case 'dog.member.revoked':
+        return `${member} a quitté le robot ${dog}`
+      case 'mission.started':
+        return `${mission} a démarré sur le robot ${dog}`
+      case 'mission.completed':
+        return `${mission} est terminée sur le robot ${dog}`
     }
   }
 
@@ -91,7 +100,10 @@ export class NotificationService {
         },
       } as unknown as Parameters<typeof transmit.broadcast>[1])
     } catch (error) {
-      logger.error({ err: error, userId: notification.userId }, 'NotificationService: SSE broadcast failed')
+      logger.error(
+        { err: error, userId: notification.userId },
+        'NotificationService: SSE broadcast failed'
+      )
     }
   }
 }

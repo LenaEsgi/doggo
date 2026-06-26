@@ -32,8 +32,20 @@ export default class DogAssignedSseListener {
       const coOwnerIds = allOwnerIds.filter((id) => id !== event.userId)
 
       await Promise.all([
-        this.notificationService.create(event.userId, 'dog.assigned', 'info', { robotDogName }, event.robotDogId),
-        this.notificationService.createBulk(coOwnerIds, 'dog.member.assigned', 'info', { robotDogName, memberName }, event.robotDogId),
+        this.notificationService.create(
+          event.userId,
+          'dog.assigned',
+          'info',
+          { robotDogName },
+          event.robotDogId
+        ),
+        this.notificationService.createBulk(
+          coOwnerIds,
+          'dog.member.assigned',
+          'info',
+          { robotDogName, memberName },
+          event.robotDogId
+        ),
       ])
 
       logger.info(

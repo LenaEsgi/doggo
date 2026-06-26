@@ -35,6 +35,9 @@ export interface FindNotificationsParams {
 export abstract class NotificationRepository {
   abstract create(data: CreateNotificationData): Promise<NotificationRecord>
   abstract createMany(data: CreateNotificationData[]): Promise<NotificationRecord[]>
-  abstract findByUser(userId: string, params: FindNotificationsParams): Promise<PaginatedResult<NotificationRecord>>
+  abstract findByUser(
+    userId: string,
+    params: FindNotificationsParams
+  ): Promise<PaginatedResult<NotificationRecord>>
   abstract markAllReadByUser(userId: string): Promise<void>
 }

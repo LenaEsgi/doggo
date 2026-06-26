@@ -32,12 +32,28 @@ export default class DogRevokedSseListener {
         : 'Un utilisateur'
 
       await Promise.all([
-        this.notificationService.create(event.userId, 'dog.revoked', 'warning', { robotDogName }, event.robotDogId),
-        this.notificationService.createBulk(remainingOwnerIds, 'dog.member.revoked', 'info', { robotDogName, memberName }, event.robotDogId),
+        this.notificationService.create(
+          event.userId,
+          'dog.revoked',
+          'warning',
+          { robotDogName },
+          event.robotDogId
+        ),
+        this.notificationService.createBulk(
+          remainingOwnerIds,
+          'dog.member.revoked',
+          'info',
+          { robotDogName, memberName },
+          event.robotDogId
+        ),
       ])
 
       logger.info(
-        { userId: event.userId, robotDogId: event.robotDogId, remainingOwnerCount: remainingOwnerIds.length },
+        {
+          userId: event.userId,
+          robotDogId: event.robotDogId,
+          remainingOwnerCount: remainingOwnerIds.length,
+        },
         'DogRevokedSseListener: notifications created'
       )
     } catch (error) {

@@ -13,6 +13,7 @@ import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { ActiveOwnershipNotFoundError } from '#app/modules/users/ownerships/domain/exceptions/active-ownership-not-found.error'
+import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
 
 class FakeUserReadRepository extends UserReadRepository {
   constructor(private readonly users: User[]) {
@@ -59,6 +60,7 @@ test.group('User ownership use cases', () => {
     const useCase = new AdoptRobotDogUseCase(
       new UserOwnershipGatewayImplementation(userRepository),
       new RobotDogOwnershipGatewayImplementation(dogRepository),
+      ownershipRepository,
       ownershipRepository
     )
     await useCase.execute(user.id, dog.serialNumber)
@@ -73,6 +75,7 @@ test.group('User ownership use cases', () => {
     const useCase = new AdoptRobotDogUseCase(
       new UserOwnershipGatewayImplementation(new FakeUserReadRepository([])),
       new RobotDogOwnershipGatewayImplementation(dogRepository),
+      ownershipRepository,
       ownershipRepository
     )
 
@@ -200,15 +203,49 @@ test.group('User ownership use cases', () => {
       'Doe',
       UserRole.USER
     )
+    const ownershipRepository = new FakeOwnershipRepository()
     const useCase = new AdoptRobotDogUseCase(
       new UserOwnershipGatewayImplementation(new FakeUserReadRepository([user])),
       new RobotDogOwnershipGatewayImplementation(new FakeRobotDogRepository()),
-      new FakeOwnershipRepository()
+      ownershipRepository,
+      ownershipRepository
     )
 
     await assert.rejects(
       () => useCase.execute(user.id, '56a39d4d-b05d-42fb-a402-6782fc66dc3d'),
       RobotDogNotFoundError
+    )
+  })
+
+  test('AdoptDogUseCase throws when user is already an owner', async ({ assert }) => {
+    const user = User.rehydrate(
+      'u1',
+      'firebase-u1',
+      'john@example.com',
+      'John',
+      'Doe',
+      UserRole.USER
+    )
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    const userRepository = new FakeUserReadRepository([user])
+    const dogRepository = new FakeRobotDogRepository()
+    const ownershipRepository = new FakeOwnershipRepository(
+      { [user.id]: [dog.id.value] },
+      { [dog.id.value]: [user.id] }
+    )
+
+    await dogRepository.save(dog)
+
+    const useCase = new AdoptRobotDogUseCase(
+      new UserOwnershipGatewayImplementation(userRepository),
+      new RobotDogOwnershipGatewayImplementation(dogRepository),
+      ownershipRepository,
+      ownershipRepository
+    )
+
+    await assert.rejects(
+      () => useCase.execute(user.id, dog.serialNumber),
+      OwnershipAlreadyExistsError
     )
   })
 })

@@ -86,6 +86,10 @@ export class FakeOwnershipRepository
     return (this.userToDogs[userId] ?? []).includes(robotDogId)
   }
 
+  async findAllActiveUserIdsByRobotDogId(robotDogId: string): Promise<string[]> {
+    return this.dogToUsers[robotDogId] ?? []
+  }
+
   async adopt(userId: string, robotDogId: string): Promise<void> {
     const dogs = new Set(this.userToDogs[userId] ?? [])
     dogs.add(robotDogId)

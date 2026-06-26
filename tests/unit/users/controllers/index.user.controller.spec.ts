@@ -63,8 +63,14 @@ test('IndexUserController returns 422 for non-admin without search', async ({ as
 
   await controller.handle({
     response: {
-      ok: (body: any) => { result.status = 200; result.body = body },
-      unprocessableEntity: (body: any) => { result.status = 422; result.body = body },
+      ok: (body: any) => {
+        result.status = 200
+        result.body = body
+      },
+      unprocessableEntity: (body: any) => {
+        result.status = 422
+        result.body = body
+      },
     },
     request: { input: (_key: string, defaultValue: any) => defaultValue },
     logger: { info: () => {} },
@@ -76,14 +82,22 @@ test('IndexUserController returns 422 for non-admin without search', async ({ as
   assert.equal(result.status, 422)
 })
 
-test('IndexUserController returns 422 for non-admin with search shorter than 3 chars', async ({ assert }) => {
+test('IndexUserController returns 422 for non-admin with search shorter than 3 chars', async ({
+  assert,
+}) => {
   const controller = new IndexUserController(new FakeIndexUserUseCase() as any)
   const result: { status?: number; body?: any } = {}
 
   await controller.handle({
     response: {
-      ok: (body: any) => { result.status = 200; result.body = body },
-      unprocessableEntity: (body: any) => { result.status = 422; result.body = body },
+      ok: (body: any) => {
+        result.status = 200
+        result.body = body
+      },
+      unprocessableEntity: (body: any) => {
+        result.status = 422
+        result.body = body
+      },
     },
     request: {
       input: (key: string, defaultValue: any) => (key === 'search' ? 'ab' : defaultValue),
@@ -103,8 +117,14 @@ test('IndexUserController returns users for non-admin with valid search', async 
 
   await controller.handle({
     response: {
-      ok: (body: any) => { result.status = 200; result.body = body },
-      unprocessableEntity: (body: any) => { result.status = 422; result.body = body },
+      ok: (body: any) => {
+        result.status = 200
+        result.body = body
+      },
+      unprocessableEntity: (body: any) => {
+        result.status = 422
+        result.body = body
+      },
     },
     request: {
       input: (key: string, defaultValue: any) => (key === 'search' ? 'ali' : defaultValue),

@@ -99,6 +99,10 @@ class FakeOwnershipReadRepository extends OwnershipReadRepository {
   async isOwner(_userId: string, _robotDogId: string): Promise<boolean> {
     return false
   }
+
+  async findAllActiveUserIdsByRobotDogId(_robotDogId: string): Promise<string[]> {
+    return []
+  }
 }
 
 class FakeUserWriteRepository extends UserWriteRepository {
