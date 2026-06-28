@@ -60,11 +60,19 @@ export default class MissionPolicy extends BasePolicy {
     return this.ownershipRepository.isOwner(user.id, dogId)
   }
 
-  async assignToDog(user: User, dogId: string): Promise<AuthorizerResponse> {
-    return this.ownershipRepository.isOwner(user.id, dogId)
+  async assignToDog(user: User, dogId: string, missionId: string): Promise<AuthorizerResponse> {
+    const [ownsDog, ownsMission] = await Promise.all([
+      this.ownershipRepository.isOwner(user.id, dogId),
+      this.missionRepository.isOwner(user.id, missionId),
+    ])
+    return ownsDog && ownsMission
   }
 
-  async removeFromDog(user: User, dogId: string): Promise<AuthorizerResponse> {
-    return this.ownershipRepository.isOwner(user.id, dogId)
+  async removeFromDog(user: User, dogId: string, missionId: string): Promise<AuthorizerResponse> {
+    const [ownsDog, ownsMission] = await Promise.all([
+      this.ownershipRepository.isOwner(user.id, dogId),
+      this.missionRepository.isOwner(user.id, missionId),
+    ])
+    return ownsDog && ownsMission
   }
 }
