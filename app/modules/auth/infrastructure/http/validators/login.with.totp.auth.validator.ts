@@ -1,6 +1,6 @@
 import vine from '@vinejs/vine'
 
-export const loginWithTotpAuthValidator = vine.compile(
+export const loginWithTotpAuthValidator = vine.create(
   vine.object({
     pendingCredential: vine.string().trim().minLength(1),
     mfaEnrollmentId: vine.string().trim().minLength(1),

@@ -16,12 +16,12 @@ export default class CreateRobotDogController {
       name: validatedData.name,
     })
 
-    await this.createUseCase.execute(validatedData)
+    const robotDog = await this.createUseCase.execute(validatedData)
     logger.info('RobotDog successfully created', {
-      serialNumber: validatedData.serialNumber,
-      name: validatedData.name,
+      id: robotDog.id.value,
+      serialNumber: robotDog.serialNumber,
     })
 
-    return response.status(201).json({ message: 'RobotDog created' })
+    return response.status(201).json({ id: robotDog.id.value })
   }
 }
