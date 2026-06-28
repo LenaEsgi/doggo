@@ -15,7 +15,15 @@ export default class RobotDogPolicy extends BasePolicy {
     if (user?.role === UserRole.ADMIN) return true
   }
 
+  create(_user: User): AuthorizerResponse {
+    return false
+  }
+
   index(_user: User): AuthorizerResponse {
+    return false
+  }
+
+  destroy(_user: User): AuthorizerResponse {
     return false
   }
 

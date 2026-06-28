@@ -33,10 +33,10 @@ export class ListRobotDogOwnersUseCase {
       params
     )
 
-    const users = await this.userGateway.findByIds(paginateUsers.data)
-    const dogsCountByUserId = await this.ownershipReadRepository.countActiveDogsByUserIds(
-      paginateUsers.data
-    )
+    const [users, dogsCountByUserId] = await Promise.all([
+      this.userGateway.findByIds(paginateUsers.data),
+      this.ownershipReadRepository.countActiveDogsByUserIds(paginateUsers.data),
+    ])
     const usersById = new Map(users.map((user) => [user.id, user]))
 
     const result = paginateUsers.data.flatMap((userId) => {

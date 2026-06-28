@@ -93,6 +93,7 @@ export class OwnershipRepositoryImplementation
       .where('robot_dog_id', robotDogId)
       .whereNull('end_date')
       .select('user_id')
+      .orderBy('start_date', 'desc')
       .paginate(page, perPage)
 
     const userIds = rows.all().map((row) => String(row.user_id))
