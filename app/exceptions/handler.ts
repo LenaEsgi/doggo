@@ -2,11 +2,18 @@ import app from '@adonisjs/core/services/app'
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
+import { InvalidRobotDogNameError } from '#dogs/domain/exceptions/invalid-robot-dog-name.error'
 import { DomainError } from '#app/modules/share/exceptions/domain-error'
 import { HttpError } from '#app/modules/share/exceptions/http-error'
 import { ActiveOwnershipNotFoundError } from '#app/modules/users/ownerships/domain/exceptions/active-ownership-not-found.error'
 import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
+import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
+import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
+import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
+import { ActionAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-already-exists.error'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -45,6 +52,55 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     if (error instanceof OwnershipAlreadyExistsError) {
       return ctx.response.status(409).json({
         error: 'OWNERSHIP_ALREADY_EXISTS',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof MissionNotFoundError) {
+      return ctx.response.status(404).json({
+        error: 'MISSION_NOT_FOUND',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof InvalidMissionNotEditableError) {
+      return ctx.response.status(422).json({
+        error: 'MISSION_NOT_EDITABLE',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof InvalidMissionAlreadyRunningError) {
+      return ctx.response.status(409).json({
+        error: 'MISSION_ALREADY_RUNNING',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof InvalidMissionStepNotFoundError) {
+      return ctx.response.status(404).json({
+        error: 'MISSION_STEP_NOT_FOUND',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof ActionNotFoundError) {
+      return ctx.response.status(404).json({
+        error: 'ACTION_NOT_FOUND',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof ActionAlreadyExistsError) {
+      return ctx.response.status(409).json({
+        error: 'ACTION_ALREADY_EXISTS',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof InvalidRobotDogNameError) {
+      return ctx.response.status(422).json({
+        error: 'INVALID_ROBOT_DOG_NAME',
         message: error.message,
       })
     }

@@ -20,7 +20,7 @@ export default class UpdateUserController {
 
     const payload = await request.validateUsing(updateUserValidator)
 
-    if (payload.role || payload.firebaseUid) {
+    if (payload.role) {
       await bouncer.with('UserPolicy').authorize('updateRole')
     }
 

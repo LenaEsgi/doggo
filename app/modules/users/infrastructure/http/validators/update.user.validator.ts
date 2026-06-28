@@ -8,7 +8,6 @@ export const updateUserParamValidator = vine.compile(
 
 export const updateUserValidator = vine.compile(
   vine.object({
-    firebaseUid: vine.string().trim().minLength(1).maxLength(128).optional(),
     firstname: vine.string().trim().minLength(2).maxLength(100).optional(),
     lastname: vine.string().trim().minLength(2).maxLength(100).optional(),
     email: vine.string().trim().email().normalizeEmail().optional(),
