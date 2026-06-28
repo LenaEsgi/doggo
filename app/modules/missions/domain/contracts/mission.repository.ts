@@ -7,6 +7,7 @@ export abstract class MissionRepository {
   abstract findById(id: MissionId): Promise<Mission | null>
   abstract findAll(options?: PaginationDto): Promise<PaginatedResult<Mission>>
   abstract findByUser(userId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>>
+  abstract isOwner(userId: string, missionId: string): Promise<boolean>
   abstract save(mission: Mission): Promise<void>
   abstract delete(missionId: MissionId): Promise<void>
   abstract listByRobotDog(dogId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>>

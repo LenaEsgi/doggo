@@ -73,6 +73,14 @@ export class MissionRepositoryImplementation implements MissionRepository {
     }
   }
 
+  async isOwner(userId: string, missionId: string): Promise<boolean> {
+    const row = await MissionModel.query()
+      .where('id', missionId)
+      .where('user_id', userId)
+      .first()
+    return row !== null
+  }
+
   async save(mission: Mission): Promise<void> {
     await db.transaction(async (trx) => {
       const missionRow = await MissionModel.updateOrCreate(

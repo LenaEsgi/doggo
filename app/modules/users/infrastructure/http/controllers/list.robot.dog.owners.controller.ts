@@ -22,7 +22,7 @@ export default class ListRobotDogOwnersController {
       data: request.params(),
     })
 
-    await bouncer.with('UserPolicy').authorize('listDogOwners')
+    await bouncer.with('UserPolicy').authorize('listDogOwners', id)
 
     const pagination: PaginationDto = {
       page: Number(request.input('page', 1)),

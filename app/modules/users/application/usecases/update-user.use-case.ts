@@ -34,7 +34,7 @@ export class UpdateUserUseCase {
 
     const updated = User.rehydrate(
       current.id,
-      payload.firebaseUid ?? current.firebaseUid,
+      current.firebaseUid,
       payload.email ?? current.email,
       payload.firstname ?? current.firstname,
       payload.lastname ?? current.lastname,

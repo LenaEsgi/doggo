@@ -32,9 +32,10 @@ export class ListUserRobotDogsUseCase {
       userId,
       options
     )
-    const robotDogs = await this.robotDogGateway.findByIds(robotDogIds)
-    const usersCountByRobotDogId =
-      await this.ownershipReadRepository.countActiveUsersByRobotDogIds(robotDogIds)
+    const [robotDogs, usersCountByRobotDogId] = await Promise.all([
+      this.robotDogGateway.findByIds(robotDogIds),
+      this.ownershipReadRepository.countActiveUsersByRobotDogIds(robotDogIds),
+    ])
     const robotDogsById = new Map(robotDogs.map((robotDog) => [robotDog.id.value, robotDog]))
 
     const data = robotDogIds.flatMap((robotDogId) => {

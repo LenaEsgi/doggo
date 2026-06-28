@@ -3,7 +3,7 @@ import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
-import { InvalidMissionNotFountError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fount.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
 
 @inject()
 export class ShowMissionUseCase {
@@ -15,7 +15,7 @@ export class ShowMissionUseCase {
     const mission = await this.missionRepository.findById(missionId)
 
     if (!mission) {
-      throw new InvalidMissionNotFountError('Mission not found')
+      throw new MissionNotFoundError(id)
     }
     logger.info('ShowMissionUseCase started', { id })
 
