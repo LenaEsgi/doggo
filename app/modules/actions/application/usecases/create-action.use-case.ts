@@ -10,7 +10,7 @@ export class CreateActionUseCase {
   constructor(private actionRepository: ActionRepository) {}
 
   async execute(dto: CreateActionDto) {
-    logger.info('CreateAction started', { dto })
+    logger.info({ code: dto.code, name: dto.name }, 'CreateAction started')
 
     const existing = await this.actionRepository.findByCode(dto.code)
 
