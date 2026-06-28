@@ -40,6 +40,11 @@ export class FakeMissionRepository implements MissionRepository {
     }
   }
 
+  async isOwner(userId: string, missionId: string): Promise<boolean> {
+    const mission = this.storedMissions.find((m) => m.id.value === missionId)
+    return mission?.userId === userId
+  }
+
   async save(mission: Mission): Promise<void> {
     const index = this.storedMissions.findIndex((m) => m.id.equals(mission.id))
     if (index >= 0) {

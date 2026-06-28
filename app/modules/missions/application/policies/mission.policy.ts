@@ -4,7 +4,6 @@ import type { AuthorizerResponse } from '@adonisjs/bouncer/types'
 import { type User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
-import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 
 @inject()
@@ -29,46 +28,31 @@ export default class MissionPolicy extends BasePolicy {
   }
 
   async show(user: User, missionId: string): Promise<AuthorizerResponse> {
-    if (user.role === UserRole.ADMIN) return true
-    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
-    if (!mission) return false
-    return mission.userId === user.id
+    return this.missionRepository.isOwner(user.id, missionId)
   }
 
   async update(user: User, missionId: string): Promise<AuthorizerResponse> {
-    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
-    if (!mission) return false
-    return mission.userId === user.id
+    return this.missionRepository.isOwner(user.id, missionId)
   }
 
   async destroy(user: User, missionId: string): Promise<AuthorizerResponse> {
-    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
-    if (!mission) return false
-    return mission.userId === user.id
+    return this.missionRepository.isOwner(user.id, missionId)
   }
 
   async addStep(user: User, missionId: string): Promise<AuthorizerResponse> {
-    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
-    if (!mission) return false
-    return mission.userId === user.id
+    return this.missionRepository.isOwner(user.id, missionId)
   }
 
   async removeStep(user: User, missionId: string): Promise<AuthorizerResponse> {
-    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
-    if (!mission) return false
-    return mission.userId === user.id
+    return this.missionRepository.isOwner(user.id, missionId)
   }
 
   async moveStep(user: User, missionId: string): Promise<AuthorizerResponse> {
-    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
-    if (!mission) return false
-    return mission.userId === user.id
+    return this.missionRepository.isOwner(user.id, missionId)
   }
 
   async syncSteps(user: User, missionId: string): Promise<AuthorizerResponse> {
-    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
-    if (!mission) return false
-    return mission.userId === user.id
+    return this.missionRepository.isOwner(user.id, missionId)
   }
 
   async listByDog(user: User, dogId: string): Promise<AuthorizerResponse> {
