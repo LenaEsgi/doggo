@@ -113,7 +113,7 @@ export default class MissionRun {
   }
 
   get runSteps(): MissionRunStep[] {
-    return [...this._runSteps]
+    return this._runSteps.map((s) => MissionRunStep.rehydrate(s.id.value, s.stepId.value, s.status))
   }
 
   get startedAt(): Date {
