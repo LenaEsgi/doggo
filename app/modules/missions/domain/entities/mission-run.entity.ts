@@ -113,7 +113,7 @@ export default class MissionRun {
   }
 
   get runSteps(): MissionRunStep[] {
-    return this._runSteps
+    return [...this._runSteps]
   }
 
   get startedAt(): Date {
