@@ -104,4 +104,8 @@ export class FakeMissionRepository implements MissionRepository {
 
     this.missionDogs.set(missionId, linkedDogs)
   }
+
+  async isAssignedToDog(missionId: string, robotDogId: string): Promise<boolean> {
+    return this.missionDogs.get(missionId)?.has(robotDogId) ?? false
+  }
 }

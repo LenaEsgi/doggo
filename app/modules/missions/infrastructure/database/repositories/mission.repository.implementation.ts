@@ -151,4 +151,13 @@ export class MissionRepositoryImplementation implements MissionRepository {
     const mission = await MissionModel.findOrFail(missionId)
     await mission.related('robotDogs').detach([dogId])
   }
+
+  async isAssignedToDog(missionId: string, robotDogId: string): Promise<boolean> {
+    const row = await MissionModel.query()
+      .where('id', missionId)
+      .whereHas('robotDogs', (q) => q.where('robot_dog_id', robotDogId))
+      .first()
+
+    return row !== null
+  }
 }

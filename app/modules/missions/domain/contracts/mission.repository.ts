@@ -13,4 +13,5 @@ export abstract class MissionRepository {
   abstract listByRobotDog(dogId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>>
   abstract assignToDog(dogId: string, missionId: string): Promise<void>
   abstract removeFromDog(dogId: string, missionId: string): Promise<void>
+  abstract isAssignedToDog(missionId: string, robotDogId: string): Promise<boolean>
 }

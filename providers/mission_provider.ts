@@ -1,6 +1,8 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission.repository.implementation'
+import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
+import { MissionRunRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-run.repository.implementation'
 import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
 import { RobotDogGatewayImplementation } from '#app/modules/missions/infrastructure/gateways/robot-dog.gateway.implementation'
 import { UserGateway } from '#app/modules/missions/application/contracts/user.gateway'
@@ -15,6 +17,10 @@ export default class MissionProvider {
   register() {
     this.app.container.bind(MissionRepository, () => {
       return this.app.container.make(MissionRepositoryImplementation)
+    })
+
+    this.app.container.bind(MissionRunRepository, () => {
+      return this.app.container.make(MissionRunRepositoryImplementation)
     })
 
     this.app.container.bind(RobotDogGateway, () => {
