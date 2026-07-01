@@ -1,18 +1,23 @@
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { NotificationService } from '#app/modules/notifications/application/notification.service'
+import type MissionCompletedEvent from '#app/modules/missions/domain/events/mission-completed.event'
+import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 
-// Stub — sera câblé dans start/events.ts quand MissionCompletedEvent existera
 @inject()
 export default class MissionCompletedSseListener {
   constructor(private readonly notificationService: NotificationService) {}
 
-  async handle(event: { userId: string; missionId: string; missionName: string }): Promise<void> {
+  async handle(event: MissionCompletedEvent): Promise<void> {
+    const isSuccess = event.status === MissionRunStatus.SUCCESS
+    const type = isSuccess ? 'mission.completed' : 'mission.failed'
+    const severity = isSuccess ? 'success' : 'critical'
+
     try {
-      await this.notificationService.create(event.userId, 'mission.completed', 'success', {
+      await this.notificationService.create(event.userId, type, severity, {
         missionName: event.missionName,
       })
-      logger.info({ userId: event.userId }, 'MissionCompletedSseListener: notification created')
+      logger.info({ userId: event.userId, type }, 'MissionCompletedSseListener: notification created')
     } catch (error) {
       logger.error({ err: error, userId: event.userId }, 'MissionCompletedSseListener: failed')
     }
