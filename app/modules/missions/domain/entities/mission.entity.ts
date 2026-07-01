@@ -1,7 +1,4 @@
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
-import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
-import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
-import { InvalidMissionNotRunningError } from '../exceptions/invalid-mission-not-running.error.ts'
 import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
@@ -19,30 +16,21 @@ export default class Mission {
     private _name: string,
     private _robotDogIds: RobotDogId[],
     private _userId: string,
-    private _status: MissionStatus,
     private _missionSteps: MissionStep[]
   ) {}
 
   public static create(name: string, userId: string) {
-    return new Mission(MissionId.generate(), name, [], userId, MissionStatus.STAND_BY, [])
+    return new Mission(MissionId.generate(), name, [], userId, [])
   }
 
   public static rehydrate(
     id: string,
     name: string,
     userId: string,
-    status: MissionStatus,
     missionSteps: MissionStep[] = [],
     robotDogIds?: RobotDogId[]
   ) {
-    return new Mission(
-      MissionId.fromString(id),
-      name,
-      robotDogIds ?? [],
-      userId,
-      status,
-      missionSteps
-    )
+    return new Mission(MissionId.fromString(id), name, robotDogIds ?? [], userId, missionSteps)
   }
 
   // -------------------
@@ -61,42 +49,17 @@ export default class Mission {
     this._name = newName.trim()
   }
 
-  public startMission() {
-    if (this._status === MissionStatus.RUNNING) {
-      throw new InvalidMissionAlreadyRunningError()
-    }
-
-    this._status = MissionStatus.RUNNING
-  }
-
-  public endMission() {
-    if (this._status !== MissionStatus.RUNNING) {
-      throw new InvalidMissionNotRunningError()
-    }
-
-    this._status = MissionStatus.STAND_BY
-  }
-
-  public interruptMission() {
-    if (this._status !== MissionStatus.RUNNING) {
-      throw new InvalidMissionNotRunningError()
-    }
-
-    this._status = MissionStatus.INTERRUPTED
-  }
-
-  public addStep(actionId: string, parameters: string): void {
-    this.ensureEditable()
+  public addStep(actionId: string, parameters: string, hasActiveRun: boolean = false): void {
+    this.ensureEditable(hasActiveRun)
 
     const nextOrder = this._missionSteps.length + 1
-
     const step = MissionStep.create(actionId, nextOrder, parameters)
 
     this._missionSteps.push(step)
   }
 
-  public removeStep(id: MissionStepId): void {
-    this.ensureEditable()
+  public removeStep(id: MissionStepId, hasActiveRun: boolean = false): void {
+    this.ensureEditable(hasActiveRun)
 
     const index = this._missionSteps.findIndex((s) => s.id.equals(id))
 
@@ -108,8 +71,8 @@ export default class Mission {
     this.reorderSteps()
   }
 
-  public moveStep(stepId: MissionStepId, newOrder: number): void {
-    this.ensureEditable()
+  public moveStep(stepId: MissionStepId, newOrder: number, hasActiveRun: boolean = false): void {
+    this.ensureEditable(hasActiveRun)
 
     const stepToMove = this._missionSteps.find((s) => s.id.equals(stepId))
     if (!stepToMove) {
@@ -143,8 +106,11 @@ export default class Mission {
     stepToMove.changeOrder(newOrder)
   }
 
-  public syncSteps(desired: Array<{ id?: string; actionId: string; parameters: string }>): void {
-    this.ensureEditable()
+  public syncSteps(
+    desired: Array<{ id?: string; actionId: string; parameters: string }>,
+    hasActiveRun: boolean = false
+  ): void {
+    this.ensureEditable(hasActiveRun)
 
     const newSteps: MissionStep[] = desired.map((item, index) => {
       const order = index + 1
@@ -168,9 +134,9 @@ export default class Mission {
     return [...this._missionSteps].sort((a, b) => a.order - b.order)
   }
 
-  private ensureEditable(): void {
-    if (this._status !== MissionStatus.STAND_BY) {
-      throw new InvalidMissionNotEditableError(this._status)
+  private ensureEditable(hasActiveRun: boolean): void {
+    if (hasActiveRun) {
+      throw new InvalidMissionNotEditableError()
     }
   }
 
@@ -196,10 +162,6 @@ export default class Mission {
 
   get userId(): string {
     return this._userId
-  }
-
-  get status(): MissionStatus {
-    return this._status
   }
 
   get missionSteps(): MissionStep[] {

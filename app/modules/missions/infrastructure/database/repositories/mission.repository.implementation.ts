@@ -20,10 +20,10 @@ export class MissionRepositoryImplementation implements MissionRepository {
     if (!row) return null
 
     const steps = row.steps.map((s) =>
-      MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters, s.status)
+      MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters)
     )
 
-    return Mission.rehydrate(row.id, row.name, row.userId, row.status, steps)
+    return Mission.rehydrate(row.id, row.name, row.userId, steps)
   }
 
   async findAll(options?: PaginationDto): Promise<PaginatedResult<Mission>> {
@@ -34,7 +34,7 @@ export class MissionRepositoryImplementation implements MissionRepository {
 
     const missions = paginator
       .all()
-      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, row.status, []))
+      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, []))
 
     return {
       data: missions,
@@ -59,7 +59,7 @@ export class MissionRepositoryImplementation implements MissionRepository {
 
     const missions = paginator
       .all()
-      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, row.status, []))
+      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, []))
 
     return {
       data: missions,
@@ -88,7 +88,6 @@ export class MissionRepositoryImplementation implements MissionRepository {
         {
           name: mission.name,
           userId: mission.userId,
-          status: mission.status,
         },
         { client: trx }
       )
@@ -108,7 +107,6 @@ export class MissionRepositoryImplementation implements MissionRepository {
         sequenceOrder: step.order,
         parameters: JSON.stringify(step.parameters),
         missionId: mission.id.value,
-        status: step.status,
       }))
       await MissionStepModel.updateOrCreateMany('id', stepsData, { client: trx })
     })
@@ -129,7 +127,7 @@ export class MissionRepositoryImplementation implements MissionRepository {
       .paginate(page, limit)
 
     const missions = paginator.all().map((row) => {
-      return Mission.rehydrate(row.id, row.name, row.userId, row.status, [])
+      return Mission.rehydrate(row.id, row.name, row.userId, [])
     })
 
     return {

@@ -1,21 +1,17 @@
 import { test } from '@japa/runner'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
-import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
 import { MissionNameCannotBeEmptyError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-cannot-be-empty.error'
 import { MissionNameTooLongError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-too-long.error'
-import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
-import { InvalidMissionNotRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-running.error'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
 
 test.group('Mission entity', () => {
-  test('should create a mission with default status', ({ assert }) => {
+  test('should create a mission', ({ assert }) => {
     const mission = Mission.create('Test Mission', 'user-1')
     assert.equal(mission.name, 'Test Mission')
     assert.equal(mission.userId, 'user-1')
-    assert.equal(mission.status, MissionStatus.STAND_BY)
     assert.lengthOf(mission.missionSteps, 0)
   })
 
@@ -38,45 +34,6 @@ test.group('Mission entity', () => {
     const mission = Mission.create('Old Name', 'user-1')
     const longName = 'a'.repeat(101)
     assert.throws(() => mission.rename(longName), MissionNameTooLongError)
-  })
-
-  // -------------------
-  // startMission / endMission / interruptMission
-  // -------------------
-  test('should start mission', ({ assert }) => {
-    const mission = Mission.create('Test', 'user-1')
-    mission.startMission()
-    assert.equal(mission.status, MissionStatus.RUNNING)
-  })
-
-  test('should not start already running mission', ({ assert }) => {
-    const mission = Mission.create('Test', 'user-1')
-    mission.startMission()
-    assert.throws(() => mission.startMission(), InvalidMissionAlreadyRunningError)
-  })
-
-  test('should end mission', ({ assert }) => {
-    const mission = Mission.create('Test', 'user-1')
-    mission.startMission()
-    mission.endMission()
-    assert.equal(mission.status, MissionStatus.STAND_BY)
-  })
-
-  test('should not end mission not running', ({ assert }) => {
-    const mission = Mission.create('Test', 'user-1')
-    assert.throws(() => mission.endMission(), InvalidMissionNotRunningError)
-  })
-
-  test('should interrupt mission', ({ assert }) => {
-    const mission = Mission.create('Test', 'user-1')
-    mission.startMission()
-    mission.interruptMission()
-    assert.equal(mission.status, MissionStatus.INTERRUPTED)
-  })
-
-  test('should not interrupt mission not running', ({ assert }) => {
-    const mission = Mission.create('Test', 'user-1')
-    assert.throws(() => mission.interruptMission(), InvalidMissionNotRunningError)
   })
 
   // -------------------
@@ -144,10 +101,15 @@ test.group('Mission entity', () => {
   // -------------------
   // ensureEditable
   // -------------------
-  test('should not allow editing if not STAND_BY', ({ assert }) => {
+  test('should not allow editing while a run is active', ({ assert }) => {
     const mission = Mission.create('Test', 'user-1')
-    mission.startMission()
-    assert.throws(() => mission.addStep('action', 'params'), InvalidMissionNotEditableError)
+    assert.throws(() => mission.addStep('action', 'params', true), InvalidMissionNotEditableError)
+  })
+
+  test('should allow editing when no run is active', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    mission.addStep('action', 'params', false)
+    assert.lengthOf(mission.missionSteps, 1)
   })
 
   // -------------------
@@ -213,12 +175,11 @@ test.group('Mission entity', () => {
     )
   })
 
-  test('syncSteps throws InvalidMissionNotEditableError if not STAND_BY', ({ assert }) => {
+  test('syncSteps throws InvalidMissionNotEditableError when a run is active', ({ assert }) => {
     const mission = Mission.create('Test', 'user-1')
-    mission.startMission()
 
     assert.throws(
-      () => mission.syncSteps([{ actionId: 'action-1', parameters: '' }]),
+      () => mission.syncSteps([{ actionId: 'action-1', parameters: '' }], true),
       InvalidMissionNotEditableError
     )
   })
