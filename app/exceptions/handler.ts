@@ -14,6 +14,7 @@ import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
 import { ActionAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-already-exists.error'
+import { InvalidRobotCommandError } from '#app/modules/robot-communication/domain/exceptions/invalid-robot-command.error'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -94,6 +95,13 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     if (error instanceof ActionAlreadyExistsError) {
       return ctx.response.status(409).json({
         error: 'ACTION_ALREADY_EXISTS',
+        message: error.message,
+      })
+    }
+
+    if (error instanceof InvalidRobotCommandError) {
+      return ctx.response.status(422).json({
+        error: 'INVALID_ROBOT_COMMAND',
         message: error.message,
       })
     }
