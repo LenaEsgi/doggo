@@ -49,14 +49,14 @@ export class SendRobotCommandUseCase {
           throw new MissionNotFoundError(missionId)
         }
 
+        dog.startMission()
+
         const run = MissionRun.start(
           mission.id,
           dog.id,
           mission.missionSteps.map((step) => step.id)
         )
         await this.missionRunRepository.save(run)
-
-        dog.startMission()
         break
       }
       case RobotCommand.STOP_MISSION: {
