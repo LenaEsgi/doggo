@@ -8,7 +8,6 @@ import { RobotCommand } from '#app/modules/robot-communication/domain/types/robo
 import { NoActiveMissionRunError } from '#app/modules/missions/domain/exceptions/no-active-mission-run.error'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
-import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 
 test.group('StopMissionCommandUseCase', (group) => {
