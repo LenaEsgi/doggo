@@ -8,10 +8,17 @@ import RobotDogPolicy from '#dogs/application/policies/robot-dog.policy'
 export default class StopMissionController {
   constructor(private stopMission: StopMissionCommandUseCase) {}
 
-  public async handle({ params, response, bouncer, serialize }: HttpContext) {
+  public async handle({ params, response, bouncer, logger, serialize }: HttpContext) {
     await bouncer.with(RobotDogPolicy).authorize('stopMission', params.id)
 
+    logger.info({ robotDogId: params.id }, 'StopMissionController called')
+
     const dog = await this.stopMission.execute(params.id)
+
+    logger.info(
+      { robotDogId: params.id, state: dog.state },
+      'StopMissionController completed successfully'
+    )
 
     response.status(200)
     return serialize(RobotDogTransformer.transform(dog))
