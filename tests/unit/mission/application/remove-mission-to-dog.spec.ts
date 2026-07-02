@@ -9,6 +9,7 @@ import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-rep
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
+import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
 
 test.group('RemoveMissionToDogUseCase', (group) => {
   let repo: FakeMissionRepository
@@ -70,6 +71,21 @@ test.group('RemoveMissionToDogUseCase', (group) => {
     await assert.rejects(
       () => useCase.execute(mission.id.value, dogId),
       InvalidMissionAlreadyRunningError
+    )
+  })
+
+  test('should throw MissionNotAssignedToRobotError when the robot was never assigned', async ({
+    assert,
+  }) => {
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    const dogId = '8570f711-2895-4632-9599-281083096058'
+
+    await repo.save(mission)
+    dogGateway.addRobot(dogId)
+
+    await assert.rejects(
+      () => useCase.execute(mission.id.value, dogId),
+      MissionNotAssignedToRobotError
     )
   })
 })

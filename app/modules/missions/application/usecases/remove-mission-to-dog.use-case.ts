@@ -27,6 +27,8 @@ export class RemoveMissionToDogUseCase {
       throw new MissionNotFoundError(missionId)
     }
 
+    mission.unassignRobot(RobotDogId.fromString(dogId))
+
     const activeRun = await this.missionRunRepository.findActiveRun(missionId, dogId)
     if (activeRun) {
       throw new InvalidMissionAlreadyRunningError()
