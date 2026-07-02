@@ -1,12 +1,13 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 
-const SendRobotCommandController = () =>
-  import('./controllers/send-robot-command.controller.js')
+const StartMissionController = () => import('./controllers/start-mission.controller.js')
+const StopMissionController = () => import('./controllers/stop-mission.controller.js')
 
 router
   .group(() => {
-    router.post('/:id/commands', [SendRobotCommandController])
+    router.post('/:id/mission', [StartMissionController])
+    router.delete('/:id/mission', [StopMissionController])
   })
   .prefix('/api/v1/dogs')
   .use(middleware.firebaseAuth())

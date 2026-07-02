@@ -5,7 +5,6 @@ import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-fou
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
 import { InvalidRobotCommandError } from '#app/modules/robot-communication/domain/exceptions/invalid-robot-command.error'
 import { RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
-import { type RobotCommandHandler } from '#app/modules/robot-communication/application/contracts/robot-command-handler'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
@@ -14,7 +13,7 @@ import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exc
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 
 @inject()
-export class StartMissionCommandUseCase implements RobotCommandHandler {
+export class StartMissionCommandUseCase {
   readonly command = RobotCommand.START_MISSION
 
   constructor(
@@ -24,7 +23,7 @@ export class StartMissionCommandUseCase implements RobotCommandHandler {
     private readonly missionRunRepository: MissionRunRepository
   ) {}
 
-  async execute(dogId: string, missionId?: string): Promise<void> {
+  async execute(dogId: string, missionId?: string): Promise<MissionRun> {
     if (!missionId) {
       throw new InvalidRobotCommandError('missionId is required for START_MISSION command')
     }
@@ -55,5 +54,7 @@ export class StartMissionCommandUseCase implements RobotCommandHandler {
 
     await this.missionRunRepository.save(run)
     await this.dogRepository.save(dog)
+
+    return run
   }
 }

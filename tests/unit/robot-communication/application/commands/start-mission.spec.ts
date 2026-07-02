@@ -47,15 +47,16 @@ test.group('StartMissionCommandUseCase', (group) => {
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
-    await useCase.execute(dog.id.value, mission.id.value)
+    const returned = await useCase.execute(dog.id.value, mission.id.value)
 
     assert.lengthOf(fakeMqtt.calls, 1)
     assert.equal(fakeMqtt.calls[0].missionId, mission.id.value)
+    assert.equal(returned.status, MissionRunStatus.RUNNING)
+    assert.lengthOf(returned.runSteps, 1)
 
     const run = await runRepo.findActiveRun(mission.id.value, dog.id.value)
     assert.isNotNull(run)
-    assert.equal(run!.status, MissionRunStatus.RUNNING)
-    assert.lengthOf(run!.runSteps, 1)
+    assert.equal(run!.id.value, returned.id.value)
   })
 
   test("refuse si le robot n'est pas assigné à la mission", async ({ assert }) => {

@@ -1,5 +1,6 @@
 import { test } from '@japa/runner'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
 import { FakeRobotCommunicationService } from '#tests/unit/fakes/fake-robot-communication-service'
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
@@ -35,7 +36,10 @@ test.group('StopMissionCommandUseCase', (group) => {
     const run = MissionRun.start(MissionId.generate(), dog.id, [MissionStepId.generate()])
     await runRepo.save(run)
 
-    await useCase.execute(dog.id.value)
+    const returned = await useCase.execute(dog.id.value)
+
+    assert.equal(returned.id.value, dog.id.value)
+    assert.equal(returned.state, RobotDogState.IDLE)
 
     const found = await runRepo.findActiveRunByRobotDog(dog.id.value)
     assert.isNull(found)

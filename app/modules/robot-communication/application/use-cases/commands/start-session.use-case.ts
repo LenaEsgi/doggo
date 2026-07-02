@@ -4,10 +4,9 @@ import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
 import { RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
-import { type RobotCommandHandler } from '#app/modules/robot-communication/application/contracts/robot-command-handler'
 
 @inject()
-export class StartSessionCommandUseCase implements RobotCommandHandler {
+export class StartSessionCommandUseCase {
   readonly command = RobotCommand.START_SESSION
 
   constructor(

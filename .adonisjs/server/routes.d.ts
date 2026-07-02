@@ -51,7 +51,8 @@ export type ScannedRoutes = {
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_notifications': { paramsTuple?: []; params?: {} }
     'mark_notifications_read': { paramsTuple?: []; params?: {} }
-    'send_robot_command': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
@@ -111,7 +112,7 @@ export type ScannedRoutes = {
     'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'assign_to_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
-    'send_robot_command': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
   }
@@ -123,6 +124,7 @@ export type ScannedRoutes = {
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'remove_from_dog': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'missionId': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
