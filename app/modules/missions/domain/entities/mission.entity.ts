@@ -7,6 +7,8 @@ import MissionStep from '#app/modules/missions/domain/entities/mission-step.enti
 import { type RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
 import { MissionNameCannotBeEmptyError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-cannot-be-empty.error'
 import { MissionNameTooLongError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-too-long.error'
+import { RobotAlreadyAssignedError } from '#app/modules/missions/domain/exceptions/robot-already-assigned.error'
+import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
 
 export default class Mission {
   private static MAX_NAME_LENGTH = 100
@@ -132,6 +134,21 @@ export default class Mission {
 
   public getStepsInOrder(): MissionStep[] {
     return [...this._missionSteps].sort((a, b) => a.order - b.order)
+  }
+
+  public assignRobot(robotDogId: RobotDogId): void {
+    if (this._robotDogIds.some((id) => id.equals(robotDogId))) {
+      throw new RobotAlreadyAssignedError(this._id.value, robotDogId.value)
+    }
+    this._robotDogIds.push(robotDogId)
+  }
+
+  public unassignRobot(robotDogId: RobotDogId): void {
+    const index = this._robotDogIds.findIndex((id) => id.equals(robotDogId))
+    if (index === -1) {
+      throw new MissionNotAssignedToRobotError(this._id.value, robotDogId.value)
+    }
+    this._robotDogIds.splice(index, 1)
   }
 
   private ensureEditable(hasActiveRun: boolean): void {

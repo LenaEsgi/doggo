@@ -6,6 +6,9 @@ import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exc
 import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-not-found.error'
 import { InvalidMissionStepOrderError } from '#app/modules/missions/domain/exceptions/invalid-mission-step-order.error'
 import MissionStep from '#app/modules/missions/domain/entities/mission-step.entity'
+import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
+import { RobotAlreadyAssignedError } from '#app/modules/missions/domain/exceptions/robot-already-assigned.error'
+import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
 
 test.group('Mission entity', () => {
   test('should create a mission', ({ assert }) => {
@@ -182,5 +185,54 @@ test.group('Mission entity', () => {
       () => mission.syncSteps([{ actionId: 'action-1', parameters: '' }], true),
       InvalidMissionNotEditableError
     )
+  })
+
+  // -------------------
+  // assignRobot / unassignRobot
+  // -------------------
+  test('should assign a robot to a mission', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    const robotId = RobotDogId.fromString('8570f711-2895-4632-9599-281083096058')
+
+    mission.assignRobot(robotId)
+
+    assert.lengthOf(mission.robotDogIds, 1)
+    assert.isTrue(mission.robotDogIds[0].equals(robotId))
+  })
+
+  test('should assign the same mission to two different robots', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    const robotA = RobotDogId.fromString('8570f711-2895-4632-9599-281083096058')
+    const robotB = RobotDogId.fromString('a1c1b6c2-4e2a-4b0b-9c3d-9f3a1e2d4c5b')
+
+    mission.assignRobot(robotA)
+    mission.assignRobot(robotB)
+
+    assert.lengthOf(mission.robotDogIds, 2)
+  })
+
+  test('should throw when assigning an already-assigned robot', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    const robotId = RobotDogId.fromString('8570f711-2895-4632-9599-281083096058')
+    mission.assignRobot(robotId)
+
+    assert.throws(() => mission.assignRobot(robotId), RobotAlreadyAssignedError)
+  })
+
+  test('should unassign a robot from a mission', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    const robotId = RobotDogId.fromString('8570f711-2895-4632-9599-281083096058')
+    mission.assignRobot(robotId)
+
+    mission.unassignRobot(robotId)
+
+    assert.lengthOf(mission.robotDogIds, 0)
+  })
+
+  test('should throw when unassigning a robot that is not assigned', ({ assert }) => {
+    const mission = Mission.create('Test', 'user-1')
+    const robotId = RobotDogId.fromString('8570f711-2895-4632-9599-281083096058')
+
+    assert.throws(() => mission.unassignRobot(robotId), MissionNotAssignedToRobotError)
   })
 })
