@@ -41,4 +41,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   FRONTEND_URL: Env.schema.string({ format: 'url', tld: false }),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring MQTT broker connection
+  |----------------------------------------------------------
+  */
+  MQTT_HOST: Env.schema.string(),
+  MQTT_PORT: Env.schema.number(),
 })
