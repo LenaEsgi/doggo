@@ -50,4 +50,8 @@ export default class RobotDogPolicy extends BasePolicy {
   async stopMission(user: User, robotDogId: string): Promise<AuthorizerResponse> {
     return this.ownershipRepository.isOwner(user.id, robotDogId)
   }
+
+  async viewMission(user: User, robotDogId: string): Promise<AuthorizerResponse> {
+    return this.ownershipRepository.isOwner(user.id, robotDogId)
+  }
 }
