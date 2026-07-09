@@ -35,6 +35,7 @@ test.group('HandleRobotMissionUpdateUseCase', (group) => {
 
     const stepId = mission.missionSteps[0].id
     const run = MissionRun.start(mission.id, dog.id, [stepId])
+    run.confirm()
     await runRepo.save(run)
 
     await useCase.execute(dog.id.value, {
@@ -84,8 +85,10 @@ test.group('HandleRobotMissionUpdateUseCase', (group) => {
     const stepId = mission.missionSteps[0].id
 
     const runA = MissionRun.start(mission.id, dogA.id, [stepId])
+    runA.confirm()
     await runRepo.save(runA)
     const runB = MissionRun.start(mission.id, dogB.id, [stepId])
+    runB.confirm()
     await runRepo.save(runB)
 
     await useCase.execute(dogA.id.value, {

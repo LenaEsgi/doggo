@@ -2,6 +2,8 @@ import type MissionRun from '#app/modules/missions/domain/entities/mission-run.e
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 
+const ACTIVE_STATUSES: MissionRunStatus[] = [MissionRunStatus.PENDING, MissionRunStatus.RUNNING]
+
 export class FakeMissionRunRepository implements MissionRunRepository {
   public runs: MissionRun[] = []
 
@@ -11,7 +13,7 @@ export class FakeMissionRunRepository implements MissionRunRepository {
         (r) =>
           r.missionId.value === missionId &&
           r.robotDogId.value === robotDogId &&
-          r.status === MissionRunStatus.RUNNING
+          ACTIVE_STATUSES.includes(r.status)
       ) ?? null
     )
   }
@@ -19,14 +21,14 @@ export class FakeMissionRunRepository implements MissionRunRepository {
   async findActiveRunByRobotDog(robotDogId: string): Promise<MissionRun | null> {
     return (
       this.runs.find(
-        (r) => r.robotDogId.value === robotDogId && r.status === MissionRunStatus.RUNNING
+        (r) => r.robotDogId.value === robotDogId && ACTIVE_STATUSES.includes(r.status)
       ) ?? null
     )
   }
 
   async hasActiveRunForMission(missionId: string): Promise<boolean> {
     return this.runs.some(
-      (r) => r.missionId.value === missionId && r.status === MissionRunStatus.RUNNING
+      (r) => r.missionId.value === missionId && ACTIVE_STATUSES.includes(r.status)
     )
   }
 

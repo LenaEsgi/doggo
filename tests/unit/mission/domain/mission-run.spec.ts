@@ -8,21 +8,45 @@ import { InvalidMissionStepNotFoundError } from '#app/modules/missions/domain/ex
 import { NoActiveMissionRunError } from '#app/modules/missions/domain/exceptions/no-active-mission-run.error'
 
 test.group('MissionRun entity', () => {
-  test('starts RUNNING with one PENDING run step per given step id', ({ assert }) => {
+  test('starts PENDING with one PENDING run step per given step id', ({ assert }) => {
     const stepId1 = MissionStepId.generate()
     const stepId2 = MissionStepId.generate()
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [stepId1, stepId2])
 
-    assert.equal(run.status, MissionRunStatus.RUNNING)
+    assert.equal(run.status, MissionRunStatus.PENDING)
     assert.lengthOf(run.runSteps, 2)
     assert.isNull(run.endedAt)
     assert.isFalse(run.isTerminal)
+  })
+
+  test('confirm() moves a PENDING run to RUNNING', ({ assert }) => {
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+
+    run.confirm()
+
+    assert.equal(run.status, MissionRunStatus.RUNNING)
+    assert.isFalse(run.isTerminal)
+  })
+
+  test('confirm() throws when the run is not PENDING', ({ assert }) => {
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    run.confirm()
+
+    assert.throws(() => run.confirm(), NoActiveMissionRunError)
+  })
+
+  test('cannot complete a step while the run is still PENDING (not confirmed)', ({ assert }) => {
+    const stepId = MissionStepId.generate()
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [stepId])
+
+    assert.throws(() => run.completeStep(stepId), NoActiveMissionRunError)
   })
 
   test('completing all steps makes the run SUCCESS', ({ assert }) => {
     const stepId1 = MissionStepId.generate()
     const stepId2 = MissionStepId.generate()
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [stepId1, stepId2])
+    run.confirm()
 
     run.completeStep(stepId1)
     assert.equal(run.status, MissionRunStatus.RUNNING)
@@ -37,6 +61,7 @@ test.group('MissionRun entity', () => {
     const stepId1 = MissionStepId.generate()
     const stepId2 = MissionStepId.generate()
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [stepId1, stepId2])
+    run.confirm()
 
     run.failStep(stepId1)
 
@@ -46,11 +71,22 @@ test.group('MissionRun entity', () => {
 
   test('throws when completing an unknown step', ({ assert }) => {
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    run.confirm()
 
     assert.throws(() => run.completeStep(MissionStepId.generate()), InvalidMissionStepNotFoundError)
   })
 
   test('interrupt() moves a running run to INTERRUPTED', ({ assert }) => {
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    run.confirm()
+
+    run.interrupt()
+
+    assert.equal(run.status, MissionRunStatus.INTERRUPTED)
+    assert.isTrue(run.isTerminal)
+  })
+
+  test('interrupt() also cancels a PENDING run that was never confirmed', ({ assert }) => {
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
 
     run.interrupt()
@@ -62,6 +98,7 @@ test.group('MissionRun entity', () => {
   test('cannot interrupt a run that is already terminal', ({ assert }) => {
     const stepId = MissionStepId.generate()
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [stepId])
+    run.confirm()
     run.completeStep(stepId)
 
     assert.throws(() => run.interrupt(), NoActiveMissionRunError)
@@ -70,6 +107,7 @@ test.group('MissionRun entity', () => {
   test('cannot report progress on a run that is already terminal', ({ assert }) => {
     const stepId = MissionStepId.generate()
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [stepId])
+    run.confirm()
     run.completeStep(stepId)
 
     assert.throws(() => run.failStep(stepId), NoActiveMissionRunError)

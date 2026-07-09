@@ -29,6 +29,7 @@ test.group('FakeMissionRunRepository', () => {
 
     assert.isTrue(await repo.hasActiveRunForMission(missionId.value))
 
+    run.confirm()
     run.completeStep(stepId)
     await repo.save(run)
 

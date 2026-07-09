@@ -51,7 +51,7 @@ test.group('StartMissionCommandUseCase', (group) => {
 
     assert.lengthOf(fakeMqtt.calls, 1)
     assert.equal(fakeMqtt.calls[0].missionId, mission.id.value)
-    assert.equal(returned.status, MissionRunStatus.RUNNING)
+    assert.equal(returned.status, MissionRunStatus.PENDING)
     assert.lengthOf(returned.runSteps, 1)
 
     const run = await runRepo.findActiveRun(mission.id.value, dog.id.value)

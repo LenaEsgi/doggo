@@ -68,6 +68,6 @@ test.group('StopMissionCommandUseCase', (group) => {
 
     const found = await runRepo.findActiveRunByRobotDog(dog.id.value)
     assert.isNotNull(found)
-    assert.equal(found!.status, 'RUNNING')
+    assert.equal(found!.status, 'PENDING')
   })
 })

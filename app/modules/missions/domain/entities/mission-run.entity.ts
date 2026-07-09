@@ -24,7 +24,7 @@ export default class MissionRun {
       MissionRunId.generate(),
       missionId,
       robotDogId,
-      MissionRunStatus.RUNNING,
+      MissionRunStatus.PENDING,
       stepIds.map((stepId) => MissionRunStep.create(stepId)),
       new Date(),
       null
@@ -51,6 +51,13 @@ export default class MissionRun {
     )
   }
 
+  confirm(): void {
+    if (this._status !== MissionRunStatus.PENDING) {
+      throw new NoActiveMissionRunError(this._robotDogId.value)
+    }
+    this._status = MissionRunStatus.RUNNING
+  }
+
   completeStep(stepId: MissionStepId): void {
     this.ensureRunning()
     this.findRunStep(stepId).complete()
@@ -64,7 +71,7 @@ export default class MissionRun {
   }
 
   interrupt(): void {
-    this.ensureRunning()
+    this.ensureActive()
     this._status = MissionRunStatus.INTERRUPTED
     this._endedAt = new Date()
   }
@@ -92,6 +99,12 @@ export default class MissionRun {
 
   private ensureRunning(): void {
     if (this._status !== MissionRunStatus.RUNNING) {
+      throw new NoActiveMissionRunError(this._robotDogId.value)
+    }
+  }
+
+  private ensureActive(): void {
+    if (this._status !== MissionRunStatus.RUNNING && this._status !== MissionRunStatus.PENDING) {
       throw new NoActiveMissionRunError(this._robotDogId.value)
     }
   }
@@ -125,6 +138,6 @@ export default class MissionRun {
   }
 
   get isTerminal(): boolean {
-    return this._status !== MissionRunStatus.RUNNING
+    return this._status !== MissionRunStatus.RUNNING && this._status !== MissionRunStatus.PENDING
   }
 }

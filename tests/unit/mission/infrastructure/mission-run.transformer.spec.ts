@@ -25,6 +25,7 @@ test.group('MissionRunTransformer', () => {
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
       MissionStepId.generate(),
     ])
+    run.confirm()
 
     const obj = new MissionRunTransformer(run).toObject()
 

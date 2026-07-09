@@ -7,12 +7,14 @@ import MissionRunModel from '#app/modules/missions/infrastructure/database/model
 import MissionRunStepModel from '#app/modules/missions/infrastructure/database/models/mission-run-step'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 
+const ACTIVE_STATUSES = [MissionRunStatus.PENDING, MissionRunStatus.RUNNING]
+
 export class MissionRunRepositoryImplementation implements MissionRunRepository {
   async findActiveRun(missionId: string, robotDogId: string): Promise<MissionRun | null> {
     const row = await MissionRunModel.query()
       .where('mission_id', missionId)
       .where('robot_dog_id', robotDogId)
-      .where('status', MissionRunStatus.RUNNING)
+      .whereIn('status', ACTIVE_STATUSES)
       .preload('runSteps')
       .first()
 
@@ -22,7 +24,7 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
   async findActiveRunByRobotDog(robotDogId: string): Promise<MissionRun | null> {
     const row = await MissionRunModel.query()
       .where('robot_dog_id', robotDogId)
-      .where('status', MissionRunStatus.RUNNING)
+      .whereIn('status', ACTIVE_STATUSES)
       .preload('runSteps')
       .first()
 
@@ -32,7 +34,7 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
   async hasActiveRunForMission(missionId: string): Promise<boolean> {
     const row = await MissionRunModel.query()
       .where('mission_id', missionId)
-      .where('status', MissionRunStatus.RUNNING)
+      .whereIn('status', ACTIVE_STATUSES)
       .first()
 
     return row !== null

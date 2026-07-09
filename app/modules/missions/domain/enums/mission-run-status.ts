@@ -1,4 +1,5 @@
 export enum MissionRunStatus {
+  PENDING = 'PENDING',
   RUNNING = 'RUNNING',
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
