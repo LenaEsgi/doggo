@@ -69,6 +69,7 @@
     "@adonisjs/transmit": "3.0.1",
     "@vinejs/vine": "4.3.0",
     "adonis-autoswagger": "3.73.0",
+    "bullmq": "^5.79.3",
     "edge.js": "6.5.1",
     "firebase-admin": "13.7.0",
     "js-yaml": "4.1.1",

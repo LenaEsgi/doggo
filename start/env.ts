@@ -49,4 +49,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   MQTT_HOST: Env.schema.string(),
   MQTT_PORT: Env.schema.number(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring Redis (BullMQ queue)
+  |----------------------------------------------------------
+  */
+  REDIS_HOST: Env.schema.string({ format: 'host' }),
+  REDIS_PORT: Env.schema.number(),
 })
