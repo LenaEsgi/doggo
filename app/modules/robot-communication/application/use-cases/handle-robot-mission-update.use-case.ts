@@ -33,6 +33,14 @@ export class HandleRobotMissionUpdateUseCase {
       return
     }
 
+    if (run.status === MissionRunStatus.PENDING) {
+      logger.warn(
+        { missionId: update.missionId, dogId },
+        'HandleRobotMissionUpdate: run encore PENDING, step update ignoré'
+      )
+      return
+    }
+
     const stepId = MissionStepId.fromString(update.stepId)
 
     if (update.status === MissionStepStatus.COMPLETED) {

@@ -10,12 +10,15 @@ import { InvalidRobotCommandError } from '#app/modules/robot-communication/domai
 import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
+import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
+import { FakeMissionTimeoutQueue } from '#tests/unit/fakes/fake-mission-timeout-queue'
 
 test.group('StartMissionCommandUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
   let fakeMqtt: FakeRobotCommunicationService
   let missionRepo: FakeMissionRepository
   let runRepo: FakeMissionRunRepository
+  let timeoutQueue: FakeMissionTimeoutQueue
   let useCase: StartMissionCommandUseCase
 
   group.each.setup(() => {
@@ -23,7 +26,8 @@ test.group('StartMissionCommandUseCase', (group) => {
     fakeMqtt = new FakeRobotCommunicationService()
     missionRepo = new FakeMissionRepository()
     runRepo = new FakeMissionRunRepository()
-    useCase = new StartMissionCommandUseCase(fakeRepo, fakeMqtt, missionRepo, runRepo)
+    timeoutQueue = new FakeMissionTimeoutQueue()
+    useCase = new StartMissionCommandUseCase(fakeRepo, fakeMqtt, missionRepo, runRepo, timeoutQueue)
   })
 
   test('exposes RobotCommand.START_MISSION as its command', ({ assert }) => {
@@ -71,6 +75,42 @@ test.group('StartMissionCommandUseCase', (group) => {
       MissionNotAssignedToRobotError
     )
     assert.lengthOf(fakeMqtt.calls, 0)
+  })
+
+  test('refuse de démarrer si un run actif existe déjà pour ce robot', async ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await fakeRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep('action-1', 'p1')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    await useCase.execute(dog.id.value, mission.id.value)
+    assert.lengthOf(fakeMqtt.calls, 1)
+
+    await assert.rejects(
+      () => useCase.execute(dog.id.value, mission.id.value),
+      InvalidMissionAlreadyRunningError
+    )
+    assert.lengthOf(fakeMqtt.calls, 1)
+  })
+
+  test('schedule un job de timeout 60s après le run PENDING', async ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await fakeRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep('action-1', 'p1')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    const run = await useCase.execute(dog.id.value, mission.id.value)
+
+    assert.lengthOf(timeoutQueue.scheduled, 1)
+    assert.equal(timeoutQueue.scheduled[0].runId, run.id.value)
+    assert.equal(timeoutQueue.scheduled[0].dogId, dog.id.value)
+    assert.equal(timeoutQueue.scheduled[0].delayMs, 60_000)
   })
 
   test('envoie la commande MQTT avant de persister le run', async ({ assert }) => {

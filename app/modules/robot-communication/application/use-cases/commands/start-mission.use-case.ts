@@ -7,10 +7,14 @@ import { InvalidRobotCommandError } from '#app/modules/robot-communication/domai
 import { RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
+import { MissionTimeoutQueue } from '#app/modules/missions/domain/contracts/mission-timeout-queue'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
 import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
+import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
+
+const PENDING_RUN_TIMEOUT_MS = 60_000
 
 @inject()
 export class StartMissionCommandUseCase {
@@ -20,7 +24,8 @@ export class StartMissionCommandUseCase {
     private readonly dogRepository: RobotDogRepository,
     private readonly communicationService: RobotCommunicationService,
     private readonly missionRepository: MissionRepository,
-    private readonly missionRunRepository: MissionRunRepository
+    private readonly missionRunRepository: MissionRunRepository,
+    private readonly missionTimeoutQueue: MissionTimeoutQueue
   ) {}
 
   async execute(dogId: string, missionId?: string): Promise<MissionRun> {
@@ -31,6 +36,11 @@ export class StartMissionCommandUseCase {
     const dog = await this.dogRepository.findById(RobotDogId.fromString(dogId))
     if (!dog) {
       throw new RobotDogNotFoundError(dogId)
+    }
+
+    const existingRun = await this.missionRunRepository.findActiveRunByRobotDog(dogId)
+    if (existingRun) {
+      throw new InvalidMissionAlreadyRunningError()
     }
 
     const isAssigned = await this.missionRepository.isAssignedToDog(missionId, dogId)
@@ -53,6 +63,7 @@ export class StartMissionCommandUseCase {
     await this.communicationService.sendCommand(dogId, this.command, missionId)
 
     await this.missionRunRepository.save(run)
+    await this.missionTimeoutQueue.schedule(run.id.value, dogId, PENDING_RUN_TIMEOUT_MS)
 
     return run
   }
