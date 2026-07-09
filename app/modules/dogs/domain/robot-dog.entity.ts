@@ -117,6 +117,16 @@ export class RobotDog {
     this._state = RobotDogState.IDLE
   }
 
+  public validateForMission(): void {
+    this.ensureOnline()
+    this.ensureIdle()
+    this.ensureBatterySufficient()
+  }
+
+  public applyStateFromRobot(state: RobotDogState): void {
+    this._state = state
+  }
+
   public markCharging(): void {
     this.ensureIdle()
 
