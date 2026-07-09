@@ -8,6 +8,7 @@ import { type RobotDog } from '#dogs/domain/robot-dog.entity'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { NoActiveMissionRunError } from '#app/modules/missions/domain/exceptions/no-active-mission-run.error'
 import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 
 @inject()
 export class StopMissionCommandUseCase {
@@ -33,7 +34,7 @@ export class StopMissionCommandUseCase {
     await this.communicationService.sendCommand(dogId, this.command)
 
     activeRun.interrupt()
-    dog.endMission()
+    dog.applyStateFromRobot(RobotDogState.IDLE)
 
     await this.missionRunRepository.save(activeRun)
     await this.dogRepository.save(dog)

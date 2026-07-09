@@ -33,11 +33,19 @@ export class MissionRepositoryImplementation implements MissionRepository {
     const page = Math.max(1, options?.page ?? 1)
     const limit = Math.min(options?.limit ?? 20, 100)
 
-    const paginator = await MissionModel.query().orderBy('created_at', 'desc').paginate(page, limit)
+    const paginator = await MissionModel.query()
+      .preload('steps', (q) => q.orderBy('sequence_order', 'asc'))
+      .orderBy('created_at', 'desc')
+      .paginate(page, limit)
 
-    const missions = paginator
-      .all()
-      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, []))
+    const missions = paginator.all().map((row) =>
+      Mission.rehydrate(
+        row.id,
+        row.name,
+        row.userId,
+        row.steps.map((s) => MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters))
+      )
+    )
 
     return {
       data: missions,
