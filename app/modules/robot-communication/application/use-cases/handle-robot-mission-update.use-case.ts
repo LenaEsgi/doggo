@@ -12,6 +12,7 @@ import MissionStepUpdatedEvent from '#app/modules/missions/domain/events/mission
 import MissionCompletedEvent from '#app/modules/missions/domain/events/mission-completed.event'
 import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 import { type RobotMissionUpdate } from '#app/modules/robot-communication/domain/types/robot-mission-update.type'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 
 @inject()
 export class HandleRobotMissionUpdateUseCase {
@@ -56,7 +57,7 @@ export class HandleRobotMissionUpdateUseCase {
 
     const dog = await this.dogRepository.findById(RobotDogId.fromString(dogId))
     if (dog) {
-      dog.endMission()
+      dog.applyStateFromRobot(RobotDogState.IDLE)
       await this.dogRepository.save(dog)
       void DogStateChangedEvent.dispatch(dog.id.toString(), dog.state)
     }

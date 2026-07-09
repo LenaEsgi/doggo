@@ -7,6 +7,7 @@ import { RobotCommand } from '#app/modules/robot-communication/domain/types/robo
 import { type RobotDog } from '#dogs/domain/robot-dog.entity'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { NoActiveMissionRunError } from '#app/modules/missions/domain/exceptions/no-active-mission-run.error'
+import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 
 @inject()
 export class StopMissionCommandUseCase {
@@ -36,6 +37,7 @@ export class StopMissionCommandUseCase {
 
     await this.missionRunRepository.save(activeRun)
     await this.dogRepository.save(dog)
+    void DogStateChangedEvent.dispatch(dog.id.toString(), dog.state)
 
     return dog
   }
