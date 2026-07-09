@@ -65,12 +65,18 @@ export class MissionRepositoryImplementation implements MissionRepository {
 
     const paginator = await MissionModel.query()
       .where('user_id', userId)
+      .preload('steps', (q) => q.orderBy('sequence_order', 'asc'))
       .orderBy('created_at', 'desc')
       .paginate(page, limit)
 
-    const missions = paginator
-      .all()
-      .map((row) => Mission.rehydrate(row.id, row.name, row.userId, []))
+    const missions = paginator.all().map((row) =>
+      Mission.rehydrate(
+        row.id,
+        row.name,
+        row.userId,
+        row.steps.map((s) => MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters))
+      )
+    )
 
     return {
       data: missions,
@@ -135,10 +141,19 @@ export class MissionRepositoryImplementation implements MissionRepository {
       .whereHas('robotDogs', (q) => {
         q.where('robot_dog_id', dogId)
       })
+      .preload('steps', (q) => q.orderBy('sequence_order', 'asc'))
+      .preload('robotDogs')
       .paginate(page, limit)
 
     const missions = paginator.all().map((row) => {
-      return Mission.rehydrate(row.id, row.name, row.userId, [])
+      const robotDogIds = row.robotDogs.map((dog) => RobotDogId.fromString(dog.id))
+      return Mission.rehydrate(
+        row.id,
+        row.name,
+        row.userId,
+        row.steps.map((s) => MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters)),
+        robotDogIds
+      )
     })
 
     return {
