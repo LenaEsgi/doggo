@@ -11,6 +11,7 @@ import { type RobotTelemetry } from '#app/modules/robot-communication/domain/typ
 import { type RobotMissionUpdate } from '#app/modules/robot-communication/domain/types/robot-mission-update.type'
 import { HandleRobotTelemetryUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-telemetry.use-case'
 import { HandleRobotMissionUpdateUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-mission-update.use-case'
+import { HandleRobotStateChangedUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-state-changed.use-case'
 
 export class MqttServiceImplementation implements RobotCommunicationService {
   private client!: MqttClient
@@ -30,6 +31,7 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     await this.client.subscribeAsync('robot/+/telemetry')
     await this.client.subscribeAsync('robot/+/mission/step')
     await this.client.subscribeAsync('robot/+/connected')
+    await this.client.subscribeAsync('robot/+/state')
 
     this.client.on('message', (topic, payload) => {
       this.handleMessage(topic, payload).catch((err) => {
@@ -80,6 +82,8 @@ export class MqttServiceImplementation implements RobotCommunicationService {
       await this.handleMissionUpdate(dogId, raw)
     } else if (topic === `robot/${dogId}/connected`) {
       this.handleConnectionStatus(dogId, raw)
+    } else if (topic === `robot/${dogId}/state`) {
+      await this.handleStateChanged(dogId, raw)
     }
   }
 
@@ -109,6 +113,18 @@ export class MqttServiceImplementation implements RobotCommunicationService {
 
     const useCase = await app.container.make(HandleRobotMissionUpdateUseCase)
     await useCase.execute(dogId, update)
+  }
+
+  private async handleStateChanged(dogId: string, raw: string): Promise<void> {
+    let payload: { state: string }
+    try {
+      payload = JSON.parse(raw) as { state: string }
+    } catch {
+      logger.warn({ dogId, raw }, 'MqttService: invalid state payload')
+      return
+    }
+    const useCase = await app.container.make(HandleRobotStateChangedUseCase)
+    await useCase.execute(dogId, payload.state)
   }
 
   private handleConnectionStatus(dogId: string, status: string): void {

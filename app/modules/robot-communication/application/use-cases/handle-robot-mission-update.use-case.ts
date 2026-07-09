@@ -10,6 +10,7 @@ import { MissionStepStatus } from '#app/modules/missions/domain/enums/mission-st
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 import MissionStepUpdatedEvent from '#app/modules/missions/domain/events/mission-step-updated.event'
 import MissionCompletedEvent from '#app/modules/missions/domain/events/mission-completed.event'
+import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 import { type RobotMissionUpdate } from '#app/modules/robot-communication/domain/types/robot-mission-update.type'
 
 @inject()
@@ -57,6 +58,7 @@ export class HandleRobotMissionUpdateUseCase {
     if (dog) {
       dog.endMission()
       await this.dogRepository.save(dog)
+      void DogStateChangedEvent.dispatch(dog.id.toString(), dog.state)
     }
 
     if (run.status === MissionRunStatus.SUCCESS || run.status === MissionRunStatus.FAILED) {

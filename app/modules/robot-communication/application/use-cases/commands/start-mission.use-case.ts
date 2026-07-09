@@ -43,7 +43,7 @@ export class StartMissionCommandUseCase {
       throw new MissionNotFoundError(missionId)
     }
 
-    dog.startMission()
+    dog.validateForMission()
     const run = MissionRun.start(
       mission.id,
       dog.id,
@@ -53,7 +53,6 @@ export class StartMissionCommandUseCase {
     await this.communicationService.sendCommand(dogId, this.command, missionId)
 
     await this.missionRunRepository.save(run)
-    await this.dogRepository.save(dog)
 
     return run
   }
