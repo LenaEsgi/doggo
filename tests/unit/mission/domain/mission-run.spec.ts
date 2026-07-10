@@ -148,4 +148,54 @@ test.group('MissionRun entity', () => {
     assert.isTrue(rehydrated.id.equals(run.id))
     assert.equal(rehydrated.status, MissionRunStatus.RUNNING)
   })
+
+  test('completeStep rattrape les étapes précédentes PENDING (comble les trous) et retourne les ids', ({
+    assert,
+  }) => {
+    const s1 = MissionStepId.generate()
+    const s2 = MissionStepId.generate()
+    const s3 = MissionStepId.generate()
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [s1, s2, s3])
+    run.confirm()
+
+    const completed = run.completeStep(s3)
+
+    assert.deepEqual(
+      completed.map((id) => id.value),
+      [s1.value, s2.value, s3.value]
+    )
+    assert.equal(run.status, MissionRunStatus.SUCCESS)
+  })
+
+  test('completeStep en doublon (étape déjà COMPLETED) ne retourne rien et ne lève pas', ({
+    assert,
+  }) => {
+    const s1 = MissionStepId.generate()
+    const s2 = MissionStepId.generate()
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [s1, s2])
+    run.confirm()
+    run.completeStep(s1)
+
+    const again = run.completeStep(s1)
+
+    assert.lengthOf(again, 0)
+    assert.equal(run.status, MissionRunStatus.RUNNING)
+  })
+
+  test('failStep rattrape les précédentes en COMPLETED puis marque la cible FAILED', ({ assert }) => {
+    const s1 = MissionStepId.generate()
+    const s2 = MissionStepId.generate()
+    const s3 = MissionStepId.generate()
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [s1, s2, s3])
+    run.confirm()
+
+    const backfilled = run.failStep(s3)
+
+    assert.deepEqual(
+      backfilled.map((id) => id.value),
+      [s1.value, s2.value]
+    )
+    assert.equal(run.status, MissionRunStatus.FAILED)
+    assert.isTrue(run.isTerminal)
+  })
 })

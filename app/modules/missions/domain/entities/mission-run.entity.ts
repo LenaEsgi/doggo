@@ -58,16 +58,27 @@ export default class MissionRun {
     this._status = MissionRunStatus.RUNNING
   }
 
-  completeStep(stepId: MissionStepId): void {
+  completeStep(stepId: MissionStepId): MissionStepId[] {
     this.ensureRunning()
-    this.findRunStep(stepId).complete()
+    const targetOrder = this.findRunStep(stepId).order
+    const toComplete = this._runSteps
+      .filter((s) => s.order <= targetOrder && s.status === MissionStepStatus.PENDING)
+      .sort((a, b) => a.order - b.order)
+    toComplete.forEach((s) => s.complete())
     this.recomputeStatus()
+    return toComplete.map((s) => s.stepId)
   }
 
-  failStep(stepId: MissionStepId): void {
+  failStep(stepId: MissionStepId): MissionStepId[] {
     this.ensureRunning()
+    const targetOrder = this.findRunStep(stepId).order
+    const backfilled = this._runSteps
+      .filter((s) => s.order < targetOrder && s.status === MissionStepStatus.PENDING)
+      .sort((a, b) => a.order - b.order)
+    backfilled.forEach((s) => s.complete())
     this.findRunStep(stepId).fail()
     this.recomputeStatus()
+    return backfilled.map((s) => s.stepId)
   }
 
   interrupt(): void {
