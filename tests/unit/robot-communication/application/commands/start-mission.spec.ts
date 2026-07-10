@@ -113,7 +113,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     assert.equal(timeoutQueue.scheduled[0].delayMs, 60_000)
   })
 
-  test('envoie la commande MQTT avant de persister le run', async ({ assert }) => {
+  test('persiste le run PENDING avant de publier la commande MQTT (irréversible en dernier)', async ({ assert }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await fakeRepo.save(dog)
 
@@ -136,10 +136,12 @@ test.group('StartMissionCommandUseCase', (group) => {
 
     await useCase.execute(dog.id.value, mission.id.value)
 
-    assert.deepEqual(callOrder, ['mqtt', 'save-run'])
+    assert.deepEqual(callOrder, ['save-run', 'mqtt'])
   })
 
-  test('ne persiste rien si la publication MQTT échoue', async ({ assert }) => {
+  test('compense en LAUNCH_FAILED (+ annule le timeout) si la publication MQTT échoue', async ({
+    assert,
+  }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await fakeRepo.save(dog)
 
@@ -152,7 +154,42 @@ test.group('StartMissionCommandUseCase', (group) => {
 
     await assert.rejects(() => useCase.execute(dog.id.value, mission.id.value))
 
-    const run = await runRepo.findActiveRun(mission.id.value, dog.id.value)
-    assert.isNull(run)
+    // aucun run actif ne subsiste → relance immédiate possible
+    const active = await runRepo.findActiveRun(mission.id.value, dog.id.value)
+    assert.isNull(active)
+
+    // mais le run persiste avec une trace honnête de l'échec de lancement
+    assert.lengthOf(runRepo.runs, 1)
+    assert.equal(runRepo.runs[0].status, MissionRunStatus.LAUNCH_FAILED)
+
+    // le timeout armé a été annulé (compensation)
+    assert.deepInclude(timeoutQueue.cancelled, runRepo.runs[0].id.value)
+  })
+
+  test('compense en LAUNCH_FAILED sans rien publier si l’armement du timeout échoue', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await fakeRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep('action-1', 'p1')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    timeoutQueue.schedule = async () => {
+      throw new Error('redis down')
+    }
+
+    await assert.rejects(() => useCase.execute(dog.id.value, mission.id.value))
+
+    // le timeout ayant échoué, l'ordre ne doit jamais partir au robot
+    assert.lengthOf(fakeMqtt.calls, 0)
+
+    // le run est compensé, aucun run actif ne subsiste
+    assert.lengthOf(runRepo.runs, 1)
+    assert.equal(runRepo.runs[0].status, MissionRunStatus.LAUNCH_FAILED)
+    const active = await runRepo.findActiveRunByRobotDog(dog.id.value)
+    assert.isNull(active)
   })
 })

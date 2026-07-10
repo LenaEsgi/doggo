@@ -76,6 +76,19 @@ export default class MissionRun {
     this._endedAt = new Date()
   }
 
+  /**
+   * Le run a été créé (PENDING) mais l'ordre n'a jamais pu être transmis au robot
+   * (échec de publication MQTT / d'armement du timeout). Ce n'est pas une interruption :
+   * la mission n'a jamais démarré côté robot. Uniquement valide depuis PENDING.
+   */
+  markLaunchFailed(): void {
+    if (this._status !== MissionRunStatus.PENDING) {
+      throw new NoActiveMissionRunError(this._robotDogId.value)
+    }
+    this._status = MissionRunStatus.LAUNCH_FAILED
+    this._endedAt = new Date()
+  }
+
   private recomputeStatus(): void {
     const allCompleted = this._runSteps.every((s) => s.status === MissionStepStatus.COMPLETED)
     const anyFailed = this._runSteps.some((s) => s.status === MissionStepStatus.FAILED)

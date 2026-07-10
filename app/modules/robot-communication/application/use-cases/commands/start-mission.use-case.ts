@@ -60,10 +60,22 @@ export class StartMissionCommandUseCase {
       mission.missionSteps.map((step) => step.id)
     )
 
-    await this.communicationService.sendCommand(dogId, this.command, missionId)
-
+    // On persiste d'abord (source de vérité, réversible) puis on arme le filet de sécurité,
+    // et on publie l'ordre au robot EN DERNIER car c'est la seule action irréversible.
+    // Si l'armement du timeout ou la publication échoue, on compense : le run n'a jamais
+    // démarré côté robot, donc on le marque LAUNCH_FAILED (état terminal non-actif) et on
+    // annule le timeout éventuel. Aucun run PENDING orphelin ne subsiste → relance possible.
     await this.missionRunRepository.save(run)
-    await this.missionTimeoutQueue.schedule(run.id.value, dogId, PENDING_RUN_TIMEOUT_MS)
+
+    try {
+      await this.missionTimeoutQueue.schedule(run.id.value, dogId, PENDING_RUN_TIMEOUT_MS)
+      await this.communicationService.sendCommand(dogId, this.command, missionId)
+    } catch (error) {
+      await this.missionTimeoutQueue.cancel(run.id.value)
+      run.markLaunchFailed()
+      await this.missionRunRepository.save(run)
+      throw error
+    }
 
     return run
   }

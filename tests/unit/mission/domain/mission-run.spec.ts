@@ -95,6 +95,23 @@ test.group('MissionRun entity', () => {
     assert.isTrue(run.isTerminal)
   })
 
+  test('markLaunchFailed() moves a PENDING run to LAUNCH_FAILED', ({ assert }) => {
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+
+    run.markLaunchFailed()
+
+    assert.equal(run.status, MissionRunStatus.LAUNCH_FAILED)
+    assert.isTrue(run.isTerminal)
+    assert.isNotNull(run.endedAt)
+  })
+
+  test('markLaunchFailed() throws when the run is not PENDING (already started)', ({ assert }) => {
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    run.confirm()
+
+    assert.throws(() => run.markLaunchFailed(), NoActiveMissionRunError)
+  })
+
   test('cannot interrupt a run that is already terminal', ({ assert }) => {
     const stepId = MissionStepId.generate()
     const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [stepId])

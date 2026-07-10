@@ -4,4 +4,5 @@ export enum MissionRunStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   INTERRUPTED = 'INTERRUPTED',
+  LAUNCH_FAILED = 'LAUNCH_FAILED',
 }
