@@ -69,7 +69,7 @@ export class StartMissionCommandUseCase {
 
     try {
       await this.missionTimeoutQueue.schedule(run.id.value, dogId, PENDING_RUN_TIMEOUT_MS)
-      await this.communicationService.sendCommand(dogId, this.command, missionId)
+      await this.communicationService.sendCommand(dogId, this.command, { missionId })
     } catch (error) {
       await this.missionTimeoutQueue.cancel(run.id.value)
       run.markLaunchFailed()

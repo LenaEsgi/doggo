@@ -5,6 +5,7 @@ import env from '#start/env'
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
 import {
   RobotCommand,
+  type RobotCommandData,
   type RobotCommandPayload,
 } from '#app/modules/robot-communication/domain/types/robot-command.type'
 import { type RobotTelemetry } from '#app/modules/robot-communication/domain/types/robot-telemetry.type'
@@ -55,13 +56,13 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     }
   }
 
-  async sendCommand(dogId: string, command: RobotCommand, missionId?: string): Promise<void> {
+  async sendCommand(dogId: string, command: RobotCommand, data?: RobotCommandData): Promise<void> {
     if (!this.client?.connected) {
       throw new Error('MQTT client is not connected')
     }
 
     const topic = `robot/${dogId}/command`
-    const payload: RobotCommandPayload = { type: command, missionId }
+    const payload: RobotCommandPayload = { type: command, ...data }
 
     await this.client.publishAsync(topic, JSON.stringify(payload), { qos: 1 })
 

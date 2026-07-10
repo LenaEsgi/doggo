@@ -1,14 +1,30 @@
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
-import { type RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
+import {
+  type RobotCommand,
+  type RobotCommandData,
+  type RobotCommandStep,
+} from '#app/modules/robot-communication/domain/types/robot-command.type'
 
 export class FakeRobotCommunicationService extends RobotCommunicationService {
-  public calls: { dogId: string; command: RobotCommand; missionId?: string }[] = []
+  public calls: {
+    dogId: string
+    command: RobotCommand
+    runId?: string
+    missionId?: string
+    steps?: RobotCommandStep[]
+  }[] = []
   public shouldFail = false
 
-  async sendCommand(dogId: string, command: RobotCommand, missionId?: string): Promise<void> {
+  async sendCommand(dogId: string, command: RobotCommand, data?: RobotCommandData): Promise<void> {
     if (this.shouldFail) {
       throw new Error('MQTT client is not connected')
     }
-    this.calls.push({ dogId, command, missionId })
+    this.calls.push({
+      dogId,
+      command,
+      runId: data?.runId,
+      missionId: data?.missionId,
+      steps: data?.steps,
+    })
   }
 }
