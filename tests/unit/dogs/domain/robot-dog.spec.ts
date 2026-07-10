@@ -100,12 +100,12 @@ test.group('RobotDog Entity', () => {
     }, InvalidDogStateError)
   })
 
-  test('should start mission', ({ assert }) => {
+  test('should pass mission validation when idle', ({ assert }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
 
-    dog.startMission()
+    dog.validateForMission()
 
-    assert.equal(dog.state, RobotDogState.IN_MISSION)
+    assert.equal(dog.state, RobotDogState.IDLE)
   })
 
   test('should mark charging', ({ assert }) => {

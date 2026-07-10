@@ -71,7 +71,12 @@ export default defineConfig({
     () => import('#providers/user_provider'),
     () => import('#providers/action_provider'),
     () => import('#providers/notification_provider'),
+    () => import('#providers/queue_provider'),
     () => import('#providers/firebase_provider'),
+    {
+      file: () => import('#providers/mqtt_provider'),
+      environment: ['web', 'console'],
+    },
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/mail/mail_provider'),
     () => import('@adonisjs/core/providers/edge_provider'),

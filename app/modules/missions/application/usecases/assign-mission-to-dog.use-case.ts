@@ -24,6 +24,8 @@ export class AssignMissionToDogUseCase {
       throw new MissionNotFoundError(missionId)
     }
 
+    mission.assignRobot(RobotDogId.fromString(dogId))
+
     await this.missionRepository.assignToDog(missionId, dogId)
   }
 }

@@ -7,6 +7,10 @@ import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/acti
 import { InvalidActionParametersError } from '#app/modules/actions/domain/exceptions/invalid-action-parameters.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
+import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
+import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
+import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
+import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import type { ActionParameterSchema } from '#app/modules/actions/domain/value-objects/action-parameter-schema'
 
 // Schema de test : action MOVE avec distance_cm requis (1-5000)
@@ -33,7 +37,7 @@ test.group('SyncMissionStepsUseCase', () => {
     // --- ARRANGE ---
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, actionRepo)
+    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
 
     const actionId = '550e8400-e29b-41d4-a716-446655440001'
     actionRepo.actions.push(makeAction(actionId, null)) // pas de schema → tout accepté
@@ -73,7 +77,7 @@ test.group('SyncMissionStepsUseCase', () => {
   test("lance MissionNotFoundError si la mission n'existe pas", async ({ assert }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, actionRepo)
+    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
 
     const unknownId = '550e8400-e29b-41d4-a716-446655440000'
 
@@ -86,7 +90,7 @@ test.group('SyncMissionStepsUseCase', () => {
   test('lance ActionNotFoundError si une action du step est inconnue', async ({ assert }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository() // vide
-    const useCase = new SyncMissionStepsUseCase(missionRepo, actionRepo)
+    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
 
     const mission = Mission.create('Mission Test', 'user-001')
     await missionRepo.save(mission)
@@ -108,7 +112,7 @@ test.group('SyncMissionStepsUseCase', () => {
   }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, actionRepo)
+    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
 
     const actionId = '550e8400-e29b-41d4-a716-446655440002'
     actionRepo.actions.push(makeAction(actionId, moveSchema))
@@ -130,7 +134,7 @@ test.group('SyncMissionStepsUseCase', () => {
   test('accepte les paramètres valides respectant le schema', async ({ assert }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, actionRepo)
+    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
 
     const actionId = '550e8400-e29b-41d4-a716-446655440003'
     actionRepo.actions.push(makeAction(actionId, moveSchema))
@@ -144,5 +148,28 @@ test.group('SyncMissionStepsUseCase', () => {
     })
 
     assert.lengthOf(result.missionSteps, 1)
+  })
+
+  test('doit refuser si une mission a un run actif', async ({ assert }) => {
+    const missionRepo = new FakeMissionRepository()
+    const actionRepo = new FakeActionRepository()
+    const runRepo = new FakeMissionRunRepository()
+    const useCase = new SyncMissionStepsUseCase(missionRepo, runRepo, actionRepo)
+
+    const actionId = '550e8400-e29b-41d4-a716-446655440004'
+    actionRepo.actions.push(makeAction(actionId, null))
+
+    const mission = Mission.create('Mission Test', 'user-001')
+    await missionRepo.save(mission)
+    await runRepo.save(MissionRun.start(mission.id, RobotDogId.generate(), []))
+
+    await assert.rejects(
+      () =>
+        useCase.execute({
+          missionId: mission.id.value,
+          steps: [{ actionId, parameters: '{}' }],
+        }),
+      InvalidMissionNotEditableError
+    )
   })
 })

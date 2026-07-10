@@ -8,7 +8,6 @@ export default class MissionStepTransformer extends BaseTransformer<MissionStep>
       actionId: this.resource.actionId,
       sequenceOrder: this.resource.order,
       parameters: this.resource.parameters,
-      status: this.resource.status,
     }
   }
 }

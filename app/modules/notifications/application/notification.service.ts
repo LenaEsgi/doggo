@@ -14,6 +14,7 @@ export type NotificationType =
   | 'dog.member.revoked'
   | 'mission.started'
   | 'mission.completed'
+  | 'mission.failed'
 
 @inject()
 export class NotificationService {
@@ -80,7 +81,9 @@ export class NotificationService {
       case 'mission.started':
         return `${mission} a démarré sur le robot ${dog}`
       case 'mission.completed':
-        return `${mission} est terminée sur le robot ${dog}`
+        return `${mission} est terminée avec succès sur le robot ${dog}`
+      case 'mission.failed':
+        return `${mission} a échoué sur le robot ${dog}`
     }
   }
 

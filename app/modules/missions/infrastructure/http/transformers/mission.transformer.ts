@@ -7,8 +7,8 @@ export default class MissionTransformer extends BaseTransformer<Mission> {
     return {
       id: this.resource.id.value,
       name: this.resource.name,
-      status: this.resource.status,
       userId: this.resource.userId,
+      robotDogIds: this.resource.robotDogIds.map((id) => id.value),
       missionSteps: MissionStepTransformer.transform(this.resource.missionSteps),
     }
   }
