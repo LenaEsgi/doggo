@@ -43,21 +43,38 @@ export class HandleRobotMissionUpdateUseCase {
 
     const stepId = MissionStepId.fromString(update.stepId)
 
+    let completedStepIds: MissionStepId[]
     if (update.status === MissionStepStatus.COMPLETED) {
-      run.completeStep(stepId)
+      completedStepIds = run.completeStep(stepId)
     } else if (update.status === MissionStepStatus.FAILED) {
-      run.failStep(stepId)
+      completedStepIds = run.failStep(stepId)
+    } else {
+      return
     }
 
     await this.missionRunRepository.save(run)
 
-    void MissionStepUpdatedEvent.dispatch(
-      update.missionId,
-      dogId,
-      update.stepId,
-      update.status,
-      run.status
-    )
+    // un event par étape passée à COMPLETED (cible + trous rattrapés)
+    for (const completedStepId of completedStepIds) {
+      void MissionStepUpdatedEvent.dispatch(
+        update.missionId,
+        dogId,
+        completedStepId.value,
+        MissionStepStatus.COMPLETED,
+        run.status
+      )
+    }
+
+    // puis l'event FAILED de la cible, le cas échéant
+    if (update.status === MissionStepStatus.FAILED) {
+      void MissionStepUpdatedEvent.dispatch(
+        update.missionId,
+        dogId,
+        update.stepId,
+        MissionStepStatus.FAILED,
+        run.status
+      )
+    }
 
     if (!run.isTerminal) {
       return

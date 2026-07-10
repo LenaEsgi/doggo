@@ -9,18 +9,23 @@ import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { MissionStepStatus } from '#app/modules/missions/domain/enums/mission-step-status'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
+import emitter from '@adonisjs/core/services/emitter'
+import MissionStepUpdatedEvent from '#app/modules/missions/domain/events/mission-step-updated.event'
 
 test.group('HandleRobotMissionUpdateUseCase', (group) => {
   let missionRepo: FakeMissionRepository
   let runRepo: FakeMissionRunRepository
   let dogRepo: FakeRobotDogRepository
   let useCase: HandleRobotMissionUpdateUseCase
+  let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
     runRepo = new FakeMissionRunRepository()
     dogRepo = new FakeRobotDogRepository()
     useCase = new HandleRobotMissionUpdateUseCase(missionRepo, runRepo, dogRepo)
+    events = emitter.fake()
+    return () => emitter.restore()
   })
 
   test('complète le step du run actif de ce robot et termine le run quand tous les steps sont faits', async ({
@@ -103,5 +108,95 @@ test.group('HandleRobotMissionUpdateUseCase', (group) => {
 
     const stillActiveRunB = await runRepo.findActiveRun(mission.id.value, dogB.id.value)
     assert.isNotNull(stillActiveRunB)
+  })
+
+  test('COMPLETED sur une étape comble les trous et émet un event par étape complétée', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
+    await dogRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep('action-1', 'p1')
+    mission.addStep('action-2', 'p2')
+    mission.addStep('action-3', 'p3')
+    await missionRepo.save(mission)
+
+    const stepIds = mission.getStepsInOrder().map((s) => s.id)
+    const run = MissionRun.start(mission.id, dog.id, stepIds)
+    run.confirm()
+    await runRepo.save(run)
+
+    await useCase.execute(dog.id.value, {
+      missionId: mission.id.value,
+      stepId: stepIds[2].value,
+      status: MissionStepStatus.COMPLETED,
+    })
+
+    const saved = runRepo.runs.find((r) => r.id.equals(run.id))!
+    assert.equal(saved.status, MissionRunStatus.SUCCESS)
+    assert.isTrue(saved.runSteps.every((s) => s.status === MissionStepStatus.COMPLETED))
+
+    events.assertEmittedCount(MissionStepUpdatedEvent, 3)
+  })
+
+  test('FAILED comble les précédentes en COMPLETED puis émet le FAILED de la cible', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
+    await dogRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep('action-1', 'p1')
+    mission.addStep('action-2', 'p2')
+    mission.addStep('action-3', 'p3')
+    await missionRepo.save(mission)
+
+    const stepIds = mission.getStepsInOrder().map((s) => s.id)
+    const run = MissionRun.start(mission.id, dog.id, stepIds)
+    run.confirm()
+    await runRepo.save(run)
+
+    await useCase.execute(dog.id.value, {
+      missionId: mission.id.value,
+      stepId: stepIds[2].value,
+      status: MissionStepStatus.FAILED,
+    })
+
+    const saved = runRepo.runs.find((r) => r.id.equals(run.id))!
+    assert.equal(saved.status, MissionRunStatus.FAILED)
+
+    events.assertEmittedCount(MissionStepUpdatedEvent, 3)
+    events.assertEmitted(
+      MissionStepUpdatedEvent,
+      ({ data }) => data.stepId === stepIds[2].value && data.stepStatus === MissionStepStatus.FAILED
+    )
+  })
+
+  test("un COMPLETED en doublon (run RUNNING) n'émet aucun event", async () => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
+    await dogRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep('action-1', 'p1')
+    mission.addStep('action-2', 'p2')
+    await missionRepo.save(mission)
+
+    const stepIds = mission.getStepsInOrder().map((s) => s.id)
+    const run = MissionRun.start(mission.id, dog.id, stepIds)
+    run.confirm()
+    run.completeStep(stepIds[0]) // étape 1 déjà COMPLETED (mutation domaine, sans event)
+    await runRepo.save(run)
+
+    await useCase.execute(dog.id.value, {
+      missionId: mission.id.value,
+      stepId: stepIds[0].value,
+      status: MissionStepStatus.COMPLETED,
+    })
+
+    events.assertEmittedCount(MissionStepUpdatedEvent, 0)
   })
 })
