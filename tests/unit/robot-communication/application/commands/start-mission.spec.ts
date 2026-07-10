@@ -12,6 +12,10 @@ import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import { FakeMissionTimeoutQueue } from '#tests/unit/fakes/fake-mission-timeout-queue'
+import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
+import Action from '#app/modules/actions/domain/action.entity'
+import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
+import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
 
 test.group('StartMissionCommandUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
@@ -19,6 +23,8 @@ test.group('StartMissionCommandUseCase', (group) => {
   let missionRepo: FakeMissionRepository
   let runRepo: FakeMissionRunRepository
   let timeoutQueue: FakeMissionTimeoutQueue
+  let actionRepo: FakeActionRepository
+  let action: Action
   let useCase: StartMissionCommandUseCase
 
   group.each.setup(() => {
@@ -27,7 +33,17 @@ test.group('StartMissionCommandUseCase', (group) => {
     missionRepo = new FakeMissionRepository()
     runRepo = new FakeMissionRunRepository()
     timeoutQueue = new FakeMissionTimeoutQueue()
-    useCase = new StartMissionCommandUseCase(fakeRepo, fakeMqtt, missionRepo, runRepo, timeoutQueue)
+    actionRepo = new FakeActionRepository()
+    action = Action.create('SIT', 'Assis', 'sit', null, null)
+    actionRepo.actions.push(action)
+    useCase = new StartMissionCommandUseCase(
+      fakeRepo,
+      fakeMqtt,
+      missionRepo,
+      runRepo,
+      timeoutQueue,
+      actionRepo
+    )
   })
 
   test('exposes RobotCommand.START_MISSION as its command', ({ assert }) => {
@@ -47,7 +63,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     await fakeRepo.save(dog)
 
     const mission = Mission.create('Patrol', 'user-1')
-    mission.addStep('action-1', 'p1')
+    mission.addStep(action.id.value, '{"angle":90}')
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
@@ -82,7 +98,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     await fakeRepo.save(dog)
 
     const mission = Mission.create('Patrol', 'user-1')
-    mission.addStep('action-1', 'p1')
+    mission.addStep(action.id.value, '{"angle":90}')
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
@@ -101,7 +117,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     await fakeRepo.save(dog)
 
     const mission = Mission.create('Patrol', 'user-1')
-    mission.addStep('action-1', 'p1')
+    mission.addStep(action.id.value, '{"angle":90}')
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
@@ -118,7 +134,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     await fakeRepo.save(dog)
 
     const mission = Mission.create('Patrol', 'user-1')
-    mission.addStep('action-1', 'p1')
+    mission.addStep(action.id.value, '{"angle":90}')
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
@@ -146,7 +162,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     await fakeRepo.save(dog)
 
     const mission = Mission.create('Patrol', 'user-1')
-    mission.addStep('action-1', 'p1')
+    mission.addStep(action.id.value, '{"angle":90}')
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
@@ -173,7 +189,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     await fakeRepo.save(dog)
 
     const mission = Mission.create('Patrol', 'user-1')
-    mission.addStep('action-1', 'p1')
+    mission.addStep(action.id.value, '{"angle":90}')
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
@@ -191,5 +207,52 @@ test.group('StartMissionCommandUseCase', (group) => {
     assert.equal(runRepo.runs[0].status, MissionRunStatus.LAUNCH_FAILED)
     const active = await runRepo.findActiveRunByRobotDog(dog.id.value)
     assert.isNull(active)
+  })
+
+  test('transmet le runId et les steps dénormalisés (actionCode + params parsés) au robot', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await fakeRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep(action.id.value, '{"angle":90}')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    const run = await useCase.execute(dog.id.value, mission.id.value)
+
+    assert.lengthOf(fakeMqtt.calls, 1)
+    const call = fakeMqtt.calls[0]
+    assert.equal(call.runId, run.id.value)
+    assert.equal(call.missionId, mission.id.value)
+    assert.lengthOf(call.steps!, 1)
+    assert.deepEqual(call.steps![0], {
+      stepId: mission.missionSteps[0].id.value,
+      order: 1,
+      actionCode: 'SIT',
+      parameters: { angle: 90 },
+    })
+  })
+
+  test("refuse de lancer si une action de la mission n'existe plus (ActionNotFoundError, aucun artefact)", async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await fakeRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep(ActionId.generate().value, '{}') // action valide en forme mais non seedée
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    await assert.rejects(
+      () => useCase.execute(dog.id.value, mission.id.value),
+      ActionNotFoundError
+    )
+
+    assert.lengthOf(runRepo.runs, 0) // aucun run créé
+    assert.lengthOf(fakeMqtt.calls, 0) // rien publié
+    assert.lengthOf(timeoutQueue.scheduled, 0) // aucun timeout armé
   })
 })
