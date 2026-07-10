@@ -101,14 +101,6 @@ export class RobotDog {
     this._state = RobotDogState.IDLE
   }
 
-  public startMission(): void {
-    this.ensureOnline()
-    this.ensureIdle()
-    this.ensureBatterySufficient()
-
-    this._state = RobotDogState.IN_MISSION
-  }
-
   public endMission(): void {
     if (this._state !== RobotDogState.IN_MISSION) {
       throw new InvalidDogStateError(`No active mission to end`)

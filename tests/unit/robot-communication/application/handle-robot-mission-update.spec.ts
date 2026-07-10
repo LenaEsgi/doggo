@@ -6,6 +6,7 @@ import { HandleRobotMissionUpdateUseCase } from '#app/modules/robot-communicatio
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { MissionStepStatus } from '#app/modules/missions/domain/enums/mission-step-status'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 
@@ -26,7 +27,7 @@ test.group('HandleRobotMissionUpdateUseCase', (group) => {
     assert,
   }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
-    dog.startMission()
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
     await dogRepo.save(dog)
 
     const mission = Mission.create('Patrol', 'user-1')
@@ -73,10 +74,10 @@ test.group('HandleRobotMissionUpdateUseCase', (group) => {
     assert,
   }) => {
     const dogA = RobotDog.create('SN-A', 'Rex', 80)
-    dogA.startMission()
+    dogA.applyStateFromRobot(RobotDogState.IN_MISSION)
     await dogRepo.save(dogA)
     const dogB = RobotDog.create('SN-B', 'Fido', 80)
-    dogB.startMission()
+    dogB.applyStateFromRobot(RobotDogState.IN_MISSION)
     await dogRepo.save(dogB)
 
     const mission = Mission.create('Patrol', 'user-1')

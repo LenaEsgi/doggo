@@ -30,7 +30,7 @@ test.group('StopMissionCommandUseCase', (group) => {
 
   test('interrompt le run actif du robot', async ({ assert }) => {
     let dog = RobotDog.create('SN-001', 'Rex', 80)
-    dog.startMission()
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
     await fakeRepo.save(dog)
 
     const run = MissionRun.start(MissionId.generate(), dog.id, [MissionStepId.generate()])
@@ -57,7 +57,7 @@ test.group('StopMissionCommandUseCase', (group) => {
 
   test('ne persiste rien si la publication MQTT échoue', async ({ assert }) => {
     let dog = RobotDog.create('SN-001', 'Rex', 80)
-    dog.startMission()
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
     await fakeRepo.save(dog)
 
     const run = MissionRun.start(MissionId.generate(), dog.id, [MissionStepId.generate()])

@@ -22,7 +22,7 @@ test.group('HandlePendingRunTimeoutUseCase', (group) => {
 
   test('interrompt le run PENDING et repasse le dog IDLE quand le robot ne confirme jamais', async ({ assert }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
-    dog.startMission()
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
     await dogRepo.save(dog)
     assert.equal(dog.state, RobotDogState.IN_MISSION)
 
@@ -40,7 +40,7 @@ test.group('HandlePendingRunTimeoutUseCase', (group) => {
 
   test("ne touche pas à un run déjà confirmé (RUNNING)", async ({ assert }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
-    dog.startMission()
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
     await dogRepo.save(dog)
 
     const run = MissionRun.start(MissionId.generate(), dog.id, [MissionStepId.generate()])
