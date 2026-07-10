@@ -25,7 +25,7 @@ export default class MissionRun {
       missionId,
       robotDogId,
       MissionRunStatus.PENDING,
-      stepIds.map((stepId) => MissionRunStep.create(stepId)),
+      stepIds.map((stepId, i) => MissionRunStep.create(stepId, i + 1)),
       new Date(),
       null
     )
@@ -139,7 +139,9 @@ export default class MissionRun {
   }
 
   get runSteps(): MissionRunStep[] {
-    return this._runSteps.map((s) => MissionRunStep.rehydrate(s.id.value, s.stepId.value, s.status))
+    return this._runSteps.map((s) =>
+      MissionRunStep.rehydrate(s.id.value, s.stepId.value, s.status, s.order)
+    )
   }
 
   get startedAt(): Date {

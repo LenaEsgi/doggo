@@ -19,6 +19,9 @@ export default class MissionRunStepModel extends BaseModel {
   @column()
   declare status: MissionStepStatus
 
+  @column()
+  declare sequenceOrder: number
+
   @belongsTo(() => MissionRunModel, { foreignKey: 'missionRunId' })
   declare missionRun: BelongsTo<typeof MissionRunModel>
 

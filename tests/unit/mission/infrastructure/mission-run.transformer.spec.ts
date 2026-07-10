@@ -10,7 +10,7 @@ import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run
 
 test.group('MissionRunStepTransformer', () => {
   test('sérialise un run step en objet plat', ({ assert }) => {
-    const step = MissionRunStep.create(MissionStepId.generate())
+    const step = MissionRunStep.create(MissionStepId.generate(), 1)
 
     const obj = new MissionRunStepTransformer(step).toObject()
 

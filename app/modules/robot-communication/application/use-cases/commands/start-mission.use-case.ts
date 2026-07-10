@@ -70,7 +70,7 @@ export class StartMissionCommandUseCase {
     const run = MissionRun.start(
       mission.id,
       dog.id,
-      mission.missionSteps.map((step) => step.id)
+      mission.getStepsInOrder().map((step) => step.id)
     )
 
     // On persiste d'abord (source de vérité, réversible) puis on arme le filet de sécurité,

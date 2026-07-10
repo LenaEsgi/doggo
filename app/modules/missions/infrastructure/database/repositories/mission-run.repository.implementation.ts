@@ -59,6 +59,7 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
         missionRunId: run.id.value,
         missionStepId: step.stepId.value,
         status: step.status,
+        sequenceOrder: step.order,
       }))
 
       await MissionRunStepModel.updateOrCreateMany('id', stepsData, { client: trx })
@@ -67,7 +68,7 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
 
   private toDomain(row: MissionRunModel): MissionRun {
     const runSteps = row.runSteps.map((s) =>
-      MissionRunStep.rehydrate(s.id, s.missionStepId, s.status)
+      MissionRunStep.rehydrate(s.id, s.missionStepId, s.status, s.sequenceOrder)
     )
 
     return MissionRun.rehydrate(
