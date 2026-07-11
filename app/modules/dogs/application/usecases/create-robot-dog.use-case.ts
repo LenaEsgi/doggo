@@ -2,7 +2,7 @@ import { RobotDogRepository } from '../../domain/contracts/robot-dog.repository.
 import { RobotDog } from '../../domain/robot-dog.entity.js'
 import { CreateRobotDogDto } from '../DTO/create-robot-dog.dto.js'
 import { inject } from '@adonisjs/core'
-import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
+import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-exists.error'
 import logger from '@adonisjs/core/services/logger'
 
 @inject()

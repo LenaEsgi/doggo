@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
 import { CreateRobotDogUseCase } from '#dogs/application/usecases/create-robot-dog.use-case'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
-import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-existe.error'
+import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-exists.error'
 
 test.group('CreateRobotDogUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
