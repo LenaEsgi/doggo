@@ -1,4 +1,4 @@
-import { MissionRepository } from '../../domain/contracts/mission.repository.js'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { inject } from '@adonisjs/core'

@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import ActionTransformer from '../transformers/action.transformer.js'
+import ActionTransformer from '#app/modules/actions/infrastructure/http/transformers/action.transformer'
 import { ShowActionUseCase } from '#app/modules/actions/application/usecases/show-action.use-case'
 
 @inject()

@@ -1,5 +1,5 @@
 import { AddMissionStepDto } from '#app/modules/missions/application/dto/add-mission-step.dto'
-import { MissionRepository } from '../../domain/contracts/mission.repository.ts'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'

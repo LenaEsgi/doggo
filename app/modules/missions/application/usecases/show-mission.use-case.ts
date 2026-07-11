@@ -1,4 +1,4 @@
-import { MissionRepository } from '../../domain/contracts/mission.repository.js'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'

@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
-import { CreateActionValidator } from '../validators/create-action.validator.js'
+import { CreateActionValidator } from '#app/modules/actions/infrastructure/http/validators/create-action.validator'
 import { CreateActionUseCase } from '#app/modules/actions/application/usecases/create-action.use-case'
 
 @inject()

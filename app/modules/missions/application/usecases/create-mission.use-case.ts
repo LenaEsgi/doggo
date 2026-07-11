@@ -1,5 +1,5 @@
-import { MissionRepository } from '../../domain/contracts/mission.repository.js'
-import { CreateMissionDto } from '../dto/create-mission.dto.js'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
+import { CreateMissionDto } from '#app/modules/missions/application/dto/create-mission.dto'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'

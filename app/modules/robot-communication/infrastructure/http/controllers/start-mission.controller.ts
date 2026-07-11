@@ -1,6 +1,6 @@
 import { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import { startMissionValidator } from '../validators/start-mission.validator.js'
+import { startMissionValidator } from '#app/modules/robot-communication/infrastructure/http/validators/start-mission.validator'
 import { StartMissionCommandUseCase } from '#app/modules/robot-communication/application/use-cases/commands/start-mission.use-case'
 import MissionRunTransformer from '#app/modules/missions/infrastructure/http/transformers/mission-run.transformer'
 import RobotDogPolicy from '#dogs/application/policies/robot-dog.policy'

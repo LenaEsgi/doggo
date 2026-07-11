@@ -24,4 +24,20 @@ export default [
       'unicorn/filename-case': 'off',
     },
   },
+  {
+    files: ['app/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../*', '../**'],
+              message: 'Utiliser un alias (#app/..., #dogs/..., etc.) au lieu d’un import relatif remontant.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]

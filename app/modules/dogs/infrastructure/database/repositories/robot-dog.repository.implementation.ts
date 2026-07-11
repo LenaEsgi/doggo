@@ -1,6 +1,6 @@
 import { type RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
-import RobotDogModel from '../models/robot-dog.js'
+import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
 import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'

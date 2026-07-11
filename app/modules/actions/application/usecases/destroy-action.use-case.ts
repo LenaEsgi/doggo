@@ -1,5 +1,5 @@
-import { ActionRepository } from '../../domain/contracts/action.repository.js'
-import { DestroyActionDto } from '../dto/destroy-action.dto.js'
+import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
+import { DestroyActionDto } from '#app/modules/actions/application/dto/destroy-action.dto'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'

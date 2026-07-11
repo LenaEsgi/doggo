@@ -1,6 +1,6 @@
 import { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
-import ActionTransformer from '../transformers/action.transformer.js'
+import ActionTransformer from '#app/modules/actions/infrastructure/http/transformers/action.transformer'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { IndexActionUseCase } from '#app/modules/actions/application/usecases/index-action.use-case'
 

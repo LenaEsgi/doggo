@@ -1,4 +1,4 @@
-import { MissionRepository } from '../../domain/contracts/mission.repository.ts'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { inject } from '@adonisjs/core'
 import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'

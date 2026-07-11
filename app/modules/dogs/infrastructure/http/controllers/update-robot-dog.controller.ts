@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
-import { UpdateRobotDogValidator } from '../validators/update-robot-dog.validator.js'
-import { UpdateRobotDogDto } from '../../../application/DTO/update-robot-dog.dto.js'
+import { UpdateRobotDogValidator } from '#app/modules/dogs/infrastructure/http/validators/update-robot-dog.validator'
+import { UpdateRobotDogDto } from '#app/modules/dogs/application/DTO/update-robot-dog.dto'
 import { UpdateRobotDogUseCase } from '#dogs/application/usecases/update-robot-dog.use-case'
 import RobotDogPolicy from '#dogs/application/policies/robot-dog.policy'
 

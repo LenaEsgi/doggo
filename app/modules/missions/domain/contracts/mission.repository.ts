@@ -1,6 +1,6 @@
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
-import type Mission from '../entities/mission.entity.js'
+import type Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { type MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 
 export abstract class MissionRepository {

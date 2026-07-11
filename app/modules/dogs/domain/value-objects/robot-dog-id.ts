@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { InvalidRobotDogIdError } from '../exceptions/invalid-robot-dog-id.error.js'
+import { InvalidRobotDogIdError } from '#app/modules/dogs/domain/exceptions/invalid-robot-dog-id.error'
 
 export class RobotDogId {
   private constructor(public readonly value: string) {}

@@ -1,5 +1,5 @@
-import { ActionRepository } from '../../domain/contracts/action.repository.js'
-import { ShowActionDto } from '../dto/show-action.dto.js'
+import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
+import { ShowActionDto } from '#app/modules/actions/application/dto/show-action.dto'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'

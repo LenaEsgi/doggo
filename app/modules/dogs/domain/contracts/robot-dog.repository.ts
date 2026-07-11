@@ -1,5 +1,5 @@
-import { type RobotDog } from '../robot-dog.entity.js'
-import { type RobotDogId } from '../value-objects/robot-dog-id.js'
+import { type RobotDog } from '#app/modules/dogs/domain/robot-dog.entity'
+import { type RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 

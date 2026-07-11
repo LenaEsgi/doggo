@@ -1,4 +1,4 @@
-import { RobotDogRepository } from '../../domain/contracts/robot-dog.repository.js'
+import { RobotDogRepository } from '#app/modules/dogs/domain/contracts/robot-dog.repository'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'

@@ -1,5 +1,5 @@
-import { ActionRepository } from '../../domain/contracts/action.repository.js'
-import { CreateActionDto } from '../dto/create-action.dto.js'
+import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
+import { CreateActionDto } from '#app/modules/actions/application/dto/create-action.dto'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { ActionAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-already-exists.error'
