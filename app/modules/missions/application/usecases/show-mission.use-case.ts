@@ -3,7 +3,7 @@ import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 
 @inject()
 export class ShowMissionUseCase {

@@ -4,7 +4,7 @@ import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository
 import { FakeRobotDogGateway } from '#tests/unit/fakes/fake-robot-dog-gateway'
 import { RemoveMissionToDogUseCase } from '#app/modules/missions/application/usecases/remove-mission-to-dog.use-case'
 import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'

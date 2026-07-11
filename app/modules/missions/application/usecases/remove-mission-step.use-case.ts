@@ -4,7 +4,7 @@ import { MissionRepository } from '#app/modules/missions/domain/contracts/missio
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { RemoveMissionStepDto } from '#app/modules/missions/application/dto/remove-mission-step.dto'
 import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 
 @inject()
 export default class RemoveMissionStep {

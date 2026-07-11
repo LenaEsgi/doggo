@@ -1,6 +1,6 @@
 import { inject } from '@adonisjs/core'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'

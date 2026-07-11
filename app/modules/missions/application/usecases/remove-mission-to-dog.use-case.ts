@@ -4,7 +4,7 @@ import { RobotDogGateway } from '#app/modules/missions/application/contracts/rob
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 

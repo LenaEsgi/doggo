@@ -4,7 +4,7 @@ import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository
 import { FakeRobotDogGateway } from '#tests/unit/fakes/fake-robot-dog-gateway'
 import { AssignMissionToDogUseCase } from '#app/modules/missions/application/usecases/assign-mission-to-dog.use-case'
 import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { RobotAlreadyAssignedError } from '#app/modules/missions/domain/exceptions/robot-already-assigned.error'
 
 test.group('AssignMissionToDogUseCase', (group) => {

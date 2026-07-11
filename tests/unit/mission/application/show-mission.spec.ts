@@ -2,7 +2,7 @@ import { test } from '@japa/runner'
 import { ShowMissionUseCase } from '#app/modules/missions/application/usecases/show-mission.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
-import { InvalidMissionNotFountError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fount.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 
 test.group('ShowMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository
@@ -27,7 +27,7 @@ test.group('ShowMissionUseCase', (group) => {
   test('should throw an error if mission is not found', async ({ assert }) => {
     const unknownId = '550e8400-e29b-41d4-a716-446655440000'
 
-    await assert.rejects(() => useCase.execute(unknownId), InvalidMissionNotFountError)
+    await assert.rejects(() => useCase.execute(unknownId), MissionNotFoundError)
   })
 
   test('should throw error if id format is invalid', async ({ assert }) => {

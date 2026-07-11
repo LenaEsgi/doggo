@@ -12,7 +12,7 @@ import { MissionRepository } from '#app/modules/missions/domain/contracts/missio
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { MissionTimeoutQueue } from '#app/modules/missions/domain/contracts/mission-timeout-queue'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'

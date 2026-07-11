@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { AddMissionStepUseCase } from '#app/modules/missions/application/usecases/add-mission-step.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'

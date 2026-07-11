@@ -2,7 +2,7 @@ import { MissionRepository } from '../../domain/contracts/mission.repository.js'
 import { UpdateMissionDto } from '../dto/update-mission.dto.js'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 
 @inject()
