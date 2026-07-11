@@ -8,6 +8,15 @@ tmp
 .env.local
 .env.production.local
 .env.development.local
+.env.test
+.env.test.local
+
+# Subagent-driven execution scratch (ledger, briefs, review packages)
+.superpowers/
+
+# MQTT broker secrets / certs (generated locally, never committed)
+mosquitto/passwordfile
+mosquitto/certs/
 
 # Frontend assets compiled code
 public/assets
