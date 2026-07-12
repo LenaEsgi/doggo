@@ -11,13 +11,12 @@ test.group('MQTT payload validators', () => {
     assert.equal(out.battery, 80)
   })
 
-  test('accepts a valid telemetry payload with state', async ({ assert }) => {
-    const out = await robotTelemetryValidator.validate({
-      battery: 42,
-      state: RobotDogState.IN_MISSION,
-    })
+  test('accepts telemetry on battery even when an unknown state field is present', async ({
+    assert,
+  }) => {
+    // Le state n'est pas validé ici : un state inconnu ne doit pas rejeter la télémétrie.
+    const out = await robotTelemetryValidator.validate({ battery: 42, state: 'NOT_A_STATE' })
     assert.equal(out.battery, 42)
-    assert.equal(out.state, RobotDogState.IN_MISSION)
   })
 
   test('rejects telemetry with non-numeric battery', async ({ assert }) => {
