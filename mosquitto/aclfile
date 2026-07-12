@@ -1,0 +1,6 @@
+# Compte backend : accès complet
+user doggo-backend
+topic readwrite robot/#
+
+# Gabarit par robot (dupliquer/générer par robot ; %u = username = id du robot)
+pattern readwrite robot/%u/#

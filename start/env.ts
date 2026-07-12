@@ -49,6 +49,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   MQTT_HOST: Env.schema.string(),
   MQTT_PORT: Env.schema.number(),
+  MQTT_USERNAME: Env.schema.string.optional(),
+  MQTT_PASSWORD: Env.schema.string.optional(),
+  MQTT_USE_TLS: Env.schema.boolean.optional(),
+  MQTT_CA_PATH: Env.schema.string.optional(),
 
   /*
   |----------------------------------------------------------

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import mqtt, { type MqttClient } from 'mqtt'
 import app from '@adonisjs/core/services/app'
 import logger from '@adonisjs/core/services/logger'
@@ -24,14 +25,20 @@ export class MqttServiceImplementation implements RobotCommunicationService {
   async connect(): Promise<void> {
     const host = env.get('MQTT_HOST')
     const port = env.get('MQTT_PORT')
+    const useTls = env.get('MQTT_USE_TLS', false)
+    const protocol = useTls ? 'mqtts' : 'mqtt'
+    const caPath = env.get('MQTT_CA_PATH')
 
-    this.client = await mqtt.connectAsync(`mqtt://${host}:${port}`, {
+    this.client = await mqtt.connectAsync(`${protocol}://${host}:${port}`, {
       clientId: `doggo-backend-${Date.now()}`,
       clean: true,
       reconnectPeriod: 5000,
+      username: env.get('MQTT_USERNAME'),
+      password: env.get('MQTT_PASSWORD'),
+      ...(useTls && caPath ? { ca: readFileSync(caPath) } : {}),
     })
 
-    logger.info({ host, port }, 'MqttService: connected to broker')
+    logger.info({ host, port, tls: useTls }, 'MqttService: connected to broker')
 
     await this.client.subscribeAsync('robot/+/telemetry')
     await this.client.subscribeAsync('robot/+/mission/step')
