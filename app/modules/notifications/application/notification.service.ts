@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
-import transmit from '@adonisjs/transmit/services/main'
 import logger from '@adonisjs/core/services/logger'
 import { NotificationRepository } from '#app/modules/notifications/domain/contracts/notification.repository'
+import { RealtimeBroadcaster } from '#app/modules/notifications/domain/contracts/realtime-broadcaster'
 import type {
   NotificationRecord,
   Severity,
@@ -18,7 +18,10 @@ export type NotificationType =
 
 @inject()
 export class NotificationService {
-  constructor(private readonly repo: NotificationRepository) {}
+  constructor(
+    private readonly repo: NotificationRepository,
+    private readonly broadcaster: RealtimeBroadcaster
+  ) {}
 
   async create(
     userId: string,
@@ -89,7 +92,7 @@ export class NotificationService {
 
   private broadcast(notification: NotificationRecord): void {
     try {
-      transmit.broadcast(`users/${notification.userId}`, {
+      this.broadcaster.broadcast(`users/${notification.userId}`, {
         type: 'notification',
         notification: {
           id: notification.id,
@@ -101,7 +104,7 @@ export class NotificationService {
           isRead: false as const,
           createdAt: notification.createdAt,
         },
-      } as unknown as Parameters<typeof transmit.broadcast>[1])
+      })
     } catch (error) {
       logger.error(
         { err: error, userId: notification.userId },
