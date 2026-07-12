@@ -1,6 +1,7 @@
 import { type MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { toPaginatedResult } from '#app/modules/share/infrastructure/database/to-paginated-result'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import { type MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
@@ -10,6 +11,12 @@ import MissionStep from '#app/modules/missions/domain/entities/mission-step.enti
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 
 export class MissionRepositoryImplementation implements MissionRepository {
+  private toSteps(row: MissionModel): MissionStep[] {
+    return row.steps.map((s) =>
+      MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters)
+    )
+  }
+
   async findById(id: MissionId): Promise<Mission | null> {
     const row = await MissionModel.query()
       .where('id', id.value)
@@ -21,12 +28,9 @@ export class MissionRepositoryImplementation implements MissionRepository {
 
     if (!row) return null
 
-    const steps = row.steps.map((s) =>
-      MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters)
-    )
     const robotDogIds = row.robotDogs.map((dog) => RobotDogId.fromString(dog.id))
 
-    return Mission.rehydrate(row.id, row.name, row.userId, steps, robotDogIds)
+    return Mission.rehydrate(row.id, row.name, row.userId, this.toSteps(row), robotDogIds)
   }
 
   async findAll(options?: PaginationDto): Promise<PaginatedResult<Mission>> {
@@ -38,25 +42,9 @@ export class MissionRepositoryImplementation implements MissionRepository {
       .orderBy('created_at', 'desc')
       .paginate(page, limit)
 
-    const missions = paginator.all().map((row) =>
-      Mission.rehydrate(
-        row.id,
-        row.name,
-        row.userId,
-        row.steps.map((s) => MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters))
-      )
+    return toPaginatedResult(paginator, (row) =>
+      Mission.rehydrate(row.id, row.name, row.userId, this.toSteps(row))
     )
-
-    return {
-      data: missions,
-      meta: {
-        total: paginator.total,
-        perPage: paginator.perPage,
-        currentPage: paginator.currentPage,
-        firstPage: paginator.firstPage,
-        lastPage: paginator.lastPage,
-      },
-    }
   }
 
   async findByUser(userId: string, options?: PaginationDto): Promise<PaginatedResult<Mission>> {
@@ -69,32 +57,13 @@ export class MissionRepositoryImplementation implements MissionRepository {
       .orderBy('created_at', 'desc')
       .paginate(page, limit)
 
-    const missions = paginator.all().map((row) =>
-      Mission.rehydrate(
-        row.id,
-        row.name,
-        row.userId,
-        row.steps.map((s) => MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters))
-      )
+    return toPaginatedResult(paginator, (row) =>
+      Mission.rehydrate(row.id, row.name, row.userId, this.toSteps(row))
     )
-
-    return {
-      data: missions,
-      meta: {
-        total: paginator.total,
-        perPage: paginator.perPage,
-        currentPage: paginator.currentPage,
-        firstPage: paginator.firstPage,
-        lastPage: paginator.lastPage,
-      },
-    }
   }
 
   async isOwner(userId: string, missionId: string): Promise<boolean> {
-    const row = await MissionModel.query()
-      .where('id', missionId)
-      .where('user_id', userId)
-      .first()
+    const row = await MissionModel.query().where('id', missionId).where('user_id', userId).first()
     return row !== null
   }
 
@@ -145,27 +114,15 @@ export class MissionRepositoryImplementation implements MissionRepository {
       .preload('robotDogs')
       .paginate(page, limit)
 
-    const missions = paginator.all().map((row) => {
-      const robotDogIds = row.robotDogs.map((dog) => RobotDogId.fromString(dog.id))
-      return Mission.rehydrate(
+    return toPaginatedResult(paginator, (row) =>
+      Mission.rehydrate(
         row.id,
         row.name,
         row.userId,
-        row.steps.map((s) => MissionStep.rehydrate(s.id, s.actionId, s.sequenceOrder, s.parameters)),
-        robotDogIds
+        this.toSteps(row),
+        row.robotDogs.map((dog) => RobotDogId.fromString(dog.id))
       )
-    })
-
-    return {
-      data: missions,
-      meta: {
-        total: paginator.total,
-        perPage: paginator.perPage,
-        currentPage: paginator.currentPage,
-        firstPage: paginator.firstPage,
-        lastPage: paginator.lastPage,
-      },
-    }
+    )
   }
 
   async assignToDog(missionId: string, dogId: string): Promise<void> {
