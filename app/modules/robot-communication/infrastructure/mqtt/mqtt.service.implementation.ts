@@ -10,9 +10,13 @@ import {
 } from '#app/modules/robot-communication/domain/types/robot-command.type'
 import { type RobotTelemetry } from '#app/modules/robot-communication/domain/types/robot-telemetry.type'
 import { type RobotMissionUpdate } from '#app/modules/robot-communication/domain/types/robot-mission-update.type'
+import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { HandleRobotTelemetryUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-telemetry.use-case'
 import { HandleRobotMissionUpdateUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-mission-update.use-case'
 import { HandleRobotStateChangedUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-state-changed.use-case'
+import { robotTelemetryValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-telemetry.validator'
+import { robotMissionUpdateValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-mission-update.validator'
+import { robotStateValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-state.validator'
 
 export class MqttServiceImplementation implements RobotCommunicationService {
   private client!: MqttClient
@@ -92,7 +96,7 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     let telemetry: RobotTelemetry
 
     try {
-      telemetry = JSON.parse(raw) as RobotTelemetry
+      telemetry = await robotTelemetryValidator.validate(JSON.parse(raw))
     } catch {
       logger.warn({ dogId, raw }, 'MqttService: invalid telemetry payload')
       return
@@ -106,7 +110,7 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     let update: RobotMissionUpdate
 
     try {
-      update = JSON.parse(raw) as RobotMissionUpdate
+      update = await robotMissionUpdateValidator.validate(JSON.parse(raw))
     } catch {
       logger.warn({ dogId, raw }, 'MqttService: invalid mission update payload')
       return
@@ -117,9 +121,10 @@ export class MqttServiceImplementation implements RobotCommunicationService {
   }
 
   private async handleStateChanged(dogId: string, raw: string): Promise<void> {
-    let payload: { state: string }
+    let payload: { state: RobotDogState }
+
     try {
-      payload = JSON.parse(raw) as { state: string }
+      payload = await robotStateValidator.validate(JSON.parse(raw))
     } catch {
       logger.warn({ dogId, raw }, 'MqttService: invalid state payload')
       return
