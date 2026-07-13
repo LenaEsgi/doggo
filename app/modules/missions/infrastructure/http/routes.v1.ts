@@ -33,6 +33,17 @@ const AssignToDogController = () =>
 const RemoveFromDogController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/remove-from-dog.controller')
 
+const CreateMissionScheduleController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/create-mission-schedule.controller')
+const ListMissionSchedulesController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/list-mission-schedules.controller')
+const UpdateMissionScheduleController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/update-mission-schedule.controller')
+const ToggleMissionScheduleController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/toggle-mission-schedule.controller')
+const DestroyMissionScheduleController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/destroy-mission-schedule.controller')
+
 router
   .group(() => {
     router.post('/', [CreateMissionController])
@@ -46,6 +57,12 @@ router
     router.put('/:id/steps', [SyncMissionStepsController])
     router.delete('/:missionId/steps/:stepId', [DestroyMissionStepController])
     router.put('/:missionId/steps/:stepId', [MoveMissionStepController])
+
+    router.post('/:id/schedules', [CreateMissionScheduleController])
+    router.get('/:id/schedules', [ListMissionSchedulesController])
+    router.put('/:missionId/schedules/:scheduleId', [UpdateMissionScheduleController])
+    router.patch('/:missionId/schedules/:scheduleId/toggle', [ToggleMissionScheduleController])
+    router.delete('/:missionId/schedules/:scheduleId', [DestroyMissionScheduleController])
   })
   .prefix('/api/v1/missions')
   .use(middleware.firebaseAuth())

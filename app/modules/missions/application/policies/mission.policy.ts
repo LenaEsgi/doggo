@@ -71,4 +71,12 @@ export default class MissionPolicy extends BasePolicy {
   async removeFromDog(user: User, dogId: string, _missionId: string): Promise<AuthorizerResponse> {
     return this.ownershipRepository.isOwner(user.id, dogId)
   }
+
+  async createSchedule(user: User, missionId: string): Promise<AuthorizerResponse> {
+    return this.missionRepository.isOwner(user.id, missionId)
+  }
+
+  async manageSchedule(user: User, missionId: string): Promise<AuthorizerResponse> {
+    return this.missionRepository.isOwner(user.id, missionId)
+  }
 }

@@ -41,6 +41,11 @@ export type ScannedRoutes = {
     'sync_mission_steps': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
     'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'create_mission_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_mission_schedules': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'update_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
+    'toggle_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
+    'destroy_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
     'list_missions_by_dog_use_case': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'assign_to_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'remove_from_dog': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'missionId': ParamValue} }
@@ -70,6 +75,7 @@ export type ScannedRoutes = {
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_mission_schedules': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_missions_by_dog_use_case': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -89,6 +95,7 @@ export type ScannedRoutes = {
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_mission_schedules': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_missions_by_dog_use_case': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'index': { paramsTuple?: []; params?: {} }
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -113,6 +120,7 @@ export type ScannedRoutes = {
     'create_robot_dog': { paramsTuple?: []; params?: {} }
     'create_mission': { paramsTuple?: []; params?: {} }
     'add_step': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'create_mission_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'assign_to_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
     'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -125,12 +133,14 @@ export type ScannedRoutes = {
     'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'destroy_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
     'remove_from_dog': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'missionId': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'toggle_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'mark_notifications_read': { paramsTuple?: []; params?: {} }
   }
@@ -139,6 +149,7 @@ export type ScannedRoutes = {
     'update_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'sync_mission_steps': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'move_mission_step': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'stepId': ParamValue} }
+    'update_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {
