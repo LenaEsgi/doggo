@@ -29,6 +29,11 @@ export class MissionScheduleRepositoryImplementation implements MissionScheduleR
     return rows.map((row) => this.toDomain(row))
   }
 
+  async findEnabled(): Promise<MissionSchedule[]> {
+    const rows = await MissionScheduleModel.query().where('enabled', true)
+    return rows.map((row) => this.toDomain(row))
+  }
+
   async save(schedule: MissionSchedule): Promise<void> {
     await MissionScheduleModel.updateOrCreate(
       { id: schedule.id.value },

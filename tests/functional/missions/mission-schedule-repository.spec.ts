@@ -65,4 +65,55 @@ test.group('MissionScheduleRepositoryImplementation', (group) => {
     await repo.delete(schedule.id)
     assert.isNull(await repo.findById(schedule.id))
   })
+
+  test('findEnabled excludes disabled schedules from the database', async ({ assert }) => {
+    const repo = new MissionScheduleRepositoryImplementation()
+
+    const user = await UserModel.create({
+      firebaseUid: 'firebase-uid-mission-schedule-enabled',
+      firstname: 'Test',
+      lastname: 'User',
+      email: 'mission-schedule-enabled@example.com',
+      role: UserRole.USER,
+    })
+
+    const dog = await RobotDogModel.create({
+      id: randomUUID(),
+      serialNumber: 'SN-MISSION-SCHEDULE-002',
+      key: 'MissionScheduleDogKey456',
+      name: 'PatrolDog2',
+      state: RobotDogState.IDLE,
+      batteryLevel: 90,
+    })
+
+    const mission = await MissionModel.create({
+      id: randomUUID(),
+      name: 'Patrol 2',
+      userId: user.id,
+    })
+
+    const enabledSchedule = MissionSchedule.create(
+      MissionId.fromString(mission.id),
+      RobotDogId.fromString(dog.id),
+      [3],
+      9,
+      0
+    )
+    const disabledSchedule = MissionSchedule.create(
+      MissionId.fromString(mission.id),
+      RobotDogId.fromString(dog.id),
+      [5],
+      10,
+      0
+    )
+    disabledSchedule.disable()
+
+    await repo.save(enabledSchedule)
+    await repo.save(disabledSchedule)
+
+    const result = await repo.findEnabled()
+
+    assert.lengthOf(result, 1)
+    assert.equal(result[0].id.value, enabledSchedule.id.value)
+  })
 })

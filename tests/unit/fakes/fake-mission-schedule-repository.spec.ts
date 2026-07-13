@@ -23,4 +23,22 @@ test.group('FakeMissionScheduleRepository', () => {
     await repo.delete(schedule.id)
     assert.isNull(await repo.findById(schedule.id))
   })
+
+  test('findEnabled returns only schedules that are enabled', async ({ assert }) => {
+    const repo = new FakeMissionScheduleRepository()
+    const missionId = MissionId.generate()
+    const robotDogId = RobotDogId.generate()
+
+    const enabledSchedule = MissionSchedule.create(missionId, robotDogId, [2], 10, 0)
+    const disabledSchedule = MissionSchedule.create(missionId, robotDogId, [3], 11, 0)
+    disabledSchedule.disable()
+
+    await repo.save(enabledSchedule)
+    await repo.save(disabledSchedule)
+
+    const result = await repo.findEnabled()
+
+    assert.lengthOf(result, 1)
+    assert.equal(result[0].id.value, enabledSchedule.id.value)
+  })
 })

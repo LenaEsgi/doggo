@@ -13,6 +13,10 @@ export class FakeMissionScheduleRepository implements MissionScheduleRepository 
     return this.storedSchedules.filter((schedule) => schedule.missionId.value === missionId)
   }
 
+  async findEnabled(): Promise<MissionSchedule[]> {
+    return this.storedSchedules.filter((schedule) => schedule.enabled)
+  }
+
   async save(schedule: MissionSchedule): Promise<void> {
     const index = this.storedSchedules.findIndex((existing) => existing.id.equals(schedule.id))
     if (index >= 0) {

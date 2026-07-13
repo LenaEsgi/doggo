@@ -4,6 +4,7 @@ import { type MissionScheduleId } from '#app/modules/missions/domain/value-objec
 export abstract class MissionScheduleRepository {
   abstract findById(id: MissionScheduleId): Promise<MissionSchedule | null>
   abstract findByMission(missionId: string): Promise<MissionSchedule[]>
+  abstract findEnabled(): Promise<MissionSchedule[]>
   abstract save(schedule: MissionSchedule): Promise<void>
   abstract delete(id: MissionScheduleId): Promise<void>
 }
