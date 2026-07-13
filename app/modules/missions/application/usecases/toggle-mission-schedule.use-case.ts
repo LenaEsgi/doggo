@@ -19,6 +19,10 @@ export class ToggleMissionScheduleUseCase {
       throw new MissionScheduleNotFoundError(dto.id)
     }
 
+    if (schedule.missionId.value !== dto.missionId) {
+      throw new MissionScheduleNotFoundError(dto.id)
+    }
+
     if (dto.enabled) {
       schedule.enable()
     } else {

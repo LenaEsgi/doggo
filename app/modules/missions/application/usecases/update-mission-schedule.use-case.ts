@@ -19,6 +19,10 @@ export class UpdateMissionScheduleUseCase {
       throw new MissionScheduleNotFoundError(dto.id)
     }
 
+    if (schedule.missionId.value !== dto.missionId) {
+      throw new MissionScheduleNotFoundError(dto.id)
+    }
+
     schedule.update(dto.daysOfWeek, dto.hour, dto.minute)
 
     await this.missionScheduleRepository.save(schedule)

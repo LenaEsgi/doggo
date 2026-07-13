@@ -15,6 +15,7 @@ export default class UpdateMissionScheduleController {
     await this.updateUseCase.execute(
       new UpdateMissionScheduleDto(
         params.scheduleId,
+        params.missionId,
         payload.daysOfWeek,
         payload.hour,
         payload.minute

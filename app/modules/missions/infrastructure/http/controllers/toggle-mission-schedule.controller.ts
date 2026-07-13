@@ -13,7 +13,7 @@ export default class ToggleMissionScheduleController {
 
     const payload = await request.validateUsing(ToggleMissionScheduleValidator)
     await this.toggleUseCase.execute(
-      new ToggleMissionScheduleDto(params.scheduleId, payload.enabled)
+      new ToggleMissionScheduleDto(params.scheduleId, params.missionId, payload.enabled)
     )
 
     return response.ok({ message: 'Mission schedule toggled successfully' })

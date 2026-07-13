@@ -10,7 +10,9 @@ export default class DestroyMissionScheduleController {
   public async handle({ params, response, bouncer }: HttpContext) {
     await bouncer.with('MissionPolicy').authorize('manageSchedule', params.missionId)
 
-    await this.destroyUseCase.execute(new DestroyMissionScheduleDto(params.scheduleId))
+    await this.destroyUseCase.execute(
+      new DestroyMissionScheduleDto(params.scheduleId, params.missionId)
+    )
 
     return response.status(200)
   }

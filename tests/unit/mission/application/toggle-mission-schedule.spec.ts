@@ -18,21 +18,23 @@ test.group('ToggleMissionScheduleUseCase', (group) => {
   })
 
   test('disables an enabled schedule', async ({ assert }) => {
-    const schedule = MissionSchedule.create(MissionId.generate(), RobotDogId.generate(), [4], 12, 45)
+    const missionId = MissionId.generate()
+    const schedule = MissionSchedule.create(missionId, RobotDogId.generate(), [4], 12, 45)
     await repo.save(schedule)
 
-    await useCase.execute(new ToggleMissionScheduleDto(schedule.id.value, false))
+    await useCase.execute(new ToggleMissionScheduleDto(schedule.id.value, missionId.value, false))
 
     const updated = await repo.findById(schedule.id)
     assert.isFalse(updated?.enabled)
   })
 
   test('re-enables a disabled schedule', async ({ assert }) => {
-    const schedule = MissionSchedule.create(MissionId.generate(), RobotDogId.generate(), [4], 12, 45)
+    const missionId = MissionId.generate()
+    const schedule = MissionSchedule.create(missionId, RobotDogId.generate(), [4], 12, 45)
     schedule.disable()
     await repo.save(schedule)
 
-    await useCase.execute(new ToggleMissionScheduleDto(schedule.id.value, true))
+    await useCase.execute(new ToggleMissionScheduleDto(schedule.id.value, missionId.value, true))
 
     const updated = await repo.findById(schedule.id)
     assert.isTrue(updated?.enabled)
@@ -40,7 +42,27 @@ test.group('ToggleMissionScheduleUseCase', (group) => {
 
   test('rejects when the schedule does not exist', async ({ assert }) => {
     await assert.rejects(
-      () => useCase.execute(new ToggleMissionScheduleDto(MissionScheduleId.generate().value, true)),
+      () =>
+        useCase.execute(
+          new ToggleMissionScheduleDto(
+            MissionScheduleId.generate().value,
+            MissionId.generate().value,
+            true
+          )
+        ),
+      MissionScheduleNotFoundError
+    )
+  })
+
+  test('rejects when the schedule belongs to a different mission', async ({ assert }) => {
+    const schedule = MissionSchedule.create(MissionId.generate(), RobotDogId.generate(), [4], 12, 45)
+    await repo.save(schedule)
+
+    await assert.rejects(
+      () =>
+        useCase.execute(
+          new ToggleMissionScheduleDto(schedule.id.value, MissionId.generate().value, true)
+        ),
       MissionScheduleNotFoundError
     )
   })

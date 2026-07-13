@@ -18,10 +18,13 @@ test.group('UpdateMissionScheduleUseCase', (group) => {
   })
 
   test('updates days, hour and minute of an existing schedule', async ({ assert }) => {
-    const schedule = MissionSchedule.create(MissionId.generate(), RobotDogId.generate(), [4], 12, 45)
+    const missionId = MissionId.generate()
+    const schedule = MissionSchedule.create(missionId, RobotDogId.generate(), [4], 12, 45)
     await repo.save(schedule)
 
-    await useCase.execute(new UpdateMissionScheduleDto(schedule.id.value, [1, 3], 8, 0))
+    await useCase.execute(
+      new UpdateMissionScheduleDto(schedule.id.value, missionId.value, [1, 3], 8, 0)
+    )
 
     const updated = await repo.findById(schedule.id)
     assert.deepEqual(updated?.daysOfWeek, [1, 3])
@@ -31,7 +34,29 @@ test.group('UpdateMissionScheduleUseCase', (group) => {
 
   test('rejects when the schedule does not exist', async ({ assert }) => {
     await assert.rejects(
-      () => useCase.execute(new UpdateMissionScheduleDto(MissionScheduleId.generate().value, [1], 8, 0)),
+      () =>
+        useCase.execute(
+          new UpdateMissionScheduleDto(
+            MissionScheduleId.generate().value,
+            MissionId.generate().value,
+            [1],
+            8,
+            0
+          )
+        ),
+      MissionScheduleNotFoundError
+    )
+  })
+
+  test('rejects when the schedule belongs to a different mission', async ({ assert }) => {
+    const schedule = MissionSchedule.create(MissionId.generate(), RobotDogId.generate(), [4], 12, 45)
+    await repo.save(schedule)
+
+    await assert.rejects(
+      () =>
+        useCase.execute(
+          new UpdateMissionScheduleDto(schedule.id.value, MissionId.generate().value, [1, 3], 8, 0)
+        ),
       MissionScheduleNotFoundError
     )
   })
