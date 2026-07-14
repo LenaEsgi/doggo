@@ -4,6 +4,7 @@ import OwnershipRevokedEvent from '#users/ownerships/domain/events/ownership-rev
 import RobotTelemetryReceivedEvent from '#dogs/domain/events/robot-telemetry-received.event'
 import MissionStepUpdatedEvent from '#app/modules/missions/domain/events/mission-step-updated.event'
 import MissionCompletedEvent from '#app/modules/missions/domain/events/mission-completed.event'
+import MissionScheduleSkippedEvent from '#app/modules/missions/domain/events/mission-schedule-skipped.event'
 import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 
 const DogAssignedListener = () =>
@@ -27,6 +28,9 @@ const MissionStepUpdatedSseListener = () =>
 const MissionCompletedSseListener = () =>
   import('#app/modules/notifications/application/listeners/mission-completed-sse.listener')
 
+const MissionScheduleSkippedSseListener = () =>
+  import('#app/modules/notifications/application/listeners/mission-schedule-skipped-sse.listener')
+
 const DogStateChangedSseListener = () =>
   import('#app/modules/notifications/application/listeners/dog-state-changed-sse.listener')
 
@@ -35,4 +39,5 @@ emitter.listen(OwnershipRevokedEvent, [DogRevokedListener, DogRevokedSseListener
 emitter.listen(RobotTelemetryReceivedEvent, [RobotTelemetrySseListener])
 emitter.listen(MissionStepUpdatedEvent, [MissionStepUpdatedSseListener])
 emitter.listen(MissionCompletedEvent, [MissionCompletedSseListener])
+emitter.listen(MissionScheduleSkippedEvent, [MissionScheduleSkippedSseListener])
 emitter.listen(DogStateChangedEvent, [DogStateChangedSseListener])

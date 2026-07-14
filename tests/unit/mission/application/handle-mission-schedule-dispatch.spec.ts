@@ -16,6 +16,8 @@ import Action from '#app/modules/actions/domain/action.entity'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { MissionScheduleFiringOutcome } from '#app/modules/missions/domain/enums/mission-schedule-firing-outcome'
+import emitter from '@adonisjs/core/services/emitter'
+import MissionScheduleSkippedEvent from '#app/modules/missions/domain/events/mission-schedule-skipped.event'
 
 test.group('HandleMissionScheduleDispatchUseCase', (group) => {
   let dogRepo: FakeRobotDogRepository
@@ -28,6 +30,7 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
   let firingRepo: FakeMissionScheduleFiringRepository
   let startMissionUseCase: StartMissionCommandUseCase
   let useCase: HandleMissionScheduleDispatchUseCase
+  let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     dogRepo = new FakeRobotDogRepository()
@@ -49,8 +52,11 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
     useCase = new HandleMissionScheduleDispatchUseCase(
       startMissionUseCase,
       scheduleRepo,
-      firingRepo
+      firingRepo,
+      missionRepo
     )
+    events = emitter.fake()
+    return () => emitter.restore()
   })
 
   test('starts the mission and records DISPATCHED with the run id on success', async ({
@@ -87,6 +93,7 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
     assert.lengthOf(firingRepo.outcomes, 1)
     assert.equal(firingRepo.outcomes[0].outcome, MissionScheduleFiringOutcome.DISPATCHED)
     assert.isNotNull(firingRepo.outcomes[0].missionRunId)
+    events.assertEmittedCount(MissionScheduleSkippedEvent, 0)
   })
 
   test('records ROBOT_BUSY and does not throw when the robot already has an active run', async ({
@@ -133,6 +140,16 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
 
     const stillEnabled = await scheduleRepo.findById(schedule.id)
     assert.isTrue(stillEnabled?.enabled)
+
+    events.assertEmitted(
+      MissionScheduleSkippedEvent,
+      ({ data }) =>
+        data.missionScheduleId === schedule.id.value &&
+        data.missionId === missionB.id.value &&
+        data.robotDogId === dog.id.value &&
+        data.userId === missionB.userId &&
+        data.missionName === missionB.name
+    )
   })
 
   test('records ERROR and auto-disables the schedule when the robot is no longer assigned to the mission', async ({
@@ -166,5 +183,6 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
 
     const disabled = await scheduleRepo.findById(schedule.id)
     assert.isFalse(disabled?.enabled)
+    events.assertEmittedCount(MissionScheduleSkippedEvent, 0)
   })
 })
