@@ -1096,8 +1096,14 @@ import { type MissionScheduleFiringOutcome } from '#app/modules/missions/domain/
 
 export class MissionScheduleFiringRepositoryImplementation implements MissionScheduleFiringRepository {
   async tryClaim(missionScheduleId: string, firedForMinute: DateTime): Promise<boolean> {
+    // db.table(...).insert(...) returns Lucid's InsertQueryBuilder, which does NOT expose
+    // .onConflict() (verified against @adonisjs/lucid@22 source: its InsertQueryBuilder only
+    // forwards table/withSchema/returning/insert/multiInsert/debug/timeout, nothing else).
+    // db.knexQuery() returns the underlying raw Knex query builder, which does support
+    // .onConflict().ignore() natively — use that escape hatch for this one query.
     const rows = await db
-      .table('mission_schedule_firings')
+      .knexQuery()
+      .from('mission_schedule_firings')
       .insert({
         id: randomUUID(),
         mission_schedule_id: missionScheduleId,
