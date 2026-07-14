@@ -1,5 +1,6 @@
 import { inject } from '@adonisjs/core'
 import { type DateTime } from 'luxon'
+import logger from '@adonisjs/core/services/logger'
 import { MissionScheduleRepository } from '#app/modules/missions/domain/contracts/mission-schedule.repository'
 import { MissionScheduleFiringRepository } from '#app/modules/missions/domain/contracts/mission-schedule-firing.repository'
 import { MissionScheduleDispatchQueue } from '#app/modules/missions/domain/contracts/mission-schedule-dispatch-queue'
@@ -21,17 +22,24 @@ export class DispatchDueMissionSchedulesUseCase {
     const due = schedules.filter((schedule) => schedule.isDueAt(nowLocal))
 
     for (const schedule of due) {
-      const claimed = await this.firingRepository.tryClaim(schedule.id.value, firedForMinute)
-      if (!claimed) {
-        continue
-      }
+      try {
+        const claimed = await this.firingRepository.tryClaim(schedule.id.value, firedForMinute)
+        if (!claimed) {
+          continue
+        }
 
-      await this.dispatchQueue.enqueue({
-        scheduleId: schedule.id.value,
-        missionId: schedule.missionId.value,
-        dogId: schedule.robotDogId.value,
-        firedForMinute: firedForMinute.toISO()!,
-      })
+        await this.dispatchQueue.enqueue({
+          scheduleId: schedule.id.value,
+          missionId: schedule.missionId.value,
+          dogId: schedule.robotDogId.value,
+          firedForMinute: firedForMinute.toISO()!,
+        })
+      } catch (error) {
+        logger.error(
+          { scheduleId: schedule.id.value, err: error },
+          'DispatchDueMissionSchedulesUseCase: failed to claim/enqueue schedule, continuing with remaining due schedules'
+        )
+      }
     }
   }
 }

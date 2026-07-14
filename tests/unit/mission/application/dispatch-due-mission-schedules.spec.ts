@@ -85,4 +85,38 @@ test.group('DispatchDueMissionSchedulesUseCase', (group) => {
 
     assert.lengthOf(dispatchQueue.enqueued, 0)
   })
+
+  test('isolates a per-schedule failure so remaining due schedules are still claimed and enqueued', async ({
+    assert,
+  }) => {
+    const failingSchedule = MissionSchedule.create(
+      MissionId.generate(),
+      RobotDogId.generate(),
+      [4],
+      13,
+      45
+    )
+    const healthySchedule = MissionSchedule.create(
+      MissionId.generate(),
+      RobotDogId.generate(),
+      [4],
+      13,
+      45
+    )
+    await scheduleRepo.save(failingSchedule)
+    await scheduleRepo.save(healthySchedule)
+
+    const originalTryClaim = firingRepo.tryClaim.bind(firingRepo)
+    firingRepo.tryClaim = async (scheduleId, minute) => {
+      if (scheduleId === failingSchedule.id.value) {
+        throw new Error('simulated claim failure')
+      }
+      return originalTryClaim(scheduleId, minute)
+    }
+
+    await assert.doesNotReject(() => useCase.execute(thursdayNoonUtc))
+
+    assert.lengthOf(dispatchQueue.enqueued, 1)
+    assert.equal(dispatchQueue.enqueued[0].scheduleId, healthySchedule.id.value)
+  })
 })

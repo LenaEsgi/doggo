@@ -19,7 +19,7 @@ export class HandleMissionScheduleDispatchUseCase {
   ) {}
 
   async execute(payload: MissionScheduleDispatchPayload): Promise<void> {
-    const firedForMinute = DateTime.fromISO(payload.firedForMinute)
+    const firedForMinute = DateTime.fromISO(payload.firedForMinute, { zone: 'utc' })
 
     try {
       const run = await this.startMissionUseCase.execute(payload.dogId, payload.missionId)
