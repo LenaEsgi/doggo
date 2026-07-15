@@ -7,11 +7,11 @@ import MissionScheduleTransformer from '#app/modules/missions/infrastructure/htt
 export default class ListMissionSchedulesController {
   constructor(private listUseCase: ListMissionSchedulesByMissionUseCase) {}
 
-  public async handle({ params, response, bouncer }: HttpContext) {
+  public async handle({ params, serialize, bouncer }: HttpContext) {
     await bouncer.with('MissionPolicy').authorize('manageSchedule', params.id)
 
     const schedules = await this.listUseCase.execute(params.id)
 
-    return response.ok(MissionScheduleTransformer.transform(schedules))
+    return serialize(MissionScheduleTransformer.transform(schedules))
   }
 }
