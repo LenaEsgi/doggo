@@ -1,0 +1,35 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: doggo_mqtt
+    restart: unless-stopped
+    ports:
+      - '8883:8883' # public (TLS) — robots ; ouvert par firewall à 0.0.0.0/0
+      - '1883:1883' # privé — backend ; fermé sur Internet par firewall
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/passwordfile:/mosquitto/config/passwordfile
+      - ./mosquitto/aclfile:/mosquitto/config/aclfile
+      - ./mosquitto/certs:/mosquitto/certs
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+
+  redis:
+    image: redis:7-alpine
+    container_name: doggo_redis
+    restart: unless-stopped
+    command: ['redis-server', '--requirepass', '${REDIS_PASSWORD}', '--appendonly', 'yes']
+    ports:
+      - '6379:6379' # privé — backend ; fermé sur Internet par firewall
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  mosquitto_data:
+  mosquitto_logs:
+  redis_data:
