@@ -10,4 +10,4 @@ COPY --from=builder /app/build ./
 RUN npm ci --omit=dev
 COPY swagger.yml .
 EXPOSE 3333
-CMD ["sh", "-c", "node bin/server.js"]
+CMD ["sh", "-c", "node ace migration:run --force && node bin/server.js"]
