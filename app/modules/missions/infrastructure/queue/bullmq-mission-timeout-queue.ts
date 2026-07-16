@@ -7,7 +7,7 @@ export const MISSION_TIMEOUT_QUEUE_NAME = 'mission-timeouts'
 export class BullMqMissionTimeoutQueue extends MissionTimeoutQueue {
   private readonly queue: Queue
 
-  constructor(connection: { host: string; port: number }) {
+  constructor(connection: { host: string; port: number; password?: string }) {
     super()
     this.queue = new Queue(MISSION_TIMEOUT_QUEUE_NAME, { connection })
   }

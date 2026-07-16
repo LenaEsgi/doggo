@@ -8,6 +8,7 @@ import { type MissionScheduleDispatchPayload } from '#app/modules/missions/domai
 export function startMissionScheduleDispatchWorker(connection: {
   host: string
   port: number
+  password?: string
 }): Worker {
   const worker = new Worker(
     MISSION_SCHEDULE_DISPATCH_QUEUE_NAME,

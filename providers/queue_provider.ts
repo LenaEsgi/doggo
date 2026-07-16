@@ -9,24 +9,28 @@ export default class QueueProvider {
   constructor(protected app: ApplicationService) {}
 
   register() {
+    const connection = {
+      host: env.get('REDIS_HOST'),
+      port: env.get('REDIS_PORT'),
+      password: env.get('REDIS_PASSWORD'),
+    }
+
     this.app.container.singleton(MissionTimeoutQueue, () => {
-      return new BullMqMissionTimeoutQueue({
-        host: env.get('REDIS_HOST'),
-        port: env.get('REDIS_PORT'),
-      })
+      return new BullMqMissionTimeoutQueue(connection)
     })
 
     this.app.container.singleton(MissionScheduleDispatchQueue, () => {
-      return new BullMqMissionScheduleDispatchQueue({
-        host: env.get('REDIS_HOST'),
-        port: env.get('REDIS_PORT'),
-      })
+      return new BullMqMissionScheduleDispatchQueue(connection)
     })
   }
 
   async ready() {
     if (this.app.getEnvironment() === 'web') {
-      const connection = { host: env.get('REDIS_HOST'), port: env.get('REDIS_PORT') }
+      const connection = {
+        host: env.get('REDIS_HOST'),
+        port: env.get('REDIS_PORT'),
+        password: env.get('REDIS_PASSWORD'),
+      }
 
       const { startMissionTimeoutWorker } = await import(
         '#app/modules/missions/infrastructure/queue/bullmq-mission-timeout.worker'

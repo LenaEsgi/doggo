@@ -10,6 +10,7 @@ const TICK_SCHEDULER_ID = 'mission-schedule-tick'
 export async function registerMissionScheduleTick(connection: {
   host: string
   port: number
+  password?: string
 }): Promise<void> {
   const queue = new Queue(MISSION_SCHEDULE_TICK_QUEUE_NAME, { connection })
   await queue.upsertJobScheduler(TICK_SCHEDULER_ID, { pattern: '* * * * *' }, { name: 'tick' })
@@ -18,6 +19,7 @@ export async function registerMissionScheduleTick(connection: {
 export function startMissionScheduleTickWorker(connection: {
   host: string
   port: number
+  password?: string
 }): Worker {
   const worker = new Worker(
     MISSION_SCHEDULE_TICK_QUEUE_NAME,
