@@ -34,7 +34,7 @@ async function seedActiveRun() {
   const dog = await RobotDogModel.create({
     id: randomUUID(),
     serialNumber: `SN-LOCK-${unique}`,
-    key: 'LockDogRepositoryKey123',
+    key: `LockDogRepositoryKey-${unique}`,
     name: 'LockDog',
     state: RobotDogState.IDLE,
     batteryLevel: 75,
