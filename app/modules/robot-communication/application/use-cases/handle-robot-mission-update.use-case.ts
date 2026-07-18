@@ -1,5 +1,4 @@
 import { inject } from '@adonisjs/core'
-import logger from '@adonisjs/core/services/logger'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
@@ -13,55 +12,60 @@ import MissionCompletedEvent from '#app/modules/missions/domain/events/mission-c
 import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 import { type RobotMissionUpdate } from '#app/modules/robot-communication/domain/types/robot-mission-update.type'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
+import { UnitOfWork } from '#app/modules/share/domain/contracts/unit-of-work'
 
 @inject()
 export class HandleRobotMissionUpdateUseCase {
   constructor(
     private readonly missionRepository: MissionRepository,
     private readonly missionRunRepository: MissionRunRepository,
-    private readonly dogRepository: RobotDogRepository
+    private readonly dogRepository: RobotDogRepository,
+    private readonly uow: UnitOfWork
   ) {}
 
   async execute(dogId: string, update: RobotMissionUpdate): Promise<void> {
-    const run = await this.missionRunRepository.findActiveRun(update.missionId, dogId)
-
-    if (!run) {
-      logger.warn(
-        { missionId: update.missionId, dogId },
-        'HandleRobotMissionUpdate: no active run found'
+    const outcome = await this.uow.run(async (tx) => {
+      const run = await this.missionRunRepository.findActiveRunForUpdate(
+        update.missionId,
+        dogId,
+        tx
       )
-      return
-    }
+      if (!run || run.status === MissionRunStatus.PENDING) return null
 
-    if (run.status === MissionRunStatus.PENDING) {
-      logger.warn(
-        { missionId: update.missionId, dogId },
-        'HandleRobotMissionUpdate: run encore PENDING, step update ignoré'
-      )
-      return
-    }
+      const stepId = MissionStepId.fromString(update.stepId)
 
-    const stepId = MissionStepId.fromString(update.stepId)
+      let transitioned: MissionStepId[]
+      if (update.status === MissionStepStatus.COMPLETED) {
+        transitioned = run.completeStep(stepId)
+      } else if (update.status === MissionStepStatus.FAILED) {
+        transitioned = run.failStep(stepId)
+      } else {
+        return null
+      }
 
-    let completedStepIds: MissionStepId[]
-    if (update.status === MissionStepStatus.COMPLETED) {
-      completedStepIds = run.completeStep(stepId)
-    } else if (update.status === MissionStepStatus.FAILED) {
-      completedStepIds = run.failStep(stepId)
-    } else {
-      return
-    }
+      await this.missionRunRepository.save(run, tx)
 
-    await this.missionRunRepository.save(run)
+      if (run.isTerminal) {
+        const dog = await this.dogRepository.findById(RobotDogId.fromString(dogId))
+        if (dog) {
+          dog.applyStateFromRobot(RobotDogState.IDLE)
+          await this.dogRepository.save(dog, tx)
+        }
+      }
+
+      return { runStatus: run.status, transitioned, terminal: run.isTerminal }
+    })
+
+    if (!outcome) return
 
     // un event par étape passée à COMPLETED (cible + trous rattrapés)
-    for (const completedStepId of completedStepIds) {
+    for (const id of outcome.transitioned) {
       void MissionStepUpdatedEvent.dispatch(
         update.missionId,
         dogId,
-        completedStepId.value,
+        id.value,
         MissionStepStatus.COMPLETED,
-        run.status
+        outcome.runStatus
       )
     }
 
@@ -72,25 +76,29 @@ export class HandleRobotMissionUpdateUseCase {
         dogId,
         update.stepId,
         MissionStepStatus.FAILED,
-        run.status
+        outcome.runStatus
       )
     }
 
-    if (!run.isTerminal) {
+    if (!outcome.terminal) {
       return
     }
 
-    const dog = await this.dogRepository.findById(RobotDogId.fromString(dogId))
-    if (dog) {
-      dog.applyStateFromRobot(RobotDogState.IDLE)
-      await this.dogRepository.save(dog)
-      void DogStateChangedEvent.dispatch(dog.id.toString(), dog.state)
-    }
+    void DogStateChangedEvent.dispatch(dogId, RobotDogState.IDLE)
 
-    if (run.status === MissionRunStatus.SUCCESS || run.status === MissionRunStatus.FAILED) {
+    if (
+      outcome.runStatus === MissionRunStatus.SUCCESS ||
+      outcome.runStatus === MissionRunStatus.FAILED
+    ) {
       const mission = await this.missionRepository.findById(MissionId.fromString(update.missionId))
       if (mission) {
-        void MissionCompletedEvent.dispatch(mission.userId, update.missionId, mission.name, dogId, run.status)
+        void MissionCompletedEvent.dispatch(
+          mission.userId,
+          update.missionId,
+          mission.name,
+          dogId,
+          outcome.runStatus
+        )
       }
     }
   }
