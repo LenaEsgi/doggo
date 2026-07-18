@@ -3,6 +3,7 @@ import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import type { Tx } from '#app/modules/share/domain/contracts/unit-of-work'
 
 export class FakeRobotDogRepository extends RobotDogRepository {
   public storedDogs: RobotDog[] = []
@@ -39,7 +40,7 @@ export class FakeRobotDogRepository extends RobotDogRepository {
     }
   }
 
-  async save(dog: RobotDog) {
+  async save(dog: RobotDog, _tx?: Tx) {
     const existingIndex = this.storedDogs.findIndex((d) => d.id === dog.id)
     if (existingIndex >= 0) {
       this.storedDogs[existingIndex] = dog

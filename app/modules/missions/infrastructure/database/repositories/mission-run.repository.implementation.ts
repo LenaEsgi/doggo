@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
 import db from '@adonisjs/lucid/services/db'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { type MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
+import type { Tx } from '#app/modules/share/domain/contracts/unit-of-work'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import MissionRunStep from '#app/modules/missions/domain/entities/mission-run-step.entity'
 import MissionRunModel from '#app/modules/missions/infrastructure/database/models/mission-run'
@@ -16,6 +18,23 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
       .where('mission_id', missionId)
       .where('robot_dog_id', robotDogId)
       .whereIn('status', ACTIVE_STATUSES)
+      .preload('runSteps')
+      .first()
+
+    return row ? this.toDomain(row) : null
+  }
+
+  async findActiveRunForUpdate(
+    missionId: string,
+    robotDogId: string,
+    tx: Tx
+  ): Promise<MissionRun | null> {
+    const trx = tx as unknown as TransactionClientContract
+    const row = await MissionRunModel.query({ client: trx })
+      .where('mission_id', missionId)
+      .where('robot_dog_id', robotDogId)
+      .whereIn('status', ACTIVE_STATUSES)
+      .forUpdate()
       .preload('runSteps')
       .first()
 
@@ -41,31 +60,37 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
     return row !== null
   }
 
-  async save(run: MissionRun): Promise<void> {
+  async save(run: MissionRun, tx?: Tx): Promise<void> {
+    const write = async (trx: TransactionClientContract) => {
+      await MissionRunModel.updateOrCreate(
+        { id: run.id.value },
+        {
+          missionId: run.missionId.value,
+          robotDogId: run.robotDogId.value,
+          status: run.status,
+          startedAt: DateTime.fromJSDate(run.startedAt),
+          endedAt: run.endedAt ? DateTime.fromJSDate(run.endedAt) : null,
+        },
+        { client: trx }
+      )
+
+      const stepsData = run.runSteps.map((step) => ({
+        id: step.id.value,
+        missionRunId: run.id.value,
+        missionStepId: step.stepId.value,
+        status: step.status,
+        sequenceOrder: step.order,
+      }))
+
+      await MissionRunStepModel.updateOrCreateMany('id', stepsData, { client: trx })
+    }
+
     try {
-      await db.transaction(async (trx) => {
-        await MissionRunModel.updateOrCreate(
-          { id: run.id.value },
-          {
-            missionId: run.missionId.value,
-            robotDogId: run.robotDogId.value,
-            status: run.status,
-            startedAt: DateTime.fromJSDate(run.startedAt),
-            endedAt: run.endedAt ? DateTime.fromJSDate(run.endedAt) : null,
-          },
-          { client: trx }
-        )
-
-        const stepsData = run.runSteps.map((step) => ({
-          id: step.id.value,
-          missionRunId: run.id.value,
-          missionStepId: step.stepId.value,
-          status: step.status,
-          sequenceOrder: step.order,
-        }))
-
-        await MissionRunStepModel.updateOrCreateMany('id', stepsData, { client: trx })
-      })
+      if (tx) {
+        await write(tx as unknown as TransactionClientContract)
+      } else {
+        await db.transaction(write)
+      }
     } catch (error) {
       if (this.isUniqueActiveRunViolation(error)) {
         throw new InvalidMissionAlreadyRunningError()

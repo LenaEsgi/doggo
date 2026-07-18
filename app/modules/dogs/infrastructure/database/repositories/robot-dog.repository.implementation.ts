@@ -6,6 +6,8 @@ import { DateTime } from 'luxon'
 import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import type { Tx } from '#app/modules/share/domain/contracts/unit-of-work'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export class RobotDogRepositoryImplementation implements RobotDogRepository {
   async findById(id: RobotDogId): Promise<RobotDog | null> {
@@ -84,7 +86,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
     }
   }
 
-  async save(dog: RobotDog): Promise<void> {
+  async save(dog: RobotDog, tx?: Tx): Promise<void> {
     await RobotDogModel.updateOrCreate(
       { id: dog.id.value },
       {
@@ -94,7 +96,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
         state: dog.state,
         batteryLevel: dog.batteryLevel,
         lastHeartbeat: DateTime.fromJSDate(dog.lastHeartbeat),
-      }
+      },
+      tx ? { client: tx as unknown as TransactionClientContract } : undefined
     )
   }
 
