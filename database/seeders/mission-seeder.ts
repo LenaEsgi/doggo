@@ -7,12 +7,21 @@ import { UserFactory } from '#database/factories/user-factory'
 import ActionModel from '#app/modules/actions/infrastructure/database/models/action'
 import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
 import UserModel from '#users/infrastructure/database/models/user'
+import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 
 export default class extends BaseSeeder {
   async run() {
+    // ensureActions() reste un upsert (schema potentiellement mis à jour à chaque run),
+    // mais les 12 missions de démo ne doivent être créées qu'une seule fois.
+    const actions = await this.ensureActions()
+
+    const existingMission = await MissionModel.query().first()
+    if (existingMission) {
+      return
+    }
+
     const users = await this.ensureUsers()
     const robotDogs = await this.ensureRobotDogs()
-    const actions = await this.ensureActions()
 
     const missions = await Promise.all(
       Array.from({ length: 12 }).map(async (_, index) => {

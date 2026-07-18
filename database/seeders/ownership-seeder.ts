@@ -8,10 +8,13 @@ import UserModel from '#users/infrastructure/database/models/user'
 
 export default class extends BaseSeeder {
   async run() {
+    const existing = await OwnershipModel.query().first()
+    if (existing) {
+      return
+    }
+
     const users = await this.ensureUsers()
     const robotDogs = await this.ensureRobotDogs()
-
-    await OwnershipModel.query().delete()
 
     const ownerships = []
     const pairCount = Math.min(12, users.length * robotDogs.length)
