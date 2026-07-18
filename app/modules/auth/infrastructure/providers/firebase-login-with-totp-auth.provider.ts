@@ -1,7 +1,6 @@
 import { type LoginWithTotpAuthProvider } from '#auth/domain/contracts/login.with.totp.auth.provider'
 import type { AuthTokens } from '#auth/domain/types/auth.tokens'
 import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase-auth.base'
-import { FirebaseAuthProviderError } from '#auth/domain/exceptions/firebase-auth-provider.error'
 
 export class FirebaseLoginWithTotpAuthProvider
   extends FirebaseAuthProviderBase
@@ -12,27 +11,28 @@ export class FirebaseLoginWithTotpAuthProvider
     mfaEnrollmentId: string,
     verificationCode: string
   ): Promise<AuthTokens> {
-    const start = await this.request<{ totpSessionInfo?: { sessionInfo: string } }>(
-      'v2/accounts/mfaSignIn:start',
-      {
-        mfaPendingCredential: pendingCredential,
-        mfaEnrollmentId,
-        totpVerificationInfo: {},
-      }
-    )
-
-    const sessionInfo = start.totpSessionInfo?.sessionInfo
-
-    if (!sessionInfo) {
-      throw new FirebaseAuthProviderError('MFA_SESSION_MISSING')
-    }
-
-    return this.request<AuthTokens>('v2/accounts/mfaSignIn:finalize', {
+    const result = await this.request<AuthTokens>('v2/accounts/mfaSignIn:finalize', {
       mfaPendingCredential: pendingCredential,
+      mfaEnrollmentId,
       totpVerificationInfo: {
-        sessionInfo,
         verificationCode,
       },
     })
+
+    // Firebase mfaSignIn:finalize only returns idToken + refreshToken,
+    // extract localId and email from the JWT payload
+    if (!result.localId || !result.email) {
+      try {
+        const payload = JSON.parse(
+          Buffer.from(result.idToken.split('.')[1], 'base64url').toString('utf8')
+        ) as { user_id?: string; sub?: string; email?: string }
+        if (!result.localId) result.localId = payload.user_id || payload.sub || ''
+        if (!result.email) result.email = payload.email || ''
+      } catch {
+        /* ignore parse errors */
+      }
+    }
+
+    return result
   }
 }

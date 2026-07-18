@@ -3,7 +3,6 @@ import { DateTime } from 'luxon'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import type { HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
 import UserModel from '#users/infrastructure/database/models/user'
-import { MissionStatus } from '#app/modules/missions/domain/enums/mission-status'
 import MissionStepModel from '#app/modules/missions/infrastructure/database/models/mission-step'
 
 export default class MissionModel extends BaseModel {
@@ -14,9 +13,6 @@ export default class MissionModel extends BaseModel {
 
   @column()
   declare name: string
-
-  @column()
-  declare status: MissionStatus
 
   @manyToMany(() => RobotDogModel, {
     pivotTable: 'mission_robot_dog',

@@ -4,7 +4,8 @@ import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository
 import { FakeRobotDogGateway } from '#tests/unit/fakes/fake-robot-dog-gateway'
 import { AssignMissionToDogUseCase } from '#app/modules/missions/application/usecases/assign-mission-to-dog.use-case'
 import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
+import { RobotAlreadyAssignedError } from '#app/modules/missions/domain/exceptions/robot-already-assigned.error'
 
 test.group('AssignMissionToDogUseCase', (group) => {
   let repo: FakeMissionRepository
@@ -31,6 +32,43 @@ test.group('AssignMissionToDogUseCase', (group) => {
     assert.equal(result.data[0].id.value, mission.id.value)
   })
 
+  test('should throw RobotAlreadyAssignedError when assigning the same robot twice', async ({
+    assert,
+  }) => {
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    const dogId = '8570f711-2895-4632-9599-281083096058'
+
+    await repo.save(mission)
+    dogGateway.addRobot(dogId)
+
+    await useCase.execute(mission.id.value, dogId)
+
+    await assert.rejects(
+      () => useCase.execute(mission.id.value, dogId),
+      RobotAlreadyAssignedError
+    )
+  })
+
+  test('should allow the same mission to be assigned to two different robots', async ({
+    assert,
+  }) => {
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    const dogA = '8570f711-2895-4632-9599-281083096058'
+    const dogB = 'a1c1b6c2-4e2a-4b0b-9c3d-9f3a1e2d4c5b'
+
+    await repo.save(mission)
+    dogGateway.addRobot(dogA)
+    dogGateway.addRobot(dogB)
+
+    await useCase.execute(mission.id.value, dogA)
+    await useCase.execute(mission.id.value, dogB)
+
+    const resultA = await repo.listByRobotDog(dogA, { page: 1, limit: 10 })
+    const resultB = await repo.listByRobotDog(dogB, { page: 1, limit: 10 })
+    assert.lengthOf(resultA.data, 1)
+    assert.lengthOf(resultB.data, 1)
+  })
+
   test('should throw RobotDogNotFoundError when robot does not exist', async ({ assert }) => {
     const mission = Mission.create('Bridge patrol', 'user-1')
     await repo.save(mission)
@@ -51,4 +89,3 @@ test.group('AssignMissionToDogUseCase', (group) => {
     )
   })
 })
-

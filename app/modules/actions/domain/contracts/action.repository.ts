@@ -1,4 +1,4 @@
-import type { ActionId } from '../value-objects/action-id.js'
+import type { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import type { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import type Action from '#app/modules/actions/domain/action.entity'

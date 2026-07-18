@@ -2,35 +2,47 @@ import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
 import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/user-ownership.gateway'
+import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
+import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
 
 @inject()
 export class AdoptRobotDogUseCase {
   constructor(
     private readonly userGateway: UserOwnershipGateway,
     private readonly robotDogGateway: RobotDogOwnershipGateway,
+    private readonly ownershipReadRepository: OwnershipReadRepository,
     private readonly ownershipWriteRepository: OwnershipWriteRepository
   ) {}
 
-  async execute(userId: string, robotDogId: string): Promise<void> {
-    logger.info({ userId, robotDogId }, 'AdoptRobotDogUseCase started')
+  async execute(userId: string, serialNumber: string): Promise<void> {
+    logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase started')
 
     const userExists = await this.userGateway.existsById(userId)
     if (!userExists) {
-      logger.warn({ userId, robotDogId }, 'User not found in AdoptRobotDogUseCase')
+      logger.warn({ userId, serialNumber }, 'User not found in AdoptRobotDogUseCase')
       throw new InvalidUserNotFoundError(userId)
     }
 
-    const robotDogExists = await this.robotDogGateway.existsById(robotDogId)
-    if (!robotDogExists) {
-      logger.warn({ userId, robotDogId }, 'RobotDog not found in AdoptRobotDogUseCase')
-      throw new RobotDogNotFoundError(robotDogId)
+    const robotDog = await this.robotDogGateway.findBySerialNumber(serialNumber)
+    if (!robotDog) {
+      logger.warn({ userId, serialNumber }, 'RobotDog not found in AdoptRobotDogUseCase')
+      throw new RobotDogNotFoundError(serialNumber)
     }
 
-    await this.ownershipWriteRepository.adopt(userId, robotDogId, new Date())
+    const alreadyOwner = await this.ownershipReadRepository.isOwner(userId, robotDog.id.value)
+    if (alreadyOwner) {
+      logger.warn({ userId, serialNumber }, 'User is already an owner of this robot dog')
+      throw new OwnershipAlreadyExistsError(userId, robotDog.id.value)
+    }
 
-    logger.info({ userId, robotDogId }, 'AdoptRobotDogUseCase completed successfully')
+    await this.ownershipWriteRepository.adopt(userId, robotDog.id.value, new Date())
+
+    void OwnershipAssignedEvent.dispatch(userId, robotDog.id.value)
+
+    logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase completed successfully')
   }
 }

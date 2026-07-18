@@ -1,6 +1,6 @@
 import { type RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
-import RobotDogModel from '../models/robot-dog.js'
+import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
 import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
@@ -44,8 +44,19 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
     )
   }
 
-  async findAll({ page = 1, limit = 20 }: FindAllOptions = {}): Promise<PaginatedResult<RobotDog>> {
-    const paginated = await RobotDogModel.query().paginate(page, limit)
+  async findAll({ page = 1, limit = 20, search }: FindAllOptions = {}): Promise<
+    PaginatedResult<RobotDog>
+  > {
+    const query = RobotDogModel.query()
+
+    if (search) {
+      const term = `%${search}%`
+      query.where((q) => {
+        q.whereILike('name', term).orWhereILike('serial_number', term)
+      })
+    }
+
+    const paginated = await query.paginate(page, limit)
 
     const data = paginated
       .all()

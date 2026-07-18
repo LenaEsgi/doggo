@@ -1,36 +1,62 @@
-import type Mission from '#app/modules/missions/domain/entities/mission.entity'
+import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { type MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { type MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 
 export class FakeMissionRepository implements MissionRepository {
   public storedMissions: Mission[] = []
   private readonly missionDogs = new Map<string, Set<string>>()
 
   async findById(id: MissionId): Promise<Mission | null> {
-    return this.storedMissions.find((m) => m.id.equals(id)) || null
+    const stored = this.storedMissions.find((m) => m.id.equals(id))
+    if (!stored) return null
+
+    const robotDogIds = [...(this.missionDogs.get(id.value) ?? [])].map((dogId) =>
+      RobotDogId.fromString(dogId)
+    )
+
+    return Mission.rehydrate(
+      stored.id.value,
+      stored.name,
+      stored.userId,
+      stored.missionSteps,
+      robotDogIds
+    )
   }
 
-  async index(options?: PaginationDto) {
+  async findAll(options?: PaginationDto) {
     const page = options?.page ?? 1
-    const perPage = options?.limit ?? 10
+    const perPage = options?.limit ?? 20
 
     const total = this.storedMissions.length
     const lastPage = Math.ceil(total / perPage)
     const start = (page - 1) * perPage
-    const end = start + perPage
-    const paginatedData = this.storedMissions.slice(start, end)
 
     return {
-      data: paginatedData,
-      meta: {
-        total,
-        perPage,
-        currentPage: page,
-        firstPage: 1,
-        lastPage,
-      },
+      data: this.storedMissions.slice(start, start + perPage),
+      meta: { total, perPage, currentPage: page, firstPage: 1, lastPage },
     }
+  }
+
+  async findByUser(userId: string, options?: PaginationDto) {
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 20
+
+    const filtered = this.storedMissions.filter((m) => m.userId === userId)
+    const total = filtered.length
+    const lastPage = Math.ceil(total / perPage)
+    const start = (page - 1) * perPage
+
+    return {
+      data: filtered.slice(start, start + perPage),
+      meta: { total, perPage, currentPage: page, firstPage: 1, lastPage },
+    }
+  }
+
+  async isOwner(userId: string, missionId: string): Promise<boolean> {
+    const mission = this.storedMissions.find((m) => m.id.value === missionId)
+    return mission?.userId === userId
   }
 
   async save(mission: Mission): Promise<void> {
@@ -91,5 +117,9 @@ export class FakeMissionRepository implements MissionRepository {
     }
 
     this.missionDogs.set(missionId, linkedDogs)
+  }
+
+  async isAssignedToDog(missionId: string, robotDogId: string): Promise<boolean> {
+    return this.missionDogs.get(missionId)?.has(robotDogId) ?? false
   }
 }

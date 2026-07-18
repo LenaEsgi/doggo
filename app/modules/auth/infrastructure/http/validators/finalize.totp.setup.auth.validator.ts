@@ -1,6 +1,6 @@
 import vine from '@vinejs/vine'
 
-export const finalizeTotpSetupAuthValidator = vine.compile(
+export const finalizeTotpSetupAuthValidator = vine.create(
   vine.object({
     sessionInfo: vine.string().trim().minLength(1),
     verificationCode: vine

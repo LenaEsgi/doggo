@@ -6,7 +6,9 @@ import RemoveMissionStep from '#app/modules/missions/application/usecases/remove
 export default class DestroyMissionStepController {
   constructor(private removeMissionStep: RemoveMissionStep) {}
 
-  public async handle({ params, response }: HttpContext) {
+  public async handle({ params, response, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('removeStep', params.missionId)
+
     await this.removeMissionStep.execute({
       missionId: params.missionId,
       stepId: params.stepId,

@@ -9,24 +9,53 @@ on:
       - master
       - dev
 
+env:
+  NODE_VERSION: '22'
+
 jobs:
-  linter:
+  install:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node (exemple)
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node_modules
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+  linter:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Run ESLint
         run: npm run lint
 
   test:
+    needs: install
     runs-on: ubuntu-latest
 
     services:
@@ -48,18 +77,22 @@ jobs:
       APP_KEY: ${{ secrets.ADONIS_APP_KEY }}
       FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
       FIREBASE_SERVICE_ACCOUNT_KEYS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEYS }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node (exemple)
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install dependencies
-        run: npm install
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - run: cp .env.ci.test .env
 

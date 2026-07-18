@@ -5,6 +5,8 @@ import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/applicat
 import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/user-ownership.gateway'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
 @inject()
 export class ListUserRobotDogsUseCase {
@@ -14,7 +16,10 @@ export class ListUserRobotDogsUseCase {
     private readonly ownershipReadRepository: OwnershipReadRepository
   ) {}
 
-  async execute(userId: string): Promise<RobotDogReferenceDto[]> {
+  async execute(
+    userId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<RobotDogReferenceDto>> {
     logger.info({ userId }, 'ListUserRobotDogsUseCase started')
 
     const userExists = await this.userGateway.existsById(userId)
@@ -23,13 +28,17 @@ export class ListUserRobotDogsUseCase {
       throw new InvalidUserNotFoundError(userId)
     }
 
-    const robotDogIds = await this.ownershipReadRepository.findActiveDogIdsByUserId(userId)
-    const robotDogs = await this.robotDogGateway.findByIds(robotDogIds)
-    const usersCountByRobotDogId =
-      await this.ownershipReadRepository.countActiveUsersByRobotDogIds(robotDogIds)
+    const { data: robotDogIds, meta } = await this.ownershipReadRepository.findActiveDogIdsByUserId(
+      userId,
+      options
+    )
+    const [robotDogs, usersCountByRobotDogId] = await Promise.all([
+      this.robotDogGateway.findByIds(robotDogIds),
+      this.ownershipReadRepository.countActiveUsersByRobotDogIds(robotDogIds),
+    ])
     const robotDogsById = new Map(robotDogs.map((robotDog) => [robotDog.id.value, robotDog]))
 
-    const result = robotDogIds.flatMap((robotDogId) => {
+    const data = robotDogIds.flatMap((robotDogId) => {
       const robotDog = robotDogsById.get(robotDogId)
       if (!robotDog) {
         return []
@@ -43,7 +52,7 @@ export class ListUserRobotDogsUseCase {
       ]
     })
 
-    logger.info({ userId, count: result.length }, 'ListUserRobotDogsUseCase completed successfully')
-    return result
+    logger.info({ userId, count: data.length }, 'ListUserRobotDogsUseCase completed successfully')
+    return { data, meta }
   }
 }

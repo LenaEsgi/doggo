@@ -1,7 +1,7 @@
-import { RobotDogRepository } from '../../domain/contracts/robot-dog.repository.js'
-import { UpdateRobotDogDto } from '../DTO/update-robot-dog.dto.js'
-import { RobotDogId } from '../../domain/value-objects/robot-dog-id.js'
-import { RobotDogNotFoundError } from '../../domain/exceptions/robot-dog-not-found.error.js'
+import { RobotDogRepository } from '#app/modules/dogs/domain/contracts/robot-dog.repository'
+import { UpdateRobotDogDto } from '#app/modules/dogs/application/DTO/update-robot-dog.dto'
+import { RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
+import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 

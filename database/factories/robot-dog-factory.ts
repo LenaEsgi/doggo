@@ -16,6 +16,7 @@ function generateRandomKey(length = 18) {
 
 export const RobotDogFactory = Factory.define(RobotDogModel, ({ faker }) => {
   return {
+    id: faker.string.uuid(),
     serial_number: `SN-${faker.number.int({ min: 100000, max: 9999999999999 })}`,
     key: generateRandomKey(),
     name: faker.animal.petName(),

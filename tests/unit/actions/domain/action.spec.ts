@@ -1,5 +1,7 @@
 import { test } from '@japa/runner'
 import Action from '#app/modules/actions/domain/action.entity'
+import { InvalidActionParametersError } from '#app/modules/actions/domain/exceptions/invalid-action-parameters.error'
+import type { ActionParameterSchema } from '#app/modules/actions/domain/value-objects/action-parameter-schema'
 
 test.group('Unit | Actions | ActionEntity', () => {
   test('it should create a new action with generated ID and uppercase code', ({ assert }) => {
@@ -56,5 +58,67 @@ test.group('Unit | Actions | ActionEntity', () => {
 
     action.updateDescription(null)
     assert.isNull(action.description)
+  })
+
+  // -------------------
+  // validateParameters
+  // -------------------
+
+  const moveSchema: ActionParameterSchema = {
+    fields: [
+      {
+        name: 'distance_cm',
+        label: 'Distance',
+        type: 'number',
+        required: true,
+        unit: 'cm',
+        min: 1,
+        max: 5000,
+      },
+    ],
+  }
+
+  test('validateParameters — paramètres valides ne throw pas', ({ assert }) => {
+    const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
+    assert.doesNotThrow(() => action.validateParameters('{"distance_cm": 100}'))
+  })
+
+  test('validateParameters — champ requis absent → InvalidActionParametersError', ({ assert }) => {
+    const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
+    assert.throws(() => action.validateParameters('{}'), InvalidActionParametersError)
+  })
+
+  test('validateParameters — mauvais type (string au lieu de number) → throw', ({ assert }) => {
+    const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
+    assert.throws(
+      () => action.validateParameters('{"distance_cm": "cent"}'),
+      InvalidActionParametersError
+    )
+  })
+
+  test('validateParameters — number en dessous du min → throw', ({ assert }) => {
+    const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
+    assert.throws(
+      () => action.validateParameters('{"distance_cm": 0}'),
+      InvalidActionParametersError
+    )
+  })
+
+  test('validateParameters — number au-dessus du max → throw', ({ assert }) => {
+    const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
+    assert.throws(
+      () => action.validateParameters('{"distance_cm": 9999}'),
+      InvalidActionParametersError
+    )
+  })
+
+  test("validateParameters — sans schema, accepte n'importe quel JSON", ({ assert }) => {
+    const action = Action.create('CUSTOM', 'Custom', 'custom', null, null)
+    assert.doesNotThrow(() => action.validateParameters('{"anything": true, "foo": 42}'))
+  })
+
+  test('validateParameters — JSON invalide → throw', ({ assert }) => {
+    const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
+    assert.throws(() => action.validateParameters('not-json'), InvalidActionParametersError)
   })
 })

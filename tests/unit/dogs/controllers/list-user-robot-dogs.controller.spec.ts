@@ -6,12 +6,20 @@ class FakeListUserRobotDogsUseCase {
   async execute() {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
 
-    return [
-      {
-        robotDog: dog,
-        usersCount: 2,
+    return {
+      data: [
+        {
+          robotDog: dog,
+          usersCount: 2,
+        },
+      ],
+      meta: {
+        total: 1,
+        perPage: 10,
+        currentPage: 1,
+        lastPage: 1,
       },
-    ]
+    }
   }
 }
 
@@ -29,6 +37,6 @@ test('ListUserRobotDogsController returns dogs list', async ({ assert }) => {
   } as any)
 
   assert.equal(out.status, 200)
-  assert.lengthOf(out.body.dogs, 1)
-  assert.equal(out.body.dogs[0].users.count, 2)
+  assert.lengthOf(out.body.data, 1)
+  assert.equal(out.body.data[0].users.count, 2)
 })

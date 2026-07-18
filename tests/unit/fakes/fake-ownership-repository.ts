@@ -1,5 +1,7 @@
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import type { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
+import type { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
 export class FakeOwnershipRepository
   extends OwnershipReadRepository
@@ -32,11 +34,59 @@ export class FakeOwnershipRepository
     )
   }
 
-  async findActiveDogIdsByUserId(userId: string): Promise<string[]> {
-    return this.userToDogs[userId] ?? []
+  async findActiveDogIdsByUserId(
+    userId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const allDogIds = this.userToDogs[userId] ?? []
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 20
+    const start = (page - 1) * perPage
+    const data = allDogIds.slice(start, start + perPage)
+    const total = allDogIds.length
+    const lastPage = Math.max(1, Math.ceil(total / perPage))
+
+    return {
+      data,
+      meta: {
+        total,
+        perPage,
+        currentPage: page,
+        firstPage: 1,
+        lastPage,
+      },
+    }
   }
 
-  async findActiveUserIdsByRobotDogId(robotDogId: string): Promise<string[]> {
+  async findActiveUserIdsByRobotDogId(
+    robotDogId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const allUserIds = this.dogToUsers[robotDogId] ?? []
+    const page = options?.page ?? 1
+    const perPage = options?.limit ?? 10
+    const start = (page - 1) * perPage
+    const data = allUserIds.slice(start, start + perPage)
+    const total = allUserIds.length
+    const lastPage = Math.max(1, Math.ceil(total / perPage))
+
+    return {
+      data,
+      meta: {
+        total,
+        perPage,
+        currentPage: page,
+        firstPage: 1,
+        lastPage,
+      },
+    }
+  }
+
+  async isOwner(userId: string, robotDogId: string): Promise<boolean> {
+    return (this.userToDogs[userId] ?? []).includes(robotDogId)
+  }
+
+  async findAllActiveUserIdsByRobotDogId(robotDogId: string): Promise<string[]> {
     return this.dogToUsers[robotDogId] ?? []
   }
 

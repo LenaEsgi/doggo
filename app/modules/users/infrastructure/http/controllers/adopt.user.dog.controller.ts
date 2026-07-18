@@ -10,15 +10,18 @@ import {
 export default class AdoptUserDogController {
   constructor(private readonly useCase: AdoptRobotDogUseCase) {}
 
-  async handle({ request, response, logger }: HttpContext): Promise<void> {
+  async handle({ request, response, logger, bouncer }: HttpContext): Promise<void> {
     const { id } = await request.validateUsing(manageUserDogsParamsValidator, {
       data: request.params(),
     })
-    const { robotDogId } = await request.validateUsing(manageUserDogsBodyValidator)
 
-    logger.info({ userId: id, robotDogId }, 'AdoptUserDogController called')
-    await this.useCase.execute(id, robotDogId)
-    logger.info({ userId: id, robotDogId }, 'AdoptUserDogController completed successfully')
+    await bouncer.with('UserPolicy').authorize('adopt', id)
+
+    const { serialNumber } = await request.validateUsing(manageUserDogsBodyValidator)
+
+    logger.info({ userId: id, serialNumber }, 'AdoptUserDogController called')
+    await this.useCase.execute(id, serialNumber)
+    logger.info({ userId: id, serialNumber }, 'AdoptUserDogController completed successfully')
 
     response.ok({
       message: 'RobotDog adopted successfully',

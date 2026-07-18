@@ -7,7 +7,9 @@ import { MoveMissionStepUseCase } from '#app/modules/missions/application/usecas
 export default class MoveMissionStepController {
   constructor(private moveMissionStep: MoveMissionStepUseCase) {}
 
-  public async handle({ params, request, response }: HttpContext) {
+  public async handle({ params, request, response, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('moveStep', params.missionId)
+
     const payload = await request.validateUsing(MoveMissionStepValidator)
 
     const fullPayload = { ...payload, missionId: params.missionId, stepId: params.stepId }

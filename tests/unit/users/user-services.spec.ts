@@ -1,5 +1,7 @@
 import { test } from '@japa/runner'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
+import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import type { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { IndexUserUseCase } from '#users/application/usecases/index-user.use-case'
 import { ShowUserUseCase } from '#users/application/usecases/show-user.use-case'
 import { UpdateUserUseCase } from '#users/application/usecases/update-user.use-case'
@@ -26,8 +28,21 @@ class FakeUserReadRepository extends UserReadRepository {
     return this.users.find((user) => user.firebaseUid === firebaseUid) ?? null
   }
 
-  async findAll(): Promise<User[]> {
-    return this.users
+  async findAll(options?: { page: number; limit: number }): Promise<PaginatedResult<User>> {
+    const page = options?.page ?? 1
+    const limit = options?.limit ?? 25
+    const start = (page - 1) * limit
+    const data = this.users.slice(start, start + limit)
+    return {
+      data,
+      meta: {
+        total: this.users.length,
+        perPage: limit,
+        currentPage: page,
+        firstPage: 1,
+        lastPage: Math.max(1, Math.ceil(this.users.length / limit)),
+      },
+    }
   }
 }
 
@@ -50,11 +65,42 @@ class FakeOwnershipReadRepository extends OwnershipReadRepository {
     return {}
   }
 
-  async findActiveDogIdsByUserId(_userId: string): Promise<string[]> {
-    return []
+  async findActiveDogIdsByUserId(
+    _userId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const perPage = options?.limit ?? 20
+    const currentPage = options?.page ?? 1
+    return {
+      data: [],
+      meta: { total: 0, perPage, currentPage, firstPage: 1, lastPage: 1 },
+    }
   }
 
-  async findActiveUserIdsByRobotDogId(_robotDogId: string): Promise<string[]> {
+  async findActiveUserIdsByRobotDogId(
+    _robotDogId: string,
+    options?: PaginationDto
+  ): Promise<PaginatedResult<string>> {
+    const perPage = options?.limit ?? 10
+    const currentPage = options?.page ?? 1
+
+    return {
+      data: [],
+      meta: {
+        total: 0,
+        perPage,
+        currentPage,
+        firstPage: 1,
+        lastPage: 1,
+      },
+    }
+  }
+
+  async isOwner(_userId: string, _robotDogId: string): Promise<boolean> {
+    return false
+  }
+
+  async findAllActiveUserIdsByRobotDogId(_robotDogId: string): Promise<string[]> {
     return []
   }
 }
@@ -87,9 +133,10 @@ test.group('User use cases', () => {
       new FakeOwnershipReadRepository({ '1': 2 })
     )
 
-    const result = await useCase.execute()
-    assert.equal(result[0].user.id, users[0].id)
-    assert.equal(result[0].dogsCount, 2)
+    const result = await useCase.execute({ page: 1, limit: 25 })
+    assert.equal(result.data[0].user.id, users[0].id)
+    assert.equal(result.data[0].dogsCount, 2)
+    assert.equal(result.meta.total, 1)
   })
 
   test('ShowUserUseCase throws when user does not exist', async ({ assert }) => {

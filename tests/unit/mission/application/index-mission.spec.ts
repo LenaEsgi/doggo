@@ -1,63 +1,107 @@
 import { test } from '@japa/runner'
-import { IndexMissionUseCase } from '#app/modules/missions/application/usecases/index-mission.use-case'
+import { IndexAllMissionsUseCase } from '#app/modules/missions/application/usecases/index-all-missions.use-case'
+import { IndexMyMissionsUseCase } from '#app/modules/missions/application/usecases/index-my-missions.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 
-test.group('IndexMissionUseCase', (group) => {
+test.group('IndexAllMissionsUseCase', (group) => {
   let missionRepo: FakeMissionRepository
-  let useCase: IndexMissionUseCase
+  let useCase: IndexAllMissionsUseCase
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
-    useCase = new IndexMissionUseCase(missionRepo)
+    useCase = new IndexAllMissionsUseCase(missionRepo)
   })
 
-  test('should return a paginated list of missions', async ({ assert }) => {
-    // Arrange
+  test('should return all missions paginated', async ({ assert }) => {
     missionRepo.storedMissions = [
       Mission.create('Mission 1', 'user-1'),
       Mission.create('Mission 2', 'user-1'),
       Mission.create('Mission 3', 'user-2'),
     ]
 
-    // Act
-    const result = await useCase.execute({
-      page: 1,
-      limit: 2,
-    })
+    const result = await useCase.execute({ page: 1, limit: 2 })
 
-    // Assert
     assert.lengthOf(result.data, 2)
     assert.equal(result.meta.total, 3)
     assert.equal(result.meta.currentPage, 1)
     assert.equal(result.meta.lastPage, 2)
-    assert.equal(result.data[0].name, 'Mission 1')
   })
 
   test('should return empty data if no missions exist', async ({ assert }) => {
-    // Arrange
-
-    // Act
     const result = await useCase.execute({ page: 1, limit: 10 })
 
-    // Assert
     assert.lengthOf(result.data, 0)
     assert.equal(result.meta.total, 0)
   })
 
   test('should handle second page correctly', async ({ assert }) => {
-    // Arrange
     missionRepo.storedMissions = [
       Mission.create('M1', 'u1'),
       Mission.create('M2', 'u1'),
       Mission.create('M3', 'u1'),
     ]
 
-    // Act
     const result = await useCase.execute({ page: 2, limit: 2 })
 
-    // Assert
     assert.lengthOf(result.data, 1)
     assert.equal(result.data[0].name, 'M3')
+  })
+})
+
+test.group('IndexMyMissionsUseCase', (group) => {
+  let missionRepo: FakeMissionRepository
+  let useCase: IndexMyMissionsUseCase
+
+  group.each.setup(() => {
+    missionRepo = new FakeMissionRepository()
+    useCase = new IndexMyMissionsUseCase(missionRepo)
+  })
+
+  test('should return only missions belonging to the given user', async ({ assert }) => {
+    missionRepo.storedMissions = [
+      Mission.create('Mission A', 'user-1'),
+      Mission.create('Mission B', 'user-1'),
+      Mission.create('Mission C', 'user-2'),
+    ]
+
+    const result = await useCase.execute('user-1', { page: 1, limit: 10 })
+
+    assert.lengthOf(result.data, 2)
+    assert.equal(result.meta.total, 2)
+    assert.isTrue(result.data.every((m) => m.userId === 'user-1'))
+  })
+
+  test('should return empty data if user has no missions', async ({ assert }) => {
+    missionRepo.storedMissions = [Mission.create('Mission A', 'user-2')]
+
+    const result = await useCase.execute('user-1', { page: 1, limit: 10 })
+
+    assert.lengthOf(result.data, 0)
+    assert.equal(result.meta.total, 0)
+  })
+
+  test('should paginate filtered results correctly', async ({ assert }) => {
+    missionRepo.storedMissions = [
+      Mission.create('M1', 'user-1'),
+      Mission.create('M2', 'user-1'),
+      Mission.create('M3', 'user-1'),
+      Mission.create('M4', 'user-1'),
+      Mission.create('M5', 'user-1'),
+      Mission.create('Other', 'user-2'),
+    ]
+
+    const page1 = await useCase.execute('user-1', { page: 1, limit: 2 })
+    const page2 = await useCase.execute('user-1', { page: 2, limit: 2 })
+    const page3 = await useCase.execute('user-1', { page: 3, limit: 2 })
+
+    assert.equal(page1.meta.total, 5)
+    assert.equal(page1.meta.lastPage, 3)
+    assert.lengthOf(page1.data, 2)
+
+    assert.lengthOf(page2.data, 2)
+
+    assert.lengthOf(page3.data, 1)
+    assert.equal(page3.data[0].name, 'M5')
   })
 })

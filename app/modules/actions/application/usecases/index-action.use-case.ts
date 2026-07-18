@@ -1,4 +1,4 @@
-import { ActionRepository } from '../../domain/contracts/action.repository.js'
+import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
 import { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { inject } from '@adonisjs/core'

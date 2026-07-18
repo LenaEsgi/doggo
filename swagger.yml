@@ -8,14 +8,14 @@ servers:
   - url: http://localhost:3333
     description: Local server
 security:
-  - BearerAuth: []
+  - BearerAuth: [ ]
 paths:
-  /auth/register:
+  /api/v1/auth/register:
     post:
       tags:
         - Authentication
       summary: Create an account
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -29,12 +29,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthSuccessResponse'
-  /auth/login:
+  /api/v1/auth/login:
     post:
       tags:
         - Authentication
       summary: Login with email/password
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -50,7 +50,7 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/AuthSuccessResponse'
                   - $ref: '#/components/schemas/MfaChallengeResponse'
-  /auth/login/2fa:
+  /api/v1/auth/login/2fa:
     post:
       tags:
         - Authentication
@@ -68,12 +68,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthSuccessResponse'
-  /auth/password-reset:
+  /api/v1/auth/password-reset:
     post:
       tags:
         - Authentication
       summary: Send password reset email
-      security: []
+      security: [ ]
       requestBody:
         required: true
         content:
@@ -87,7 +87,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
-  /auth/2fa/setup:
+  /api/v1/auth/2fa/setup:
     post:
       tags:
         - Authentication
@@ -99,7 +99,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TotpSetupResponse'
-  /auth/2fa/verify:
+  /api/v1/auth/2fa/verify:
     post:
       tags:
         - Authentication
@@ -117,7 +117,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TotpVerifyResponse'
-  /auth/2fa/enrollments:
+  /api/v1/auth/2fa/enrollments:
     post:
       tags:
         - Authentication
@@ -129,7 +129,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EnrollmentsResponse'
-  /auth/2fa:
+  /api/v1/auth/2fa:
     delete:
       tags:
         - Authentication
@@ -147,7 +147,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TotpVerifyResponse'
-  /auth/account:
+  /api/v1/auth/account:
     delete:
       tags:
         - Authentication
@@ -159,7 +159,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
-  /users:
+  /api/v1/users:
     get:
       tags:
         - Users
@@ -171,7 +171,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsersListResponse'
-  /users/{id}:
+  /api/v1/users/{id}:
     get:
       tags:
         - Users
@@ -226,7 +226,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dogs/users/{id}:
+  /api/v1/dogs/users/{id}:
     get:
       tags:
         - Dogs
@@ -251,7 +251,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/{id}/dogs/adopt:
+  /api/v1/users/{id}/dogs/adopt:
     post:
       tags:
         - Users
@@ -282,7 +282,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /users/{id}/dogs/abandon:
+  /api/v1/users/{id}/dogs/abandon:
     post:
       tags:
         - Users
@@ -313,7 +313,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dogs:
+  /api/v1/dogs:
     get:
       tags:
         - Dogs
@@ -362,7 +362,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dogs/{id}:
+  /api/v1/dogs/{id}:
     get:
       tags:
         - Dogs
@@ -439,7 +439,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
-  /users/dogs/{id}:
+  /api/v1/users/dogs/assign:
+    post:
+      tags:
+        - Users
+      summary: Assign a user to a robot dog
+      description: |-
+        Allows an authenticated owner to add another user to a robot dog they own.
+        The caller must have an active ownership of the target robot dog.
+        Admins bypass the ownership check.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignUserDogRequest'
+      responses:
+        '200':
+          description: User assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          description: Missing or invalid Bearer token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Caller does not own this robot dog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Robot dog or target user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Target user is already an owner of this robot dog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/users/dogs/{id}:
     get:
       tags:
         - Users
@@ -460,6 +506,433 @@ paths:
                 $ref: '#/components/schemas/RobotDogOwnersResponse'
         '404':
           description: Dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/missions:
+    post:
+      tags:
+        - Missions
+      summary: Create a mission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMissionRequest'
+      responses:
+        '201':
+          description: Mission created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMissionResponse'
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      tags:
+        - Missions
+      summary: List missions
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Missions list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionsListResponse'
+  /api/v1/missions/{id}:
+    get:
+      tags:
+        - Missions
+      summary: Get one mission by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Mission found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionResponse'
+        '404':
+          description: Mission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Missions
+      summary: Update a mission
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMissionRequest'
+      responses:
+        '200':
+          description: Mission updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Mission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Missions
+      summary: Delete a mission
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Mission deleted
+        '404':
+          description: Mission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/missions/{id}/steps:
+    post:
+      tags:
+        - Missions
+      summary: Add a step to a mission
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMissionStepRequest'
+      responses:
+        '204':
+          description: Step added
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/missions/{missionId}/steps/{stepId}:
+    put:
+      tags:
+        - Missions
+      summary: Move a step to a new position
+      parameters:
+        - in: path
+          name: missionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: stepId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveMissionStepRequest'
+      responses:
+        '200':
+          description: Step moved
+        '404':
+          description: Mission or step not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Missions
+      summary: Remove a step from a mission
+      parameters:
+        - in: path
+          name: missionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: stepId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Step removed
+        '404':
+          description: Mission or step not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/dogs/{id}/missions:
+    get:
+      tags:
+        - Missions
+      summary: List missions assigned to a dog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Dog missions list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionsListResponse'
+        '404':
+          description: Dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/dogs/{id}/assign:
+    post:
+      tags:
+        - Missions
+      summary: Assign a mission to a dog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignMissionToDogRequest'
+      responses:
+        '204':
+          description: Mission assigned
+        '404':
+          description: Dog or mission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/dogs/{id}/missions/{missionId}:
+    delete:
+      tags:
+        - Missions
+      summary: Remove a mission from a dog
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: missionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Mission removed from dog
+        '404':
+          description: Dog or mission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/actions:
+    post:
+      tags:
+        - Actions
+      summary: Create an action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActionRequest'
+      responses:
+        '201':
+          description: Action created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      tags:
+        - Actions
+      summary: List actions
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Actions list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionsListResponse'
+  /api/v1/actions/{id}:
+    get:
+      tags:
+        - Actions
+      summary: Get one action by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Action found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      tags:
+        - Actions
+      summary: Update an action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActionRequest'
+      responses:
+        '200':
+          description: Action updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Action not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Actions
+      summary: Delete an action
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Action deleted
+        '404':
+          description: Action not found
           content:
             application/json:
               schema:
@@ -559,11 +1032,10 @@ components:
     ManageUserDogRequest:
       type: object
       required:
-        - robotDogId
+        - serialNumber
       properties:
-        robotDogId:
+        serialNumber:
           type: string
-          format: uuid
     CreateRobotDogRequest:
       type: object
       required:
@@ -921,6 +1393,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+    AssignUserDogRequest:
+      type: object
+      required:
+        - robotDogId
+        - userId
+      properties:
+        robotDogId:
+          type: string
+          format: uuid
+          example: 56a39d4d-b05d-42fb-a402-6782fc66dc3d
+        userId:
+          type: string
+          format: uuid
+          example: 7b27cc5b-e591-48f2-85ba-f29f96eb9971
     ErrorResponse:
       type: object
       required:
@@ -933,3 +1419,242 @@ components:
         message:
           type: string
           example: User not found
+    MissionStep:
+      type: object
+      required:
+        - id
+        - parameters
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        parameters:
+          type: string
+        status:
+          type: string
+          example: pending
+    Mission:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - userId
+        - missionSteps
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Patrol route A
+        status:
+          type: string
+          example: pending
+        userId:
+          type: string
+          format: uuid
+        missionSteps:
+          type: array
+          items:
+            $ref: '#/components/schemas/MissionStep'
+    MissionResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Mission'
+    MissionsListResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Mission'
+        meta:
+          type: object
+          required:
+            - total
+            - perPage
+            - currentPage
+            - firstPage
+            - lastPage
+          properties:
+            total:
+              type: integer
+            perPage:
+              type: integer
+            currentPage:
+              type: integer
+            firstPage:
+              type: integer
+            lastPage:
+              type: integer
+    CreateMissionRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Patrol route A
+    CreateMissionResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 56a39d4d-b05d-42fb-a402-6782fc66dc3d
+    UpdateMissionRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Updated patrol route
+    AddMissionStepRequest:
+      type: object
+      required:
+        - actionId
+        - sequenceOrder
+        - parameters
+      properties:
+        actionId:
+          type: string
+          format: uuid
+          example: 56a39d4d-b05d-42fb-a402-6782fc66dc3d
+        sequenceOrder:
+          type: integer
+          minimum: 1
+          example: 1
+        parameters:
+          type: string
+          example: '{"speed": 1.5}'
+    MoveMissionStepRequest:
+      type: object
+      required:
+        - newOrder
+      properties:
+        newOrder:
+          type: integer
+          minimum: 1
+          example: 2
+    AssignMissionToDogRequest:
+      type: object
+      required:
+        - missionId
+      properties:
+        missionId:
+          type: string
+          format: uuid
+          example: 56a39d4d-b05d-42fb-a402-6782fc66dc3d
+    Action:
+      type: object
+      required:
+        - id
+        - code
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          example: MOVE_FORWARD
+        name:
+          type: string
+          example: Move forward
+        description:
+          type: string
+          nullable: true
+          example: Makes the robot dog move forward
+    ActionResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Action'
+    ActionsListResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+        meta:
+          type: object
+          required:
+            - total
+            - perPage
+            - currentPage
+            - firstPage
+            - lastPage
+          properties:
+            total:
+              type: integer
+            perPage:
+              type: integer
+            currentPage:
+              type: integer
+            firstPage:
+              type: integer
+            lastPage:
+              type: integer
+    CreateActionRequest:
+      type: object
+      required:
+        - name
+        - code
+        - slug
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Move forward
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: MOVE_FORWARD
+        slug:
+          type: string
+          minLength: 1
+          example: move-forward
+        description:
+          type: string
+          nullable: true
+          example: Makes the robot dog move forward
+    UpdateActionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: Move forward fast
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: move-forward-fast
+        description:
+          type: string
+          nullable: true
+          example: Makes the robot dog move forward at high speed

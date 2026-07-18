@@ -1,5 +1,5 @@
 import { UniqueEntityId } from '#app/modules/share/entities/unique-entity-id'
-import { InvalidActionIdError } from '../exceptions/invalid-action-id.error.js'
+import { InvalidActionIdError } from '#app/modules/actions/domain/exceptions/invalid-action-id.error'
 
 export class ActionId extends UniqueEntityId {
   private constructor(value: string) {

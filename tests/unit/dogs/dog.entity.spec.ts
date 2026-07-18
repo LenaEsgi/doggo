@@ -47,18 +47,18 @@ test.group('Dog Domain', (group) => {
   // ----------------------------
   // Mission
   // ----------------------------
-  test('should start mission when idle', ({ assert }) => {
-    dog.startMission()
-    assert.equal(dog.state, RobotDogState.IN_MISSION)
+  test('should pass mission validation when idle', ({ assert }) => {
+    dog.validateForMission()
+    assert.equal(dog.state, RobotDogState.IDLE)
   })
 
-  test('should not start mission if in session', ({ assert }) => {
+  test('should not pass mission validation if in session', ({ assert }) => {
     dog.startSession()
-    assert.throws(() => dog.startMission(), InvalidDogStateError)
+    assert.throws(() => dog.validateForMission(), InvalidDogStateError)
   })
 
   test('should end mission properly', ({ assert }) => {
-    dog.startMission()
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
     dog.endMission()
     assert.equal(dog.state, RobotDogState.IDLE)
   })
@@ -76,7 +76,7 @@ test.group('Dog Domain', (group) => {
   })
 
   test('should not charge if in mission', ({ assert }) => {
-    dog.startMission()
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
     assert.throws(() => dog.markCharging(), InvalidDogStateError)
   })
 
@@ -108,15 +108,15 @@ test.group('Dog Domain', (group) => {
 
   test('should throw if battery too low for mission', ({ assert }) => {
     dog.updateBatteryLevel(5)
-    assert.throws(() => dog.startMission(), BatteryTooLowError)
+    assert.throws(() => dog.validateForMission(), BatteryTooLowError)
   })
 
   // ----------------------------
   // Offline / Error
   // ----------------------------
-  test('should not start mission if offline', ({ assert }) => {
+  test('should not pass mission validation if offline', ({ assert }) => {
     dog.markOffline()
-    assert.throws(() => dog.startMission(), InvalidDogStateError)
+    assert.throws(() => dog.validateForMission(), InvalidDogStateError)
   })
 
   test('should not start session if error', ({ assert }) => {

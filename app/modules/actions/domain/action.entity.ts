@@ -1,5 +1,7 @@
 import { ActionId } from './value-objects/action-id.js'
 import { InvalidActionPropertyError } from '#app/modules/actions/domain/exceptions/invalid-action-property.error'
+import { InvalidActionParametersError } from '#app/modules/actions/domain/exceptions/invalid-action-parameters.error'
+import type { ActionParameterSchema } from '#app/modules/actions/domain/value-objects/action-parameter-schema'
 
 export default class Action {
   private constructor(
@@ -7,16 +9,25 @@ export default class Action {
     private readonly _code: string,
     private _name: string,
     private _slug: string,
-    private _description: string | null
+    private _description: string | null,
+    private _parameterSchema: ActionParameterSchema | null
   ) {}
 
   public static create(
     code: string,
     name: string,
     slug: string,
-    description: string | null
+    description: string | null,
+    parameterSchema: ActionParameterSchema | null = null
   ): Action {
-    return new Action(ActionId.generate(), code.toUpperCase(), name, slug, description ?? null)
+    return new Action(
+      ActionId.generate(),
+      code.toUpperCase(),
+      name,
+      slug,
+      description ?? null,
+      parameterSchema
+    )
   }
 
   public static rehydrate(
@@ -24,10 +35,22 @@ export default class Action {
     code: string,
     name: string,
     slug: string,
-    description: string | null
+    description: string | null,
+    parameterSchema: ActionParameterSchema | null = null
   ): Action {
-    return new Action(ActionId.fromString(id), code, name, slug, description ?? null)
+    return new Action(
+      ActionId.fromString(id),
+      code,
+      name,
+      slug,
+      description ?? null,
+      parameterSchema
+    )
   }
+
+  // -------------------
+  // Getters
+  // -------------------
 
   public get id(): ActionId {
     return this._id
@@ -49,6 +72,14 @@ export default class Action {
     return this._description
   }
 
+  public get parameterSchema(): ActionParameterSchema | null {
+    return this._parameterSchema
+  }
+
+  // -------------------
+  // Business
+  // -------------------
+
   public updateName(name: string): void {
     const cleaned = name.trim()
     if (cleaned.length < 1 || cleaned.length > 50) {
@@ -63,6 +94,62 @@ export default class Action {
 
   public updateDescription(description: string | null): void {
     this._description = description ?? null
+  }
+
+  public updateParameterSchema(schema: ActionParameterSchema | null): void {
+    this._parameterSchema = schema
+  }
+
+  /**
+   * Valide que paramsJson respecte le schema de cette action.
+   * Si l'action n'a pas de schema, tout JSON valide est accepté.
+   * Lance InvalidActionParametersError en cas d'échec.
+   */
+  public validateParameters(paramsJson: string): void {
+    if (!this._parameterSchema) return
+
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(paramsJson)
+    } catch {
+      throw new InvalidActionParametersError('parameters', 'must be valid JSON')
+    }
+
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      throw new InvalidActionParametersError('parameters', 'must be a JSON object')
+    }
+
+    const obj = parsed as Record<string, unknown>
+
+    for (const field of this._parameterSchema.fields) {
+      const value = obj[field.name]
+
+      if (field.required && (value === undefined || value === null)) {
+        throw new InvalidActionParametersError(field.name, 'is required')
+      }
+
+      if (value === undefined || value === null) continue
+
+      if (field.type === 'number') {
+        if (typeof value !== 'number') {
+          throw new InvalidActionParametersError(field.name, `must be a number`)
+        }
+        if (field.min !== undefined && value < field.min) {
+          throw new InvalidActionParametersError(field.name, `must be >= ${field.min}`)
+        }
+        if (field.max !== undefined && value > field.max) {
+          throw new InvalidActionParametersError(field.name, `must be <= ${field.max}`)
+        }
+      }
+
+      if (field.type === 'string' && typeof value !== 'string') {
+        throw new InvalidActionParametersError(field.name, 'must be a string')
+      }
+
+      if (field.type === 'boolean' && typeof value !== 'boolean') {
+        throw new InvalidActionParametersError(field.name, 'must be a boolean')
+      }
+    }
   }
 
   private validateString(value: string, fieldName: string): string {

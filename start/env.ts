@@ -23,7 +23,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring database connection
   |----------------------------------------------------------
   */
-  DB_HOST: Env.schema.string({ format: 'host' }),
+  DB_HOST: Env.schema.string(),
   DB_PORT: Env.schema.number(),
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
@@ -31,4 +31,35 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   FIREBASE_API_KEY: Env.schema.string(),
   FIREBASE_SERVICE_ACCOUNT_KEYS: Env.schema.string.optional(),
+  SEED_ARTHUR_FIREBASE_UID: Env.schema.string.optional(),
+
+  RESEND_API_KEY: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring frontend URLs
+  |----------------------------------------------------------
+  */
+  FRONTEND_URL: Env.schema.string({ format: 'url', tld: false }),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring MQTT broker connection
+  |----------------------------------------------------------
+  */
+  MQTT_HOST: Env.schema.string(),
+  MQTT_PORT: Env.schema.number(),
+  MQTT_USERNAME: Env.schema.string.optional(),
+  MQTT_PASSWORD: Env.schema.string.optional(),
+  MQTT_USE_TLS: Env.schema.boolean.optional(),
+  MQTT_CA_PATH: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring Redis (BullMQ queue)
+  |----------------------------------------------------------
+  */
+  REDIS_HOST: Env.schema.string({ format: 'host' }),
+  REDIS_PORT: Env.schema.number(),
+  REDIS_PASSWORD: Env.schema.string.optional(),
 })

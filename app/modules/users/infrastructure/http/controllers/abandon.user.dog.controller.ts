@@ -2,7 +2,7 @@ import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import { AbandonRobotDogUseCase } from '#app/modules/users/ownerships/application/usecases/abandon-robot-dog.use-case'
 import {
-  manageUserDogsBodyValidator,
+  manageUserDogsBodyValidatorForAbandon,
   manageUserDogsParamsValidator,
 } from '#users/infrastructure/http/validators/manage.user.dogs.validator'
 
@@ -10,11 +10,14 @@ import {
 export default class AbandonUserDogController {
   constructor(private readonly useCase: AbandonRobotDogUseCase) {}
 
-  async handle({ request, response, logger }: HttpContext): Promise<void> {
+  async handle({ request, response, logger, bouncer }: HttpContext): Promise<void> {
     const { id } = await request.validateUsing(manageUserDogsParamsValidator, {
       data: request.params(),
     })
-    const { robotDogId } = await request.validateUsing(manageUserDogsBodyValidator)
+
+    await bouncer.with('UserPolicy').authorize('abandon', id)
+
+    const { robotDogId } = await request.validateUsing(manageUserDogsBodyValidatorForAbandon)
 
     logger.info({ userId: id, robotDogId }, 'AbandonUserDogController called')
     await this.useCase.execute(id, robotDogId)

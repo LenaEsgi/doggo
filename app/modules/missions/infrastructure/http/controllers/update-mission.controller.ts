@@ -7,7 +7,9 @@ import { UpdateMissionUseCase } from '#app/modules/missions/application/usecases
 export default class UpdateMissionController {
   constructor(private updateMissionUseCase: UpdateMissionUseCase) {}
 
-  async handle({ request, params, response }: HttpContext) {
+  async handle({ request, params, response, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('update', params.id)
+
     const payload = await request.validateUsing(UpdateMissionValidator)
 
     await this.updateMissionUseCase.execute({
@@ -15,6 +17,6 @@ export default class UpdateMissionController {
       name: payload.name,
     })
 
-    response.ok
+    response.ok({ message: 'Mission updated successfully' })
   }
 }

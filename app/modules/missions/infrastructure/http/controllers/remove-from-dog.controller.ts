@@ -5,7 +5,11 @@ import { RemoveMissionToDogUseCase } from '#app/modules/missions/application/use
 @inject()
 export default class RemoveFromDogController {
   constructor(private removeFromDogController: RemoveMissionToDogUseCase) {}
-  public async handle({ params }: HttpContext) {
+  public async handle({ params, bouncer, response }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('removeFromDog', params.id, params.missionId)
+
     await this.removeFromDogController.execute(params.missionId, params.id)
+
+    return response.noContent()
   }
 }

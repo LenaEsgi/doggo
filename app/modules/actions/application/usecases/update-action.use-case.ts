@@ -1,5 +1,5 @@
-import { ActionRepository } from '../../domain/contracts/action.repository.js'
-import { UpdateActionDto } from '../dto/update-action.dto.js'
+import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
+import { UpdateActionDto } from '#app/modules/actions/application/dto/update-action.dto'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
@@ -26,6 +26,9 @@ export class UpdateActionUseCase {
 
     if (dto.description !== undefined) {
       action.updateDescription(dto.description)
+    }
+    if (dto.parameterSchema !== undefined) {
+      action.updateParameterSchema(dto.parameterSchema ?? null)
     }
     // 3. Save to repository
     await this.actionRepository.save(action)

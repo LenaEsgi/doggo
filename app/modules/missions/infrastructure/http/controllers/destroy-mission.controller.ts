@@ -6,7 +6,9 @@ import { DestroyMissionUseCase } from '#app/modules/missions/application/usecase
 export default class DestroyMissionController {
   constructor(private destroyMission: DestroyMissionUseCase) {}
 
-  async handle({ params, response }: HttpContext) {
+  async handle({ params, response, bouncer }: HttpContext) {
+    await bouncer.with('MissionPolicy').authorize('destroy', params.id)
+
     await this.destroyMission.execute({ id: params.id })
     return response.noContent()
   }

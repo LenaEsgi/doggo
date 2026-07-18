@@ -1,6 +1,12 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission.repository.implementation'
+import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
+import { MissionRunRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-run.repository.implementation'
+import { MissionScheduleRepository } from '#app/modules/missions/domain/contracts/mission-schedule.repository'
+import { MissionScheduleRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-schedule.repository.implementation'
+import { MissionScheduleFiringRepository } from '#app/modules/missions/domain/contracts/mission-schedule-firing.repository'
+import { MissionScheduleFiringRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-schedule-firing.repository.implementation'
 import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
 import { RobotDogGatewayImplementation } from '#app/modules/missions/infrastructure/gateways/robot-dog.gateway.implementation'
 import { UserGateway } from '#app/modules/missions/application/contracts/user.gateway'
@@ -15,6 +21,18 @@ export default class MissionProvider {
   register() {
     this.app.container.bind(MissionRepository, () => {
       return this.app.container.make(MissionRepositoryImplementation)
+    })
+
+    this.app.container.bind(MissionRunRepository, () => {
+      return this.app.container.make(MissionRunRepositoryImplementation)
+    })
+
+    this.app.container.bind(MissionScheduleRepository, () => {
+      return this.app.container.make(MissionScheduleRepositoryImplementation)
+    })
+
+    this.app.container.bind(MissionScheduleFiringRepository, () => {
+      return this.app.container.make(MissionScheduleFiringRepositoryImplementation)
     })
 
     this.app.container.bind(RobotDogGateway, () => {

@@ -3,6 +3,7 @@ import { UserRole } from '#users/domain/enums/user.role'
 import { User } from '#users/domain/user.entity'
 import UpdateUserController from '#users/infrastructure/http/controllers/update.user.controller'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import { fakeBouncer, fakeSerialize } from '#tests/unit/helpers/controller-mocks'
 
 class FakeUpdateUserUseCase {
   constructor(private readonly result: { user: User; dogsCount: number } | null) {}
@@ -51,6 +52,8 @@ test('UpdateUserController returns 200 when updated', async ({ assert }) => {
       },
     },
     logger: { info: () => {} },
+    bouncer: fakeBouncer(),
+    serialize: fakeSerialize,
   } as any)
 
   assert.equal(result.status, 200)
@@ -79,6 +82,8 @@ test('UpdateUserController returns 404 when missing', async ({ assert }) => {
           ok: () => {},
         },
         logger: { info: () => {} },
+        bouncer: fakeBouncer(),
+        serialize: fakeSerialize,
       } as any),
     InvalidUserNotFoundError
   )

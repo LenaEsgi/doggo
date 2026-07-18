@@ -1,12 +1,16 @@
 import { AddMissionStepDto } from '#app/modules/missions/application/dto/add-mission-step.dto'
-import { MissionRepository } from '../../domain/contracts/mission.repository.ts'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
+import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { inject } from '@adonisjs/core'
 
 @inject()
 export class AddMissionStepUseCase {
-  constructor(private missionRepository: MissionRepository) {}
+  constructor(
+    private missionRepository: MissionRepository,
+    private missionRunRepository: MissionRunRepository
+  ) {}
 
   async execute(dto: AddMissionStepDto): Promise<void> {
     const missionId = MissionId.fromString(dto.missionId)
@@ -16,7 +20,8 @@ export class AddMissionStepUseCase {
       throw new MissionNotFoundError(dto.missionId)
     }
 
-    mission.addStep(dto.actionId, dto.parameters)
+    const hasActiveRun = await this.missionRunRepository.hasActiveRunForMission(dto.missionId)
+    mission.addStep(dto.actionId, dto.parameters, hasActiveRun)
 
     await this.missionRepository.save(mission)
   }

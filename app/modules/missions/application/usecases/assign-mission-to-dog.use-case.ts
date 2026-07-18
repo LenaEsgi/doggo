@@ -1,10 +1,10 @@
-import { MissionRepository } from '../../domain/contracts/mission.repository.ts'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { inject } from '@adonisjs/core'
 import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
-import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-fout.error'
+import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 
 @inject()
 export class AssignMissionToDogUseCase {
@@ -23,6 +23,8 @@ export class AssignMissionToDogUseCase {
     if (!mission) {
       throw new MissionNotFoundError(missionId)
     }
+
+    mission.assignRobot(RobotDogId.fromString(dogId))
 
     await this.missionRepository.assignToDog(missionId, dogId)
   }
