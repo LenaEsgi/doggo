@@ -10,6 +10,7 @@ import { RobotDogKey } from './value-objects/robot-dog-key.js'
 export class RobotDog {
   private static readonly MIN_BATTERY_FOR_ACTIVITY = 10
   private static readonly HEARTBEAT_TIMEOUT_MS = 30_000
+  private static readonly DEFAULT_BATTERY_LEVEL = 100
 
   private constructor(
     public readonly id: RobotDogId,
@@ -21,7 +22,11 @@ export class RobotDog {
     private _lastHeartbeat: Date
   ) {}
 
-  public static create(serialNumber: string, name: string, batteryLevel: number): RobotDog {
+  public static create(
+    serialNumber: string,
+    name: string,
+    batteryLevel: number = RobotDog.DEFAULT_BATTERY_LEVEL
+  ): RobotDog {
     if (!serialNumber) {
       throw new InvalidRobotDogSerialNumberError()
     }
@@ -30,7 +35,7 @@ export class RobotDog {
       throw new InvalidRobotDogNameError(name)
     }
 
-    if (batteryLevel === undefined || batteryLevel < 0 || batteryLevel > 100) {
+    if (batteryLevel < 0 || batteryLevel > 100) {
       throw new InvalidBatteryLevelError(batteryLevel)
     }
 

@@ -22,7 +22,7 @@ export class CreateRobotDogUseCase {
       throw new RobotDogSerialNumberAlreadyExistsError(dto.serialNumber)
     }
 
-    const robotDog = RobotDog.create(dto.serialNumber, dto.name, dto.batteryLevel)
+    const robotDog = RobotDog.create(dto.serialNumber, dto.name)
 
     await this.robotDogRepository.save(robotDog)
 

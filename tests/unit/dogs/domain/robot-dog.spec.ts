@@ -18,6 +18,12 @@ test.group('RobotDog Entity', () => {
     assert.equal(dog.batteryLevel, 80)
   })
 
+  test('should default battery level to 100 when not provided', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex')
+
+    assert.equal(dog.batteryLevel, 100)
+  })
+
   test('should throw if serial number is empty', async ({ assert }) => {
     assert.throws(() => {
       RobotDog.create('', 'Rex', 80)

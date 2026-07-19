@@ -17,7 +17,6 @@ test.group('CreateRobotDogUseCase', (group) => {
     await useCase.execute({
       serialNumber: 'SN-001',
       name: 'Rex',
-      batteryLevel: 80,
     })
 
     assert.lengthOf(fakeRepo.storedDogs, 1)
@@ -26,7 +25,7 @@ test.group('CreateRobotDogUseCase', (group) => {
 
     assert.equal(savedDog.serialNumber, 'SN-001')
     assert.equal(savedDog.name, 'Rex')
-    assert.equal(savedDog.batteryLevel, 80)
+    assert.equal(savedDog.batteryLevel, 100)
   })
 
   test('should throw if serial number already exists', async ({ assert }) => {
@@ -38,7 +37,6 @@ test.group('CreateRobotDogUseCase', (group) => {
         useCase.execute({
           serialNumber: 'SN-001',
           name: 'AnotherDog',
-          batteryLevel: 70,
         }),
       RobotDogSerialNumberAlreadyExistsError
     )

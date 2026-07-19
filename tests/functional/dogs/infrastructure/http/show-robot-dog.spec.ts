@@ -16,7 +16,6 @@ test.group('GET /api/v1/dogs/:id', (group) => {
       .json({
         serialNumber: 'SN-SHOW-001',
         name: 'Rex',
-        batteryLevel: 80,
       })
     createResponse.assertStatus(201)
     const dogId = createResponse.body().id
@@ -28,7 +27,7 @@ test.group('GET /api/v1/dogs/:id', (group) => {
     assert.equal(body.id, dogId)
     assert.equal(body.serialNumber, 'SN-SHOW-001')
     assert.equal(body.name, 'Rex')
-    assert.equal(body.batteryLevel, 80)
+    assert.equal(body.batteryLevel, 100)
   })
 
   test('should return 404 if robot dog not found', async ({ client, cleanup }) => {
