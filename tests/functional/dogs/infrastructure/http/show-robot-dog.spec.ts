@@ -28,6 +28,8 @@ test.group('GET /api/v1/dogs/:id', (group) => {
     assert.equal(body.serialNumber, 'SN-SHOW-001')
     assert.equal(body.name, 'Rex')
     assert.equal(body.batteryLevel, 100)
+    assert.isString(body.key)
+    assert.lengthOf(body.key, 18)
   })
 
   test('should return 404 if robot dog not found', async ({ client, cleanup }) => {
