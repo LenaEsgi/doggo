@@ -13,6 +13,14 @@ import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/
 const ACTIVE_STATUSES = [MissionRunStatus.PENDING, MissionRunStatus.RUNNING]
 
 export class MissionRunRepositoryImplementation implements MissionRunRepository {
+  async listActiveRuns(): Promise<MissionRun[]> {
+    const rows = await MissionRunModel.query()
+      .whereIn('status', ACTIVE_STATUSES)
+      .preload('runSteps')
+
+    return rows.map((r) => this.toDomain(r))
+  }
+
   async findActiveRun(missionId: string, robotDogId: string): Promise<MissionRun | null> {
     const row = await MissionRunModel.query()
       .where('mission_id', missionId)
@@ -45,6 +53,18 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
     const row = await MissionRunModel.query()
       .where('robot_dog_id', robotDogId)
       .whereIn('status', ACTIVE_STATUSES)
+      .preload('runSteps')
+      .first()
+
+    return row ? this.toDomain(row) : null
+  }
+
+  async findActiveRunByRobotDogForUpdate(robotDogId: string, tx: Tx): Promise<MissionRun | null> {
+    const trx = tx as unknown as TransactionClientContract
+    const row = await MissionRunModel.query({ client: trx })
+      .where('robot_dog_id', robotDogId)
+      .whereIn('status', ACTIVE_STATUSES)
+      .forUpdate()
       .preload('runSteps')
       .first()
 

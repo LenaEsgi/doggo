@@ -8,6 +8,10 @@ const ACTIVE_STATUSES: MissionRunStatus[] = [MissionRunStatus.PENDING, MissionRu
 export class FakeMissionRunRepository implements MissionRunRepository {
   public runs: MissionRun[] = []
 
+  async listActiveRuns(): Promise<MissionRun[]> {
+    return this.runs.filter((r) => ACTIVE_STATUSES.includes(r.status))
+  }
+
   async findActiveRun(missionId: string, robotDogId: string): Promise<MissionRun | null> {
     return (
       this.runs.find(
@@ -33,6 +37,10 @@ export class FakeMissionRunRepository implements MissionRunRepository {
         (r) => r.robotDogId.value === robotDogId && ACTIVE_STATUSES.includes(r.status)
       ) ?? null
     )
+  }
+
+  async findActiveRunByRobotDogForUpdate(robotDogId: string, _tx: Tx): Promise<MissionRun | null> {
+    return this.findActiveRunByRobotDog(robotDogId)
   }
 
   async hasActiveRunForMission(missionId: string): Promise<boolean> {

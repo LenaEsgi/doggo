@@ -4,6 +4,7 @@ import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import type { Tx } from '#app/modules/share/domain/contracts/unit-of-work'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 
 export class FakeRobotDogRepository extends RobotDogRepository {
   public storedDogs: RobotDog[] = []
@@ -55,5 +56,11 @@ export class FakeRobotDogRepository extends RobotDogRepository {
 
   async findBySerialNumber(serialNumber: string) {
     return this.storedDogs.find((d) => d.serialNumber === serialNumber) ?? null
+  }
+
+  async findStale(threshold: Date) {
+    return this.storedDogs.filter(
+      (d) => d.lastHeartbeat < threshold && d.state !== RobotDogState.OFFLINE
+    )
   }
 }

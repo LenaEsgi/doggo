@@ -11,4 +11,5 @@ export abstract class RobotDogRepository {
   abstract save(dog: RobotDog, tx?: Tx): Promise<void>
   abstract delete(id: RobotDogId): Promise<void>
   abstract findBySerialNumber(serialNumber: string): Promise<RobotDog | null>
+  abstract findStale(threshold: Date): Promise<RobotDog[]>
 }

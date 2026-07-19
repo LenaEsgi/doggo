@@ -1,7 +1,7 @@
 import { type RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
-import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
@@ -119,6 +119,24 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       row.state as RobotDogState,
       row.batteryLevel,
       row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+    )
+  }
+
+  async findStale(threshold: Date): Promise<RobotDog[]> {
+    const rows = await RobotDogModel.query()
+      .where('last_heartbeat', '<', DateTime.fromJSDate(threshold).toSQL()!)
+      .whereNot('state', RobotDogState.OFFLINE)
+
+    return rows.map((row) =>
+      RobotDog.rehydrate(
+        row.id,
+        row.serialNumber,
+        row.key,
+        row.name,
+        row.state as RobotDogState,
+        row.batteryLevel,
+        row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+      )
     )
   }
 }
