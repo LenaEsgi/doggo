@@ -78,7 +78,25 @@ test.group('MissionAutoInterruptedSseListener', () => {
     assert.equal(repo.created[0].userId, USER_ID)
     assert.equal(repo.created[0].type, 'mission.interrupted')
     assert.equal(repo.created[0].severity, 'critical')
-    assert.deepEqual(repo.created[0].payload, { missionName: 'Patrouille' })
+    assert.deepEqual(repo.created[0].payload, {
+      missionName: 'Patrouille',
+      reason: 'ROBOT_OFFLINE',
+    })
+  })
+
+  test('transmet la reason MAX_DURATION dans le payload de la notification', async ({ assert }) => {
+    const repo = new FakeNotificationRepository()
+    const service = new NotificationService(repo, new FakeBroadcaster())
+    const listener = new MissionAutoInterruptedSseListener(service)
+
+    await listener.handle(
+      new MissionAutoInterruptedEvent(USER_ID, MISSION_ID, 'Patrouille', DOG_ID, 'MAX_DURATION')
+    )
+
+    assert.deepEqual(repo.created[0].payload, {
+      missionName: 'Patrouille',
+      reason: 'MAX_DURATION',
+    })
   })
 
   test('ne plante pas si la création de la notification échoue', async ({ assert }) => {

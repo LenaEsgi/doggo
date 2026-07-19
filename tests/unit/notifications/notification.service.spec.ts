@@ -119,4 +119,61 @@ test.group('NotificationService', () => {
       service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1')
     )
   })
+
+  test('message mission.interrupted mentionne "robot hors ligne" pour ROBOT_OFFLINE', async ({
+    assert,
+  }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster)
+
+    await service.create('user-1', 'mission.interrupted', 'critical', {
+      missionName: 'Patrouille',
+      robotDogName: 'Rex',
+      reason: 'ROBOT_OFFLINE',
+    })
+
+    assert.equal(
+      repo.created[0].message,
+      'Patrouille a été interrompue sur le robot Rex : robot hors ligne'
+    )
+  })
+
+  test('message mission.interrupted mentionne "durée maximale atteinte" pour MAX_DURATION', async ({
+    assert,
+  }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster)
+
+    await service.create('user-1', 'mission.interrupted', 'critical', {
+      missionName: 'Patrouille',
+      robotDogName: 'Rex',
+      reason: 'MAX_DURATION',
+    })
+
+    assert.equal(
+      repo.created[0].message,
+      'Patrouille a été interrompue sur le robot Rex : durée maximale atteinte'
+    )
+  })
+
+  test('les deux messages mission.interrupted sont distincts selon la reason', async ({
+    assert,
+  }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster)
+
+    await service.create('user-1', 'mission.interrupted', 'critical', {
+      missionName: 'Patrouille',
+      reason: 'ROBOT_OFFLINE',
+    })
+    await service.create('user-1', 'mission.interrupted', 'critical', {
+      missionName: 'Patrouille',
+      reason: 'MAX_DURATION',
+    })
+
+    assert.notEqual(repo.created[0].message, repo.created[1].message)
+  })
 })

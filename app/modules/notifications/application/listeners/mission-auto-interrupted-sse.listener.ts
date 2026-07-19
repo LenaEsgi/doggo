@@ -11,6 +11,7 @@ export default class MissionAutoInterruptedSseListener {
     try {
       await this.notificationService.create(event.userId, 'mission.interrupted', 'critical', {
         missionName: event.missionName,
+        reason: event.reason,
       })
       logger.info(
         { userId: event.userId, missionId: event.missionId, reason: event.reason },
