@@ -175,4 +175,25 @@ test.group('User use cases', () => {
     assert.equal(updated!.dogsCount, 3)
     assert.lengthOf(writeRepo.updated, 1)
   })
+
+  test('UpdateUserUseCase updates locale', async ({ assert }) => {
+    const existing = User.rehydrate(
+      '1',
+      'firebase-uid-1',
+      'old@mail.com',
+      'Old',
+      'Name',
+      UserRole.USER,
+      'fr'
+    )
+    const readRepo = new FakeUserReadRepository([existing])
+    const writeRepo = new FakeUserWriteRepository()
+    const ownershipReadRepository = new FakeOwnershipReadRepository({ '1': 0 })
+    const useCase = new UpdateUserUseCase(readRepo, writeRepo, ownershipReadRepository)
+
+    const updated = await useCase.execute('1', { locale: 'en' })
+
+    assert.equal(updated!.user.locale, 'en')
+    assert.equal(updated!.user.firstname, 'Old')
+  })
 })

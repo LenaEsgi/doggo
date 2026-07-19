@@ -38,7 +38,8 @@ export class UpdateUserUseCase {
       payload.email ?? current.email,
       payload.firstname ?? current.firstname,
       payload.lastname ?? current.lastname,
-      role
+      role,
+      payload.locale ?? current.locale
     )
 
     const user = await this.userWriteRepository.update(updated)

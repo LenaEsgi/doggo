@@ -76,6 +76,7 @@ export class UserRepositoryImplementation
         firstname: user.firstname,
         lastname: user.lastname,
         role: UserMapper.toPersistenceRole(user.role),
+        locale: user.locale,
       }
     )
 

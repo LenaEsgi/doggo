@@ -13,7 +13,8 @@ export class UserMapper {
       model.email,
       model.firstname,
       model.lastname,
-      role
+      role,
+      model.locale
     )
   }
 
