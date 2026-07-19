@@ -15,8 +15,8 @@ export default class UserPolicy extends BasePolicy {
     if (user?.role === UserRole.ADMIN) return true
   }
 
-  index(user: User): AuthorizerResponse {
-    return user.role === UserRole.ADMIN
+  index(_user: User): AuthorizerResponse {
+    return true
   }
 
   show(user: User, targetUserId: string): AuthorizerResponse {

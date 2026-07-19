@@ -30,4 +30,21 @@ test.group('GET /api/v1/users auth', (group) => {
     assert.equal(body.data.length, 1)
     assert.equal(body.data[0].id, auth.user.id)
   })
+
+  test('should return 200 for a non-admin user with a valid search query', async ({
+    client,
+    assert,
+    cleanup,
+  }) => {
+    const auth = await authenticateAs(cleanup, { role: UserRole.USER })
+
+    const response = await client
+      .get('/api/v1/users?search=ali')
+      .header('Authorization', auth.header)
+
+    response.assertStatus(200)
+    const body = response.body()
+    assert.exists(body.data)
+    assert.isArray(body.data)
+  })
 })
