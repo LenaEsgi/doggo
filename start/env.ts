@@ -62,4 +62,13 @@ export default await Env.create(new URL('../', import.meta.url), {
   REDIS_HOST: Env.schema.string({ format: 'host' }),
   REDIS_PORT: Env.schema.number(),
   REDIS_PASSWORD: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring robot liveness thresholds
+  |----------------------------------------------------------
+  */
+  ROBOT_OFFLINE_THRESHOLD_MS: Env.schema.number.optional(),
+  ROBOT_RUN_STALE_GRACE_MS: Env.schema.number.optional(),
+  MISSION_RUN_MAX_DURATION_MS: Env.schema.number.optional(),
 })

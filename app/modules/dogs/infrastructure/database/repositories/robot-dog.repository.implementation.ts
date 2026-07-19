@@ -1,11 +1,13 @@
 import { type RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
-import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
 import { type RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { type FindAllOptions } from '#dogs/domain/contracts/find-all-options'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import type { Tx } from '#app/modules/share/domain/contracts/unit-of-work'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 export class RobotDogRepositoryImplementation implements RobotDogRepository {
   async findById(id: RobotDogId): Promise<RobotDog | null> {
@@ -84,7 +86,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
     }
   }
 
-  async save(dog: RobotDog): Promise<void> {
+  async save(dog: RobotDog, tx?: Tx): Promise<void> {
     await RobotDogModel.updateOrCreate(
       { id: dog.id.value },
       {
@@ -94,7 +96,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
         state: dog.state,
         batteryLevel: dog.batteryLevel,
         lastHeartbeat: DateTime.fromJSDate(dog.lastHeartbeat),
-      }
+      },
+      tx ? { client: tx as unknown as TransactionClientContract } : undefined
     )
   }
 
@@ -116,6 +119,24 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       row.state as RobotDogState,
       row.batteryLevel,
       row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+    )
+  }
+
+  async findStale(threshold: Date): Promise<RobotDog[]> {
+    const rows = await RobotDogModel.query()
+      .where('last_heartbeat', '<', DateTime.fromJSDate(threshold).toSQL()!)
+      .whereNot('state', RobotDogState.OFFLINE)
+
+    return rows.map((row) =>
+      RobotDog.rehydrate(
+        row.id,
+        row.serialNumber,
+        row.key,
+        row.name,
+        row.state as RobotDogState,
+        row.batteryLevel,
+        row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+      )
     )
   }
 }

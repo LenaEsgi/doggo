@@ -2,6 +2,7 @@ import { test } from '@japa/runner'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
+import { FakeUnitOfWork } from '#tests/unit/fakes/fake-unit-of-work'
 import { HandleRobotMissionUpdateUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-mission-update.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
@@ -11,11 +12,13 @@ import { MissionStepStatus } from '#app/modules/missions/domain/enums/mission-st
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 import emitter from '@adonisjs/core/services/emitter'
 import MissionStepUpdatedEvent from '#app/modules/missions/domain/events/mission-step-updated.event'
+import MissionCompletedEvent from '#app/modules/missions/domain/events/mission-completed.event'
 
 test.group('HandleRobotMissionUpdateUseCase', (group) => {
   let missionRepo: FakeMissionRepository
   let runRepo: FakeMissionRunRepository
   let dogRepo: FakeRobotDogRepository
+  let uow: FakeUnitOfWork
   let useCase: HandleRobotMissionUpdateUseCase
   let events: ReturnType<typeof emitter.fake>
 
@@ -23,7 +26,8 @@ test.group('HandleRobotMissionUpdateUseCase', (group) => {
     missionRepo = new FakeMissionRepository()
     runRepo = new FakeMissionRunRepository()
     dogRepo = new FakeRobotDogRepository()
-    useCase = new HandleRobotMissionUpdateUseCase(missionRepo, runRepo, dogRepo)
+    uow = new FakeUnitOfWork()
+    useCase = new HandleRobotMissionUpdateUseCase(missionRepo, runRepo, dogRepo, uow)
     events = emitter.fake()
     return () => emitter.restore()
   })
@@ -198,5 +202,48 @@ test.group('HandleRobotMissionUpdateUseCase', (group) => {
     })
 
     events.assertEmittedCount(MissionStepUpdatedEvent, 0)
+  })
+
+  test("un doublon MQTT périmé (COMPLETED) arrivant après un run déjà terminé (FAILED) ne le ressuscite pas et n'émet qu'un seul MissionCompletedEvent", async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.applyStateFromRobot(RobotDogState.IN_MISSION)
+    await dogRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep('action-1', 'p1')
+    mission.addStep('action-2', 'p2')
+    mission.addStep('action-3', 'p3')
+    mission.addStep('action-4', 'p4')
+    await missionRepo.save(mission)
+
+    const stepIds = mission.getStepsInOrder().map((s) => s.id)
+    const run = MissionRun.start(mission.id, dog.id, stepIds)
+    run.confirm()
+    await runRepo.save(run)
+
+    // Le step 4 échoue : le run passe à FAILED (terminal), un seul MissionCompletedEvent part.
+    await useCase.execute(dog.id.value, {
+      missionId: mission.id.value,
+      stepId: stepIds[3].value,
+      status: MissionStepStatus.FAILED,
+    })
+
+    const afterFailure = runRepo.runs.find((r) => r.id.equals(run.id))!
+    assert.equal(afterFailure.status, MissionRunStatus.FAILED)
+    events.assertEmittedCount(MissionCompletedEvent, 1)
+
+    // Doublon MQTT périmé : un COMPLETED du step 2 arrive après coup (retry / désordre réseau).
+    await useCase.execute(dog.id.value, {
+      missionId: mission.id.value,
+      stepId: stepIds[1].value,
+      status: MissionStepStatus.COMPLETED,
+    })
+
+    const afterDuplicate = runRepo.runs.find((r) => r.id.equals(run.id))!
+    assert.equal(afterDuplicate.status, MissionRunStatus.FAILED)
+    assert.notEqual(afterDuplicate.status, MissionRunStatus.RUNNING)
+    events.assertEmittedCount(MissionCompletedEvent, 1)
   })
 })

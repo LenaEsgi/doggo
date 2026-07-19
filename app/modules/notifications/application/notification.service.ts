@@ -16,6 +16,7 @@ export type NotificationType =
   | 'mission.completed'
   | 'mission.failed'
   | 'mission.skipped'
+  | 'mission.interrupted'
 
 @inject()
 export class NotificationService {
@@ -90,6 +91,12 @@ export class NotificationService {
         return `${mission} a échoué sur le robot ${dog}`
       case 'mission.skipped':
         return `${mission} n'a pas pu démarrer : le robot ${dog} était déjà occupé`
+      case 'mission.interrupted': {
+        const reason = payload?.reason as string | undefined
+        const reasonText =
+          reason === 'ROBOT_OFFLINE' ? 'robot hors ligne' : 'durée maximale atteinte'
+        return `${mission} a été interrompue sur le robot ${dog} : ${reasonText}`
+      }
     }
   }
 
