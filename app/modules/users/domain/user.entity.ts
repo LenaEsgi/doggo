@@ -1,5 +1,7 @@
 import { UserRole } from '#users/domain/enums/user.role'
 
+export type UserLocale = 'fr' | 'en'
+
 export class User {
   private constructor(
     public readonly id: string,
@@ -7,7 +9,8 @@ export class User {
     public readonly email: string,
     private _firstname: string,
     private _lastname: string,
-    private _role: UserRole
+    private _role: UserRole,
+    private _locale: UserLocale
   ) {}
 
   public static create(
@@ -17,7 +20,7 @@ export class User {
     firstname: string,
     lastname: string
   ): User {
-    return new User(id, firebaseUid, email, firstname, lastname, UserRole.USER)
+    return new User(id, firebaseUid, email, firstname, lastname, UserRole.USER, 'fr')
   }
 
   public static rehydrate(
@@ -26,9 +29,10 @@ export class User {
     email: string,
     firstname: string,
     lastname: string,
-    role: UserRole
+    role: UserRole,
+    locale: UserLocale = 'fr'
   ): User {
-    return new User(id, firebaseUid, email, firstname, lastname, role)
+    return new User(id, firebaseUid, email, firstname, lastname, role, locale)
   }
 
   // -------------------
@@ -45,5 +49,9 @@ export class User {
 
   public get lastname(): string {
     return this._lastname
+  }
+
+  public get locale(): UserLocale {
+    return this._locale
   }
 }

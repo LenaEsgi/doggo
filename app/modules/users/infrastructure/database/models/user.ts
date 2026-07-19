@@ -26,6 +26,9 @@ export default class UserModel extends BaseModel {
   @column()
   declare role: UserRole
 
+  @column()
+  declare locale: 'fr' | 'en'
+
   @manyToMany(() => RobotDogModel, {
     pivotTable: 'ownerships',
     pivotForeignKey: 'user_id',
