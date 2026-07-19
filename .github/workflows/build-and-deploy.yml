@@ -1,15 +1,21 @@
 name: Build and Deploy API image
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: ["Run Tests and Linter"]
+    types:
+      - completed
     branches:
       - master
 
 jobs:
   build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
