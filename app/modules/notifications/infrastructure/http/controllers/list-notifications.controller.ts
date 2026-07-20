@@ -5,9 +5,12 @@ import {
   type FindNotificationsParams,
   type NotificationTab,
 } from '#app/modules/notifications/domain/contracts/notification.repository'
+import { NotificationTransformer } from '#app/modules/notifications/infrastructure/http/transformers/notification.transformer'
 
 @inject()
 export default class ListNotificationsController {
+  private readonly transformer = new NotificationTransformer()
+
   constructor(private readonly repo: NotificationRepository) {}
 
   async handle({ request, response, authenticatedUser }: HttpContext): Promise<void> {
@@ -24,7 +27,7 @@ export default class ListNotificationsController {
     const result = await this.repo.findByUser(authenticatedUser.id, params)
 
     response.ok({
-      data: result.data,
+      data: this.transformer.toJSONList(result.data, authenticatedUser.locale),
       meta: result.meta,
     })
   }
