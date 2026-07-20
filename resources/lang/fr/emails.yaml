@@ -1,0 +1,19 @@
+common:
+  brand: "🐾 Doggo"
+  greeting: "Bonjour {name} 👋"
+  copyright: "© 2026 Doggo — Tous droits réservés"
+
+dog_assigned:
+  subject: "Vous avez été assigné au robot dog {dogName}"
+  title: "Robot dog assigné — Doggo"
+  intro: "Un nouveau robot dog vient d'être ajouté à votre compte."
+  label: "Robot dog assigné"
+  cta: "Voir le robot dog →"
+  footer: "Vous recevez cet email car vous avez été assigné à un robot dog."
+
+dog_revoked:
+  subject: "Vous avez été retiré du robot dog {dogName}"
+  title: "Accès robot dog retiré — Doggo"
+  intro: "Votre accès à un robot dog a été retiré."
+  label: "Robot dog retiré"
+  footer: "Vous recevez cet email car votre accès à un robot dog a été modifié."

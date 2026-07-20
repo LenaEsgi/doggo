@@ -1,0 +1,19 @@
+common:
+  brand: "🐾 Doggo"
+  greeting: "Hi {name} 👋"
+  copyright: "© 2026 Doggo — All rights reserved"
+
+dog_assigned:
+  subject: "You have been assigned to robot dog {dogName}"
+  title: "Robot dog assigned — Doggo"
+  intro: "A new robot dog has just been added to your account."
+  label: "Robot dog assigned"
+  cta: "View the robot dog →"
+  footer: "You are receiving this email because you were assigned to a robot dog."
+
+dog_revoked:
+  subject: "You have been removed from robot dog {dogName}"
+  title: "Robot dog access removed — Doggo"
+  intro: "Your access to a robot dog has been removed."
+  label: "Robot dog removed"
+  footer: "You are receiving this email because your access to a robot dog was changed."
