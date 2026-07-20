@@ -20,7 +20,9 @@ test.group('MissionRun entity', () => {
   })
 
   test('confirm() moves a PENDING run to RUNNING', ({ assert }) => {
-    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
+      MissionStepId.generate(),
+    ])
 
     run.confirm()
 
@@ -29,7 +31,9 @@ test.group('MissionRun entity', () => {
   })
 
   test('confirm() throws when the run is not PENDING', ({ assert }) => {
-    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
+      MissionStepId.generate(),
+    ])
     run.confirm()
 
     assert.throws(() => run.confirm(), NoActiveMissionRunError)
@@ -70,14 +74,18 @@ test.group('MissionRun entity', () => {
   })
 
   test('throws when completing an unknown step', ({ assert }) => {
-    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
+      MissionStepId.generate(),
+    ])
     run.confirm()
 
     assert.throws(() => run.completeStep(MissionStepId.generate()), InvalidMissionStepNotFoundError)
   })
 
   test('interrupt() moves a running run to INTERRUPTED', ({ assert }) => {
-    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
+      MissionStepId.generate(),
+    ])
     run.confirm()
 
     run.interrupt()
@@ -87,7 +95,9 @@ test.group('MissionRun entity', () => {
   })
 
   test('interrupt() also cancels a PENDING run that was never confirmed', ({ assert }) => {
-    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
+      MissionStepId.generate(),
+    ])
 
     run.interrupt()
 
@@ -96,7 +106,9 @@ test.group('MissionRun entity', () => {
   })
 
   test('markLaunchFailed() moves a PENDING run to LAUNCH_FAILED', ({ assert }) => {
-    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
+      MissionStepId.generate(),
+    ])
 
     run.markLaunchFailed()
 
@@ -106,7 +118,9 @@ test.group('MissionRun entity', () => {
   })
 
   test('markLaunchFailed() throws when the run is not PENDING (already started)', ({ assert }) => {
-    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [MissionStepId.generate()])
+    const run = MissionRun.start(MissionId.generate(), RobotDogId.generate(), [
+      MissionStepId.generate(),
+    ])
     run.confirm()
 
     assert.throws(() => run.markLaunchFailed(), NoActiveMissionRunError)
@@ -182,7 +196,9 @@ test.group('MissionRun entity', () => {
     assert.equal(run.status, MissionRunStatus.RUNNING)
   })
 
-  test('failStep rattrape les précédentes en COMPLETED puis marque la cible FAILED', ({ assert }) => {
+  test('failStep rattrape les précédentes en COMPLETED puis marque la cible FAILED', ({
+    assert,
+  }) => {
     const s1 = MissionStepId.generate()
     const s2 = MissionStepId.generate()
     const s3 = MissionStepId.generate()

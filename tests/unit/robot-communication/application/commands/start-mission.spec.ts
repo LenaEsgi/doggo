@@ -129,7 +129,9 @@ test.group('StartMissionCommandUseCase', (group) => {
     assert.equal(timeoutQueue.scheduled[0].delayMs, 60_000)
   })
 
-  test('persiste le run PENDING avant de publier la commande MQTT (irréversible en dernier)', async ({ assert }) => {
+  test('persiste le run PENDING avant de publier la commande MQTT (irréversible en dernier)', async ({
+    assert,
+  }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await fakeRepo.save(dog)
 
@@ -246,10 +248,7 @@ test.group('StartMissionCommandUseCase', (group) => {
     await missionRepo.save(mission)
     await missionRepo.assignToDog(mission.id.value, dog.id.value)
 
-    await assert.rejects(
-      () => useCase.execute(dog.id.value, mission.id.value),
-      ActionNotFoundError
-    )
+    await assert.rejects(() => useCase.execute(dog.id.value, mission.id.value), ActionNotFoundError)
 
     assert.lengthOf(runRepo.runs, 0) // aucun run créé
     assert.lengthOf(fakeMqtt.calls, 0) // rien publié

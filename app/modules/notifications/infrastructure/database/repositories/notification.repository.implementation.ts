@@ -1,9 +1,11 @@
+import { DateTime } from 'luxon'
 import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 import {
   NotificationRepository,
   type NotificationRecord,
   type CreateNotificationData,
   type FindNotificationsParams,
+  type Severity,
 } from '#app/modules/notifications/domain/contracts/notification.repository'
 import NotificationModel from '#app/modules/notifications/infrastructure/database/models/notification.model'
 
@@ -74,6 +76,18 @@ export class NotificationRepositoryImplementation extends NotificationRepository
       .where('user_id', userId)
       .where('is_read', false)
       .update({ is_read: true })
+  }
+
+  async countBySeverityToday(severities: Severity[]): Promise<number> {
+    const startOfDay = DateTime.now().startOf('day').toSQL()!
+    const endOfDay = DateTime.now().endOf('day').toSQL()!
+
+    const rows = await NotificationModel.query()
+      .whereIn('severity', severities)
+      .whereBetween('created_at', [startOfDay, endOfDay])
+      .count('* as total')
+
+    return Number(rows[0].$extras.total)
   }
 
   private toRecord(row: NotificationModel): NotificationRecord {

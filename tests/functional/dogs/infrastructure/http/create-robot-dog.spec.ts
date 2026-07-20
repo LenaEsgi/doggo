@@ -14,7 +14,6 @@ test.group('POST /api/v1/dogs', (group) => {
     const response = await client.post('/api/v1/dogs').header('Authorization', auth.header).json({
       serialNumber: 'SN-HTTP-001',
       name: 'TestHTTP',
-      batteryLevel: 90,
     })
 
     response.assertStatus(201)
@@ -26,7 +25,7 @@ test.group('POST /api/v1/dogs', (group) => {
     assert.exists(created)
     assert.equal(created!.serialNumber, 'SN-HTTP-001')
     assert.equal(created!.name, 'TestHTTP')
-    assert.equal(created!.batteryLevel, 90)
+    assert.equal(created!.batteryLevel, 100)
   })
 
   test('should return 403 when authenticated as a non-admin user', async ({ client, cleanup }) => {
@@ -35,7 +34,6 @@ test.group('POST /api/v1/dogs', (group) => {
     const response = await client.post('/api/v1/dogs').header('Authorization', auth.header).json({
       serialNumber: 'SN-HTTP-002',
       name: 'ForbiddenHTTP',
-      batteryLevel: 50,
     })
 
     response.assertStatus(403)

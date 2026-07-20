@@ -59,6 +59,7 @@ export type ScannedRoutes = {
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'get_backoffice_stats': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
@@ -81,6 +82,7 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_notifications': { paramsTuple?: []; params?: {} }
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'get_backoffice_stats': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -101,6 +103,7 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_notifications': { paramsTuple?: []; params?: {} }
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'get_backoffice_stats': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
   }
   POST: {

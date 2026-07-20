@@ -12,7 +12,10 @@ export default class RobotTelemetrySseListener {
         state: event.state,
       } as unknown as Parameters<typeof transmit.broadcast>[1])
     } catch (error) {
-      logger.error({ err: error, dogId: event.dogId }, 'RobotTelemetrySseListener: broadcast failed')
+      logger.error(
+        { err: error, dogId: event.dogId },
+        'RobotTelemetrySseListener: broadcast failed'
+      )
     }
   }
 }

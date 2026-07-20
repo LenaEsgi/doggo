@@ -40,4 +40,5 @@ export abstract class NotificationRepository {
     params: FindNotificationsParams
   ): Promise<PaginatedResult<NotificationRecord>>
   abstract markAllReadByUser(userId: string): Promise<void>
+  abstract countBySeverityToday(severities: Severity[]): Promise<number>
 }

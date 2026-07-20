@@ -62,7 +62,8 @@ test.group('AddMissionStepUseCase', () => {
     await runRepo.save(MissionRun.start(mission.id, RobotDogId.generate(), []))
 
     await assert.rejects(
-      () => useCase.execute({ missionId: mission.id.value, actionId: 'move_to', parameters: 'test' }),
+      () =>
+        useCase.execute({ missionId: mission.id.value, actionId: 'move_to', parameters: 'test' }),
       InvalidMissionNotEditableError
     )
   })

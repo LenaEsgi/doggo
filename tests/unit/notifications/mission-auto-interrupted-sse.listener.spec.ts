@@ -48,6 +48,10 @@ class FakeNotificationRepository extends NotificationRepository {
   }
 
   async markAllReadByUser(_userId: string): Promise<void> {}
+
+  async countBySeverityToday(): Promise<number> {
+    return 0
+  }
 }
 
 class ThrowingNotificationRepository extends FakeNotificationRepository {

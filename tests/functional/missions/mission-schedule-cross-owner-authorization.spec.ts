@@ -11,61 +11,64 @@ import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { MissionScheduleId } from '#app/modules/missions/domain/value-objects/mission-schedule-id'
 
-test.group('DELETE /api/v1/missions/:missionId/schedules/:scheduleId cross-owner authorization', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+test.group(
+  'DELETE /api/v1/missions/:missionId/schedules/:scheduleId cross-owner authorization',
+  (group) => {
+    group.each.setup(() => testUtils.db().truncate())
 
-  test('should return 404 when the schedule belongs to a different mission owned by another user', async ({
-    client,
-    assert,
-    cleanup,
-  }) => {
-    const authA = await authenticateAs(cleanup, { firebaseUid: 'user-a' })
+    test('should return 404 when the schedule belongs to a different mission owned by another user', async ({
+      client,
+      assert,
+      cleanup,
+    }) => {
+      const authA = await authenticateAs(cleanup, { firebaseUid: 'user-a' })
 
-    const missionA = await MissionModel.create({
-      id: randomUUID(),
-      name: 'Mission A',
-      userId: authA.user.id,
+      const missionA = await MissionModel.create({
+        id: randomUUID(),
+        name: 'Mission A',
+        userId: authA.user.id,
+      })
+
+      const dogA = await RobotDogModel.create({
+        id: randomUUID(),
+        serialNumber: 'SN-CROSS-OWNER-001',
+        key: 'CrossOwnerDogKeyAAA1',
+        name: 'DogA',
+        state: RobotDogState.IDLE,
+        batteryLevel: 90,
+      })
+
+      await missionA.related('robotDogs').attach([dogA.id])
+
+      const scheduleRepository = new MissionScheduleRepositoryImplementation()
+      const scheduleFromMissionA = MissionSchedule.create(
+        MissionId.fromString(missionA.id),
+        RobotDogId.fromString(dogA.id),
+        [1, 3],
+        9,
+        30
+      )
+      await scheduleRepository.save(scheduleFromMissionA)
+
+      const authB = await authenticateAs(cleanup, { firebaseUid: 'user-b' })
+
+      const missionB = await MissionModel.create({
+        id: randomUUID(),
+        name: 'Mission B',
+        userId: authB.user.id,
+      })
+
+      const response = await client
+        .delete(`/api/v1/missions/${missionB.id}/schedules/${scheduleFromMissionA.id.value}`)
+        .header('Authorization', authB.header)
+
+      response.assertStatus(404)
+
+      const stillThere = await scheduleRepository.findById(
+        MissionScheduleId.fromString(scheduleFromMissionA.id.value)
+      )
+      assert.isNotNull(stillThere)
+      assert.equal(stillThere?.missionId.value, missionA.id)
     })
-
-    const dogA = await RobotDogModel.create({
-      id: randomUUID(),
-      serialNumber: 'SN-CROSS-OWNER-001',
-      key: 'CrossOwnerDogKeyAAA1',
-      name: 'DogA',
-      state: RobotDogState.IDLE,
-      batteryLevel: 90,
-    })
-
-    await missionA.related('robotDogs').attach([dogA.id])
-
-    const scheduleRepository = new MissionScheduleRepositoryImplementation()
-    const scheduleFromMissionA = MissionSchedule.create(
-      MissionId.fromString(missionA.id),
-      RobotDogId.fromString(dogA.id),
-      [1, 3],
-      9,
-      30
-    )
-    await scheduleRepository.save(scheduleFromMissionA)
-
-    const authB = await authenticateAs(cleanup, { firebaseUid: 'user-b' })
-
-    const missionB = await MissionModel.create({
-      id: randomUUID(),
-      name: 'Mission B',
-      userId: authB.user.id,
-    })
-
-    const response = await client
-      .delete(`/api/v1/missions/${missionB.id}/schedules/${scheduleFromMissionA.id.value}`)
-      .header('Authorization', authB.header)
-
-    response.assertStatus(404)
-
-    const stillThere = await scheduleRepository.findById(
-      MissionScheduleId.fromString(scheduleFromMissionA.id.value)
-    )
-    assert.isNotNull(stillThere)
-    assert.equal(stillThere?.missionId.value, missionA.id)
-  })
-})
+  }
+)

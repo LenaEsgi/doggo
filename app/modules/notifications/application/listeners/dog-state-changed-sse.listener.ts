@@ -11,7 +11,10 @@ export default class DogStateChangedSseListener {
         state: event.state,
       } as unknown as Parameters<typeof transmit.broadcast>[1])
     } catch (error) {
-      logger.error({ err: error, dogId: event.dogId }, 'DogStateChangedSseListener: broadcast failed')
+      logger.error(
+        { err: error, dogId: event.dogId },
+        'DogStateChangedSseListener: broadcast failed'
+      )
     }
   }
 }

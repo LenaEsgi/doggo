@@ -35,7 +35,12 @@ test.group('FakeMissionScheduleFiringRepository', () => {
     const firedForMinute = DateTime.utc().set({ second: 0, millisecond: 0 })
     const runId = randomUUID()
 
-    await repo.recordOutcome(scheduleId, firedForMinute, MissionScheduleFiringOutcome.DISPATCHED, runId)
+    await repo.recordOutcome(
+      scheduleId,
+      firedForMinute,
+      MissionScheduleFiringOutcome.DISPATCHED,
+      runId
+    )
 
     assert.lengthOf(repo.outcomes, 1)
     assert.equal(repo.outcomes[0].missionScheduleId, scheduleId)

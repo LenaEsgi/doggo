@@ -55,7 +55,13 @@ test.group('ToggleMissionScheduleUseCase', (group) => {
   })
 
   test('rejects when the schedule belongs to a different mission', async ({ assert }) => {
-    const schedule = MissionSchedule.create(MissionId.generate(), RobotDogId.generate(), [4], 12, 45)
+    const schedule = MissionSchedule.create(
+      MissionId.generate(),
+      RobotDogId.generate(),
+      [4],
+      12,
+      45
+    )
     await repo.save(schedule)
 
     await assert.rejects(

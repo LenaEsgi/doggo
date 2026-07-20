@@ -17,7 +17,6 @@ test.group('PUT /api/v1/dogs/:id', (group) => {
       .json({
         serialNumber: 'SN-UPD-001',
         name: 'OldName',
-        batteryLevel: 80,
       })
     createResponse.assertStatus(201)
     const dogId = createResponse.body().id

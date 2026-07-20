@@ -17,7 +17,10 @@ export default class MissionCompletedSseListener {
       await this.notificationService.create(event.userId, type, severity, {
         missionName: event.missionName,
       })
-      logger.info({ userId: event.userId, type }, 'MissionCompletedSseListener: notification created')
+      logger.info(
+        { userId: event.userId, type },
+        'MissionCompletedSseListener: notification created'
+      )
     } catch (error) {
       logger.error({ err: error, userId: event.userId }, 'MissionCompletedSseListener: failed')
     }

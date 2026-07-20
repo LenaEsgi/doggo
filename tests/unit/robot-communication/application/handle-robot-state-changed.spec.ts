@@ -27,7 +27,9 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
     useCase = new HandleRobotStateChangedUseCase(dogRepo, runRepo, timeoutQueue, communicationService)
   })
 
-  test('confirme le run PENDING et annule le job timeout quand robot publie IN_MISSION', async ({ assert }) => {
+  test('confirme le run PENDING et annule le job timeout quand robot publie IN_MISSION', async ({
+    assert,
+  }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await dogRepo.save(dog)
 

@@ -43,10 +43,7 @@ test.group('AssignMissionToDogUseCase', (group) => {
 
     await useCase.execute(mission.id.value, dogId)
 
-    await assert.rejects(
-      () => useCase.execute(mission.id.value, dogId),
-      RobotAlreadyAssignedError
-    )
+    await assert.rejects(() => useCase.execute(mission.id.value, dogId), RobotAlreadyAssignedError)
   })
 
   test('should allow the same mission to be assigned to two different robots', async ({

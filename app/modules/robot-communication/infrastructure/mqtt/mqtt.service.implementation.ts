@@ -3,9 +3,9 @@ import mqtt, { type MqttClient } from 'mqtt'
 import app from '@adonisjs/core/services/app'
 import logger from '@adonisjs/core/services/logger'
 import env from '#start/env'
-import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
+import { type RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
 import {
-  RobotCommand,
+  type RobotCommand,
   type RobotCommandData,
   type RobotCommandPayload,
 } from '#app/modules/robot-communication/domain/types/robot-command.type'

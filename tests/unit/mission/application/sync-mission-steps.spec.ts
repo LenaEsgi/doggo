@@ -37,7 +37,11 @@ test.group('SyncMissionStepsUseCase', () => {
     // --- ARRANGE ---
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
+    const useCase = new SyncMissionStepsUseCase(
+      missionRepo,
+      new FakeMissionRunRepository(),
+      actionRepo
+    )
 
     const actionId = '550e8400-e29b-41d4-a716-446655440001'
     actionRepo.actions.push(makeAction(actionId, null)) // pas de schema → tout accepté
@@ -77,7 +81,11 @@ test.group('SyncMissionStepsUseCase', () => {
   test("lance MissionNotFoundError si la mission n'existe pas", async ({ assert }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
+    const useCase = new SyncMissionStepsUseCase(
+      missionRepo,
+      new FakeMissionRunRepository(),
+      actionRepo
+    )
 
     const unknownId = '550e8400-e29b-41d4-a716-446655440000'
 
@@ -90,7 +98,11 @@ test.group('SyncMissionStepsUseCase', () => {
   test('lance ActionNotFoundError si une action du step est inconnue', async ({ assert }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository() // vide
-    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
+    const useCase = new SyncMissionStepsUseCase(
+      missionRepo,
+      new FakeMissionRunRepository(),
+      actionRepo
+    )
 
     const mission = Mission.create('Mission Test', 'user-001')
     await missionRepo.save(mission)
@@ -112,7 +124,11 @@ test.group('SyncMissionStepsUseCase', () => {
   }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
+    const useCase = new SyncMissionStepsUseCase(
+      missionRepo,
+      new FakeMissionRunRepository(),
+      actionRepo
+    )
 
     const actionId = '550e8400-e29b-41d4-a716-446655440002'
     actionRepo.actions.push(makeAction(actionId, moveSchema))
@@ -134,7 +150,11 @@ test.group('SyncMissionStepsUseCase', () => {
   test('accepte les paramètres valides respectant le schema', async ({ assert }) => {
     const missionRepo = new FakeMissionRepository()
     const actionRepo = new FakeActionRepository()
-    const useCase = new SyncMissionStepsUseCase(missionRepo, new FakeMissionRunRepository(), actionRepo)
+    const useCase = new SyncMissionStepsUseCase(
+      missionRepo,
+      new FakeMissionRunRepository(),
+      actionRepo
+    )
 
     const actionId = '550e8400-e29b-41d4-a716-446655440003'
     actionRepo.actions.push(makeAction(actionId, moveSchema))

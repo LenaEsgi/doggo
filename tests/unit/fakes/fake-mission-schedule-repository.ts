@@ -1,4 +1,4 @@
-import MissionSchedule from '#app/modules/missions/domain/entities/mission-schedule.entity'
+import type MissionSchedule from '#app/modules/missions/domain/entities/mission-schedule.entity'
 import { type MissionScheduleId } from '#app/modules/missions/domain/value-objects/mission-schedule-id'
 import { type MissionScheduleRepository } from '#app/modules/missions/domain/contracts/mission-schedule.repository'
 
