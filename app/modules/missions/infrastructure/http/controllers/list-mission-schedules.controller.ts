@@ -8,7 +8,7 @@ export default class ListMissionSchedulesController {
   constructor(private listUseCase: ListMissionSchedulesByMissionUseCase) {}
 
   public async handle({ params, serialize, bouncer }: HttpContext) {
-    await bouncer.with('MissionPolicy').authorize('manageSchedule', params.id)
+    await bouncer.with('MissionPolicy').authorize('viewSchedule', params.id)
 
     const schedules = await this.listUseCase.execute(params.id)
 

@@ -9,9 +9,12 @@ export default class CreateMissionScheduleController {
   constructor(private createUseCase: CreateMissionScheduleUseCase) {}
 
   public async handle({ request, response, params, bouncer }: HttpContext) {
-    await bouncer.with('MissionPolicy').authorize('createSchedule', params.id)
-
     const payload = await request.validateUsing(CreateMissionScheduleValidator)
+
+    await bouncer
+      .with('MissionPolicy')
+      .authorize('createSchedule', params.id, payload.robotDogId)
+
     const result = await this.createUseCase.execute(
       new CreateMissionScheduleDto(
         params.id,

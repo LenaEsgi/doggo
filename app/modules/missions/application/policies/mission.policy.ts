@@ -5,6 +5,7 @@ import { type User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
+import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 
 @inject()
 export default class MissionPolicy extends BasePolicy {
@@ -72,11 +73,28 @@ export default class MissionPolicy extends BasePolicy {
     return this.ownershipRepository.isOwner(user.id, dogId)
   }
 
-  async createSchedule(user: User, missionId: string): Promise<AuthorizerResponse> {
-    return this.missionRepository.isOwner(user.id, missionId)
+  async createSchedule(
+    user: User,
+    missionId: string,
+    robotDogId: string
+  ): Promise<AuthorizerResponse> {
+    if (await this.missionRepository.isOwner(user.id, missionId)) return true
+    return this.ownershipRepository.isOwner(user.id, robotDogId)
   }
 
   async manageSchedule(user: User, missionId: string): Promise<AuthorizerResponse> {
     return this.missionRepository.isOwner(user.id, missionId)
+  }
+
+  async viewSchedule(user: User, missionId: string): Promise<AuthorizerResponse> {
+    if (await this.missionRepository.isOwner(user.id, missionId)) return true
+
+    const mission = await this.missionRepository.findById(MissionId.fromString(missionId))
+    if (!mission) return false
+
+    const ownershipChecks = await Promise.all(
+      mission.robotDogIds.map((dogId) => this.ownershipRepository.isOwner(user.id, dogId.value))
+    )
+    return ownershipChecks.some(Boolean)
   }
 }
