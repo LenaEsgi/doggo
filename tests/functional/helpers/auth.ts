@@ -30,6 +30,7 @@ interface AuthOptions {
   firebaseUid?: string
   role?: UserRole
   token?: string
+  locale?: 'fr' | 'en'
 }
 
 /**
@@ -49,6 +50,7 @@ export async function authenticateAs(
     lastname: 'User',
     email: `${firebaseUid}@example.com`,
     role: opts.role ?? UserRole.USER,
+    locale: opts.locale ?? 'fr',
   })
 
   app.container.swap(FirebaseTokenVerifier, () => new FakeFirebaseTokenVerifier(firebaseUid))
