@@ -9,6 +9,8 @@ import {
   type FindNotificationsParams,
 } from '#app/modules/notifications/domain/contracts/notification.repository'
 import { RealtimeBroadcaster } from '#app/modules/notifications/domain/contracts/realtime-broadcaster'
+import { NotificationUserGateway } from '#app/modules/notifications/domain/gateways/notification-user.gateway'
+import type { UserLocale } from '#users/domain/user.entity'
 import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
 const USER_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5'
@@ -68,10 +70,20 @@ class FakeBroadcaster extends RealtimeBroadcaster {
   }
 }
 
+class FakeNotificationUserGateway extends NotificationUserGateway {
+  async findLocaleById(_userId: string): Promise<UserLocale> {
+    return 'fr'
+  }
+
+  async findLocalesByIds(userIds: string[]): Promise<Map<string, UserLocale>> {
+    return new Map(userIds.map((id) => [id, 'fr' as UserLocale]))
+  }
+}
+
 test.group('MissionAutoInterruptedSseListener', () => {
   test('crée une notification mission.interrupted avec sévérité critical', async ({ assert }) => {
     const repo = new FakeNotificationRepository()
-    const service = new NotificationService(repo, new FakeBroadcaster())
+    const service = new NotificationService(repo, new FakeBroadcaster(), new FakeNotificationUserGateway())
     const listener = new MissionAutoInterruptedSseListener(service)
 
     await listener.handle(
@@ -90,7 +102,7 @@ test.group('MissionAutoInterruptedSseListener', () => {
 
   test('transmet la reason MAX_DURATION dans le payload de la notification', async ({ assert }) => {
     const repo = new FakeNotificationRepository()
-    const service = new NotificationService(repo, new FakeBroadcaster())
+    const service = new NotificationService(repo, new FakeBroadcaster(), new FakeNotificationUserGateway())
     const listener = new MissionAutoInterruptedSseListener(service)
 
     await listener.handle(
@@ -105,7 +117,7 @@ test.group('MissionAutoInterruptedSseListener', () => {
 
   test('ne plante pas si la création de la notification échoue', async ({ assert }) => {
     const repo = new ThrowingNotificationRepository()
-    const service = new NotificationService(repo, new FakeBroadcaster())
+    const service = new NotificationService(repo, new FakeBroadcaster(), new FakeNotificationUserGateway())
     const listener = new MissionAutoInterruptedSseListener(service)
 
     await assert.doesNotReject(() =>

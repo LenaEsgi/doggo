@@ -7,6 +7,8 @@ import {
   type FindNotificationsParams,
 } from '#app/modules/notifications/domain/contracts/notification.repository'
 import { RealtimeBroadcaster } from '#app/modules/notifications/domain/contracts/realtime-broadcaster'
+import { NotificationUserGateway } from '#app/modules/notifications/domain/gateways/notification-user.gateway'
+import type { UserLocale } from '#users/domain/user.entity'
 import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
 
 const FAKE_RECORD: NotificationRecord = {
@@ -68,11 +70,25 @@ class FakeBroadcaster extends RealtimeBroadcaster {
   }
 }
 
+class FakeNotificationUserGateway extends NotificationUserGateway {
+  constructor(private readonly locale: UserLocale = 'fr') {
+    super()
+  }
+
+  async findLocaleById(_userId: string): Promise<UserLocale> {
+    return this.locale
+  }
+
+  async findLocalesByIds(userIds: string[]): Promise<Map<string, UserLocale>> {
+    return new Map(userIds.map((id) => [id, this.locale]))
+  }
+}
+
 test.group('NotificationService', () => {
   test('crée une notification avec payload et robotDogId', async ({ assert }) => {
     const repo = new FakeNotificationRepository()
     const broadcaster = new FakeBroadcaster()
-    const service = new NotificationService(repo, broadcaster)
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
 
     await service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1')
 
@@ -87,7 +103,7 @@ test.group('NotificationService', () => {
   test('crée une notification sans payload ni robotDogId', async ({ assert }) => {
     const repo = new FakeNotificationRepository()
     const broadcaster = new FakeBroadcaster()
-    const service = new NotificationService(repo, broadcaster)
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
 
     await service.create('user-1', 'dog.revoked', 'warning')
 
@@ -102,7 +118,7 @@ test.group('NotificationService', () => {
   }) => {
     const repo = new FakeNotificationRepository()
     const broadcaster = new FakeBroadcaster()
-    const service = new NotificationService(repo, broadcaster)
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
 
     await service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1')
 
@@ -117,7 +133,7 @@ test.group('NotificationService', () => {
     broadcaster.broadcast = () => {
       throw new Error('SSE unavailable')
     }
-    const service = new NotificationService(repo, broadcaster)
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
 
     await assert.doesNotReject(() =>
       service.create('user-1', 'dog.assigned', 'info', { robotDogName: 'Rex' }, 'dog-1')
@@ -129,7 +145,7 @@ test.group('NotificationService', () => {
   }) => {
     const repo = new FakeNotificationRepository()
     const broadcaster = new FakeBroadcaster()
-    const service = new NotificationService(repo, broadcaster)
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
 
     await service.create('user-1', 'mission.interrupted', 'critical', {
       missionName: 'Patrouille',
@@ -148,7 +164,7 @@ test.group('NotificationService', () => {
   }) => {
     const repo = new FakeNotificationRepository()
     const broadcaster = new FakeBroadcaster()
-    const service = new NotificationService(repo, broadcaster)
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
 
     await service.create('user-1', 'mission.interrupted', 'critical', {
       missionName: 'Patrouille',
@@ -167,7 +183,7 @@ test.group('NotificationService', () => {
   }) => {
     const repo = new FakeNotificationRepository()
     const broadcaster = new FakeBroadcaster()
-    const service = new NotificationService(repo, broadcaster)
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
 
     await service.create('user-1', 'mission.interrupted', 'critical', {
       missionName: 'Patrouille',

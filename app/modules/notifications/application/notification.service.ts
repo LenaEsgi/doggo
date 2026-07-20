@@ -2,6 +2,9 @@ import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { NotificationRepository } from '#app/modules/notifications/domain/contracts/notification.repository'
 import { RealtimeBroadcaster } from '#app/modules/notifications/domain/contracts/realtime-broadcaster'
+import { NotificationUserGateway } from '#app/modules/notifications/domain/gateways/notification-user.gateway'
+import { NotificationMessageTranslator } from '#app/modules/notifications/application/notification-message.translator'
+import type { UserLocale } from '#users/domain/user.entity'
 import type {
   NotificationRecord,
   Severity,
@@ -18,11 +21,16 @@ export type NotificationType =
   | 'mission.skipped'
   | 'mission.interrupted'
 
+const AUDIT_LOCALE: UserLocale = 'fr'
+
 @inject()
 export class NotificationService {
+  private readonly translator = new NotificationMessageTranslator()
+
   constructor(
     private readonly repo: NotificationRepository,
-    private readonly broadcaster: RealtimeBroadcaster
+    private readonly broadcaster: RealtimeBroadcaster,
+    private readonly userGateway: NotificationUserGateway
   ) {}
 
   async create(
@@ -35,12 +43,14 @@ export class NotificationService {
     const notification = await this.repo.create({
       userId,
       type,
-      message: this.buildMessage(type, payload),
+      message: this.translator.translate(type, payload, AUDIT_LOCALE),
       severity,
       payload: payload ?? null,
       robotDogId: robotDogId ?? null,
     })
-    this.broadcast(notification)
+
+    const locale = await this.userGateway.findLocaleById(userId)
+    this.broadcast(notification, locale)
   }
 
   async createBulk(
@@ -52,7 +62,7 @@ export class NotificationService {
   ): Promise<void> {
     if (userIds.length === 0) return
 
-    const message = this.buildMessage(type, payload)
+    const message = this.translator.translate(type, payload, AUDIT_LOCALE)
     const notifications = await this.repo.createMany(
       userIds.map((userId) => ({
         userId,
@@ -64,50 +74,28 @@ export class NotificationService {
       }))
     )
 
+    const locales = await this.userGateway.findLocalesByIds(userIds)
+
     for (const notification of notifications) {
-      this.broadcast(notification)
+      const locale = locales.get(notification.userId) ?? AUDIT_LOCALE
+      this.broadcast(notification, locale)
     }
   }
 
-  private buildMessage(type: NotificationType, payload?: Record<string, unknown>): string {
-    const dog = (payload?.robotDogName as string | undefined) ?? 'le robot'
-    const member = (payload?.memberName as string | undefined) ?? 'Un utilisateur'
-    const mission = (payload?.missionName as string | undefined) ?? 'La mission'
-
-    switch (type) {
-      case 'dog.assigned':
-        return `Le robot ${dog} vous a été assigné`
-      case 'dog.revoked':
-        return `Vous avez été retiré du robot ${dog}`
-      case 'dog.member.assigned':
-        return `${member} a rejoint le robot ${dog}`
-      case 'dog.member.revoked':
-        return `${member} a quitté le robot ${dog}`
-      case 'mission.started':
-        return `${mission} a démarré sur le robot ${dog}`
-      case 'mission.completed':
-        return `${mission} est terminée avec succès sur le robot ${dog}`
-      case 'mission.failed':
-        return `${mission} a échoué sur le robot ${dog}`
-      case 'mission.skipped':
-        return `${mission} n'a pas pu démarrer : le robot ${dog} était déjà occupé`
-      case 'mission.interrupted': {
-        const reason = payload?.reason as string | undefined
-        const reasonText =
-          reason === 'ROBOT_OFFLINE' ? 'robot hors ligne' : 'durée maximale atteinte'
-        return `${mission} a été interrompue sur le robot ${dog} : ${reasonText}`
-      }
-    }
-  }
-
-  private broadcast(notification: NotificationRecord): void {
+  private broadcast(notification: NotificationRecord, locale: UserLocale): void {
     try {
+      const message = this.translator.translate(
+        notification.type as NotificationType,
+        notification.payload,
+        locale
+      )
+
       this.broadcaster.broadcast(`users/${notification.userId}`, {
         type: 'notification',
         notification: {
           id: notification.id,
           type: notification.type,
-          message: notification.message,
+          message,
           severity: notification.severity,
           payload: notification.payload,
           robotDogId: notification.robotDogId,
