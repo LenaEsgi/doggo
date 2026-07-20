@@ -3,4 +3,5 @@ export type UpdateUserDto = {
   firstname?: string
   lastname?: string
   role?: 'user' | 'admin'
+  locale?: 'fr' | 'en'
 }

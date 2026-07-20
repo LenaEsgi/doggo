@@ -1,9 +1,11 @@
 import { test } from '@japa/runner'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
+import { RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
 import { FakeMissionTimeoutQueue } from '#tests/unit/fakes/fake-mission-timeout-queue'
+import { FakeRobotCommunicationService } from '#tests/unit/fakes/fake-robot-communication-service'
 import { HandleRobotStateChangedUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-state-changed.use-case'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
@@ -14,13 +16,15 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
   let dogRepo: FakeRobotDogRepository
   let runRepo: FakeMissionRunRepository
   let timeoutQueue: FakeMissionTimeoutQueue
+  let communicationService: FakeRobotCommunicationService
   let useCase: HandleRobotStateChangedUseCase
 
   group.each.setup(() => {
     dogRepo = new FakeRobotDogRepository()
     runRepo = new FakeMissionRunRepository()
     timeoutQueue = new FakeMissionTimeoutQueue()
-    useCase = new HandleRobotStateChangedUseCase(dogRepo, runRepo, timeoutQueue)
+    communicationService = new FakeRobotCommunicationService()
+    useCase = new HandleRobotStateChangedUseCase(dogRepo, runRepo, timeoutQueue, communicationService)
   })
 
   test('confirme le run PENDING et annule le job timeout quand robot publie IN_MISSION', async ({ assert }) => {
@@ -39,15 +43,33 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
 
     assert.lengthOf(timeoutQueue.cancelled, 1)
     assert.equal(timeoutQueue.cancelled[0], run.id.value)
+    assert.lengthOf(communicationService.calls, 0)
   })
 
-  test("ne touche pas au run ni à la queue si aucun run PENDING pour ce robot", async ({ assert }) => {
+  test('mission fantôme : renvoie le chien à IDLE et envoie un STOP correctif si IN_MISSION sans run actif', async ({ assert }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await dogRepo.save(dog)
 
     await useCase.execute(dog.id.value, RobotDogState.IN_MISSION)
 
+    const updatedDog = await dogRepo.findById(dog.id)
+    assert.equal(updatedDog!.state, RobotDogState.IDLE)
+
     assert.lengthOf(timeoutQueue.cancelled, 0)
+    assert.lengthOf(communicationService.calls, 1)
+    assert.equal(communicationService.calls[0].dogId, dog.id.value)
+    assert.equal(communicationService.calls[0].command, RobotCommand.STOP_MISSION)
+  })
+
+  test('mission fantôme : ne plante pas si le STOP correctif échoue (robot injoignable)', async ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await dogRepo.save(dog)
+    communicationService.shouldFail = true
+
+    await useCase.execute(dog.id.value, RobotDogState.IN_MISSION)
+
+    const updatedDog = await dogRepo.findById(dog.id)
+    assert.equal(updatedDog!.state, RobotDogState.IDLE)
   })
 
   test("n'annule pas le job si l'état reçu n'est pas IN_MISSION", async ({ assert }) => {

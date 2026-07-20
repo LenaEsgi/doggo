@@ -18,6 +18,7 @@ export default class UserTransformer extends BaseTransformer<UserWithDogsSummary
         firstname: this.resource.user.firstname,
         lastname: this.resource.user.lastname,
         role: this.resource.user.role === UserRole.ADMIN ? 'admin' : 'user',
+        locale: this.resource.user.locale,
         dogs: {
           count: this.resource.dogsCount,
           href: `/dogs/users/${this.resource.user.id}`,
@@ -31,6 +32,7 @@ export default class UserTransformer extends BaseTransformer<UserWithDogsSummary
       lastname: this.resource.user.lastname,
       email: this.resource.user.email,
       role: this.resource.user.role === UserRole.ADMIN ? 'admin' : 'user',
+      locale: this.resource.user.locale,
     }
   }
 }
