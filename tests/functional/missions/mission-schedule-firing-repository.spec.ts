@@ -2,6 +2,7 @@ import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
 import testUtils from '@adonisjs/core/services/test_utils'
+import db from '@adonisjs/lucid/services/db'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import MissionScheduleModel from '#app/modules/missions/infrastructure/database/models/mission-schedule'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
@@ -90,7 +91,6 @@ test.group('MissionScheduleFiringRepositoryImplementation', (group) => {
       null
     )
 
-    const db = (await import('@adonisjs/lucid/services/db')).default
     const row = await db
       .from('mission_schedule_firings')
       .where('mission_schedule_id', scheduleId)
