@@ -1,0 +1,21 @@
+dog:
+  assigned: "Robot dog {dog} has been assigned to you"
+  revoked: "You have been removed from robot dog {dog}"
+  member_assigned: "{member} joined robot dog {dog}"
+  member_revoked: "{member} left robot dog {dog}"
+
+mission:
+  started: "{mission} started on robot dog {dog}"
+  completed: "{mission} completed successfully on robot dog {dog}"
+  failed: "{mission} failed on robot dog {dog}"
+  skipped: "{mission} could not start: robot dog {dog} was already busy"
+  interrupted: "{mission} was interrupted on robot dog {dog}: {reasonText}"
+
+reasons:
+  robot_offline: "robot offline"
+  max_duration: "maximum duration reached"
+
+defaults:
+  dog: "the robot"
+  member: "A user"
+  mission: "The mission"
