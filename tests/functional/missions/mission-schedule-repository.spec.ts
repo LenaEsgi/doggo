@@ -14,9 +14,7 @@ import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 test.group('MissionScheduleRepositoryImplementation', (group) => {
   group.each.setup(() => testUtils.db().truncate())
 
-  test('round-trips days of week through the native postgres array column', async ({
-    assert,
-  }) => {
+  test('round-trips days of week through the native postgres array column', async ({ assert }) => {
     const repo = new MissionScheduleRepositoryImplementation()
 
     const user = await UserModel.create({

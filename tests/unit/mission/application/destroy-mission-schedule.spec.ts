@@ -31,19 +31,30 @@ test.group('DestroyMissionScheduleUseCase', (group) => {
     await assert.rejects(
       () =>
         useCase.execute(
-          new DestroyMissionScheduleDto(MissionScheduleId.generate().value, MissionId.generate().value)
+          new DestroyMissionScheduleDto(
+            MissionScheduleId.generate().value,
+            MissionId.generate().value
+          )
         ),
       MissionScheduleNotFoundError
     )
   })
 
   test('rejects when the schedule belongs to a different mission', async ({ assert }) => {
-    const schedule = MissionSchedule.create(MissionId.generate(), RobotDogId.generate(), [4], 12, 45)
+    const schedule = MissionSchedule.create(
+      MissionId.generate(),
+      RobotDogId.generate(),
+      [4],
+      12,
+      45
+    )
     await repo.save(schedule)
 
     await assert.rejects(
       () =>
-        useCase.execute(new DestroyMissionScheduleDto(schedule.id.value, MissionId.generate().value)),
+        useCase.execute(
+          new DestroyMissionScheduleDto(schedule.id.value, MissionId.generate().value)
+        ),
       MissionScheduleNotFoundError
     )
 

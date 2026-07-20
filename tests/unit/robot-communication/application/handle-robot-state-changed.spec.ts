@@ -23,7 +23,9 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
     useCase = new HandleRobotStateChangedUseCase(dogRepo, runRepo, timeoutQueue)
   })
 
-  test('confirme le run PENDING et annule le job timeout quand robot publie IN_MISSION', async ({ assert }) => {
+  test('confirme le run PENDING et annule le job timeout quand robot publie IN_MISSION', async ({
+    assert,
+  }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await dogRepo.save(dog)
 
@@ -41,7 +43,9 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
     assert.equal(timeoutQueue.cancelled[0], run.id.value)
   })
 
-  test("ne touche pas au run ni à la queue si aucun run PENDING pour ce robot", async ({ assert }) => {
+  test('ne touche pas au run ni à la queue si aucun run PENDING pour ce robot', async ({
+    assert,
+  }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await dogRepo.save(dog)
 

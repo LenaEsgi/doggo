@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import { type DateTime } from 'luxon'
 import { MissionScheduleId } from '#app/modules/missions/domain/value-objects/mission-schedule-id'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'

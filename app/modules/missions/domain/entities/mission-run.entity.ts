@@ -1,7 +1,7 @@
 import { MissionRunId } from '#app/modules/missions/domain/value-objects/mission-run-id'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
-import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
+import { type MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { MissionStepStatus } from '#app/modules/missions/domain/enums/mission-step-status'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
 import MissionRunStep from '#app/modules/missions/domain/entities/mission-run-step.entity'

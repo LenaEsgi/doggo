@@ -5,6 +5,9 @@ test.group('InvalidMissionNotEditableError', () => {
   test('builds without a status argument', ({ assert }) => {
     const error = new InvalidMissionNotEditableError()
     assert.equal(error.name, 'MissionNotEditableError')
-    assert.equal(error.message, 'Mission cannot be modified while a run is active on at least one robot')
+    assert.equal(
+      error.message,
+      'Mission cannot be modified while a run is active on at least one robot'
+    )
   })
 })

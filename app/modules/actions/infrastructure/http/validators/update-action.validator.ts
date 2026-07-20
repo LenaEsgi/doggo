@@ -14,7 +14,11 @@ const parameterFieldSchema = vine.object({
 export const UpdateActionValidator = vine.create(
   vine.object({
     name: vine.string().minLength(1).trim().maxLength(50).optional(),
-    slug: vine.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).maxLength(100).optional(),
+    slug: vine
+      .string()
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .maxLength(100)
+      .optional(),
     description: vine.string().minLength(1).nullable().optional(),
     parameterSchema: vine
       .object({ fields: vine.array(parameterFieldSchema) })

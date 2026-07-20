@@ -18,7 +18,9 @@ const MISSION_ID = process.argv[3]
 const STEP_IDS_RAW = process.argv[4]
 
 if (!DOG_ID) {
-  console.error('Usage: npx tsx scripts/robot-simulator.ts <dogId> [missionId] [stepId1,stepId2,...]')
+  console.error(
+    'Usage: npx tsx scripts/robot-simulator.ts <dogId> [missionId] [stepId1,stepId2,...]'
+  )
   process.exit(1)
 }
 
@@ -45,11 +47,7 @@ let missionInterval: ReturnType<typeof setInterval> | undefined
 const telemetryInterval = setInterval(async () => {
   battery = Math.max(0, battery - 1)
 
-  await client.publishAsync(
-    `robot/${DOG_ID}/telemetry`,
-    JSON.stringify({ battery }),
-    { qos: 0 }
-  )
+  await client.publishAsync(`robot/${DOG_ID}/telemetry`, JSON.stringify({ battery }), { qos: 0 })
 
   console.log(`[simulator] telemetry → battery: ${battery}%`)
 

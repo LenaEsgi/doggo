@@ -23,7 +23,10 @@ export default class UpdateRobotDogController {
 
     await this.updateRobotDog.execute(dto)
 
-    logger.info({ robotDogId: dto.id, updatedName: dto.name }, 'UpdateRobotDogController completed successfully')
+    logger.info(
+      { robotDogId: dto.id, updatedName: dto.name },
+      'UpdateRobotDogController completed successfully'
+    )
 
     return response.noContent()
   }
