@@ -1,7 +1,7 @@
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
-import { GetBackofficeStatsUseCase } from '#app/modules/backoffice/application/usecases/get-backoffice-stats.use-case'
-import BackofficeStatsPolicy from '#app/modules/backoffice/application/policies/backoffice-stats.policy'
+import { GetBackofficeStatsUseCase } from '#app/modules/stats/application/usecases/get-backoffice-stats.use-case'
+import BackofficeStatsPolicy from '#app/modules/stats/application/policies/backoffice-stats.policy'
 
 @inject()
 export default class GetBackofficeStatsController {
