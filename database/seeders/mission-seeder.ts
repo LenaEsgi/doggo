@@ -69,8 +69,9 @@ export default class extends BaseSeeder {
   }
 
   private async ensureActions(): Promise<ActionModel[]> {
-    // Supprime l'ancienne action MOVE (remplacée par MOVE_DISTANCE + MOVE_DURATION).
-    // Les steps qui la référençaient sont cascade-deleted via la FK.
+    // Supprime l'ancienne action MOVE (remplacée par MOVE_DISTANCE + MOVE_DURATION), si elle
+    // existe encore. La FK action_id est désormais RESTRICT : ce delete échouerait si un
+    // mission_step la référençait encore, ce qui n'est plus le cas dans les environnements déjà migrés.
     await ActionModel.query().where('code', 'MOVE').delete()
 
     const seedActions = [
