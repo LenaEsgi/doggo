@@ -25,16 +25,23 @@ export class FakeMissionRepository implements MissionRepository {
     )
   }
 
+  private applySearch(missions: Mission[], search?: string): Mission[] {
+    if (!search?.trim()) return missions
+    const needle = search.trim().toLowerCase()
+    return missions.filter((m) => m.name.toLowerCase().includes(needle))
+  }
+
   async findAll(options?: PaginationDto) {
     const page = options?.page ?? 1
     const perPage = options?.limit ?? 20
 
-    const total = this.storedMissions.length
+    const filtered = this.applySearch(this.storedMissions, options?.search)
+    const total = filtered.length
     const lastPage = Math.ceil(total / perPage)
     const start = (page - 1) * perPage
 
     return {
-      data: this.storedMissions.slice(start, start + perPage),
+      data: filtered.slice(start, start + perPage),
       meta: { total, perPage, currentPage: page, firstPage: 1, lastPage },
     }
   }
@@ -43,7 +50,10 @@ export class FakeMissionRepository implements MissionRepository {
     const page = options?.page ?? 1
     const perPage = options?.limit ?? 20
 
-    const filtered = this.storedMissions.filter((m) => m.userId === userId)
+    const filtered = this.applySearch(
+      this.storedMissions.filter((m) => m.userId === userId),
+      options?.search
+    )
     const total = filtered.length
     const lastPage = Math.ceil(total / perPage)
     const start = (page - 1) * perPage

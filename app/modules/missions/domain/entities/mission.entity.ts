@@ -18,7 +18,8 @@ export default class Mission {
     private _name: string,
     private _robotDogIds: RobotDogId[],
     private _userId: string,
-    private _missionSteps: MissionStep[]
+    private _missionSteps: MissionStep[],
+    private _stepsCount?: number
   ) {}
 
   public static create(name: string, userId: string) {
@@ -30,9 +31,17 @@ export default class Mission {
     name: string,
     userId: string,
     missionSteps: MissionStep[] = [],
-    robotDogIds?: RobotDogId[]
+    robotDogIds?: RobotDogId[],
+    stepsCount?: number
   ) {
-    return new Mission(MissionId.fromString(id), name, robotDogIds ?? [], userId, missionSteps)
+    return new Mission(
+      MissionId.fromString(id),
+      name,
+      robotDogIds ?? [],
+      userId,
+      missionSteps,
+      stepsCount
+    )
   }
 
   // -------------------
@@ -183,5 +192,9 @@ export default class Mission {
 
   get missionSteps(): MissionStep[] {
     return this._missionSteps
+  }
+
+  get stepsCount(): number {
+    return this._stepsCount ?? this._missionSteps.length
   }
 }

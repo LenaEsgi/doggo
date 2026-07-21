@@ -35,6 +35,18 @@ test.group('IndexAllMissionsUseCase', (group) => {
     assert.equal(result.meta.total, 0)
   })
 
+  test('should filter missions by name when search is provided', async ({ assert }) => {
+    missionRepo.storedMissions = [
+      Mission.create('Patrouille nord', 'user-1'),
+      Mission.create('Inspection sud', 'user-2'),
+    ]
+
+    const result = await useCase.execute({ page: 1, limit: 10, search: 'INSPECTION' })
+
+    assert.lengthOf(result.data, 1)
+    assert.equal(result.data[0].name, 'Inspection sud')
+  })
+
   test('should handle second page correctly', async ({ assert }) => {
     missionRepo.storedMissions = [
       Mission.create('M1', 'u1'),
@@ -79,6 +91,18 @@ test.group('IndexMyMissionsUseCase', (group) => {
 
     assert.lengthOf(result.data, 0)
     assert.equal(result.meta.total, 0)
+  })
+
+  test('should filter missions by name when search is provided', async ({ assert }) => {
+    missionRepo.storedMissions = [
+      Mission.create('Patrouille nord', 'user-1'),
+      Mission.create('Inspection sud', 'user-1'),
+    ]
+
+    const result = await useCase.execute('user-1', { page: 1, limit: 10, search: 'patrouille' })
+
+    assert.lengthOf(result.data, 1)
+    assert.equal(result.data[0].name, 'Patrouille nord')
   })
 
   test('should paginate filtered results correctly', async ({ assert }) => {

@@ -37,13 +37,25 @@ export class MissionRepositoryImplementation implements MissionRepository {
     const page = Math.max(1, options?.page ?? 1)
     const limit = Math.min(options?.limit ?? 20, 100)
 
-    const paginator = await MissionModel.query()
+    const query = MissionModel.query()
+      .withCount('steps')
       .preload('steps', (q) => q.orderBy('sequence_order', 'asc'))
+      .preload('robotDogs')
       .orderBy('created_at', 'desc')
-      .paginate(page, limit)
+    if (options?.search?.trim()) {
+      query.whereILike('name', `%${options.search.trim()}%`)
+    }
+    const paginator = await query.paginate(page, limit)
 
     return toPaginatedResult(paginator, (row) =>
-      Mission.rehydrate(row.id, row.name, row.userId, this.toSteps(row))
+      Mission.rehydrate(
+        row.id,
+        row.name,
+        row.userId,
+        this.toSteps(row),
+        row.robotDogs.map((d) => RobotDogId.fromString(d.id)),
+        Number(row.$extras.steps_count)
+      )
     )
   }
 
@@ -51,14 +63,26 @@ export class MissionRepositoryImplementation implements MissionRepository {
     const page = Math.max(1, options?.page ?? 1)
     const limit = Math.min(options?.limit ?? 20, 100)
 
-    const paginator = await MissionModel.query()
+    const query = MissionModel.query()
       .where('user_id', userId)
+      .withCount('steps')
       .preload('steps', (q) => q.orderBy('sequence_order', 'asc'))
+      .preload('robotDogs')
       .orderBy('created_at', 'desc')
-      .paginate(page, limit)
+    if (options?.search?.trim()) {
+      query.whereILike('name', `%${options.search.trim()}%`)
+    }
+    const paginator = await query.paginate(page, limit)
 
     return toPaginatedResult(paginator, (row) =>
-      Mission.rehydrate(row.id, row.name, row.userId, this.toSteps(row))
+      Mission.rehydrate(
+        row.id,
+        row.name,
+        row.userId,
+        this.toSteps(row),
+        row.robotDogs.map((d) => RobotDogId.fromString(d.id)),
+        Number(row.$extras.steps_count)
+      )
     )
   }
 
@@ -110,6 +134,7 @@ export class MissionRepositoryImplementation implements MissionRepository {
       .whereHas('robotDogs', (q) => {
         q.where('robot_dog_id', dogId)
       })
+      .withCount('steps')
       .preload('steps', (q) => q.orderBy('sequence_order', 'asc'))
       .preload('robotDogs')
       .paginate(page, limit)
@@ -120,13 +145,20 @@ export class MissionRepositoryImplementation implements MissionRepository {
         row.name,
         row.userId,
         this.toSteps(row),
-        row.robotDogs.map((dog) => RobotDogId.fromString(dog.id))
+        row.robotDogs.map((dog) => RobotDogId.fromString(dog.id)),
+        Number(row.$extras.steps_count)
       )
     )
   }
 
   async assignToDog(missionId: string, dogId: string): Promise<void> {
     const mission = await MissionModel.findOrFail(missionId)
+    const alreadyLinked = await mission
+      .related('robotDogs')
+      .query()
+      .wherePivot('robot_dog_id', dogId)
+      .first()
+    if (alreadyLinked) return
     await mission.related('robotDogs').attach([dogId])
   }
 

@@ -18,6 +18,24 @@ test.group('Mission entity', () => {
     assert.lengthOf(mission.missionSteps, 0)
   })
 
+  test('stepsCount returns rehydrated count when provided', ({ assert }) => {
+    const mission = Mission.rehydrate(
+      '550e8400-e29b-41d4-a716-446655440000',
+      'M',
+      'user-1',
+      [],
+      [],
+      3
+    )
+    assert.equal(mission.stepsCount, 3)
+  })
+
+  test('stepsCount falls back to loaded steps length', ({ assert }) => {
+    const mission = Mission.create('M', 'user-1')
+    mission.addStep('action-1', '{}')
+    assert.equal(mission.stepsCount, 1)
+  })
+
   // -------------------
   // rename
   // -------------------
