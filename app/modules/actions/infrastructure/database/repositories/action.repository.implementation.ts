@@ -1,9 +1,11 @@
-import { type ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
+import {
+  type ActionRepository,
+  type IndexActionOptions,
+} from '#app/modules/actions/domain/contracts/action.repository'
 import Action from '#app/modules/actions/domain/action.entity'
 import { type ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import ActionModel from '#app/modules/actions/infrastructure/database/models/action'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
-import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import db from '@adonisjs/lucid/services/db'
 
 export class ActionRepositoryImplementation implements ActionRepository {
@@ -16,7 +18,8 @@ export class ActionRepositoryImplementation implements ActionRepository {
       row.name,
       row.slug,
       row.description,
-      row.parameterSchema ?? null
+      row.parameterSchema ?? null,
+      row.isActive
     )
   }
 
@@ -29,15 +32,21 @@ export class ActionRepositoryImplementation implements ActionRepository {
       row.name,
       row.slug,
       row.description,
-      row.parameterSchema ?? null
+      row.parameterSchema ?? null,
+      row.isActive
     )
   }
 
-  async index(options?: PaginationDto): Promise<PaginatedResult<Action>> {
+  async index(options?: IndexActionOptions): Promise<PaginatedResult<Action>> {
     const page = options?.page ?? 1
     const perPage = options?.limit ?? 10
 
-    const paginator = await ActionModel.query().orderBy('id', 'desc').paginate(page, perPage)
+    const query = ActionModel.query().orderBy('id', 'desc')
+    if (!options?.includeInactive) {
+      query.where('isActive', true)
+    }
+
+    const paginator = await query.paginate(page, perPage)
 
     const data = paginator.all().map((row) => {
       return Action.rehydrate(
@@ -46,7 +55,8 @@ export class ActionRepositoryImplementation implements ActionRepository {
         row.name,
         row.slug,
         row.description,
-        row.parameterSchema ?? null
+        row.parameterSchema ?? null,
+        row.isActive
       )
     })
 
@@ -72,6 +82,7 @@ export class ActionRepositoryImplementation implements ActionRepository {
           code: action.code,
           name: action.name,
           parameterSchema: action.parameterSchema,
+          isActive: action.isActive,
         },
         { client: trx }
       )

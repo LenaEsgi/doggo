@@ -23,6 +23,9 @@ export default class ActionModel extends BaseModel {
   @column()
   declare parameterSchema: ActionParameterSchema | null
 
+  @column()
+  declare isActive: boolean
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

@@ -1,7 +1,9 @@
-import { type ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
+import {
+  type ActionRepository,
+  type IndexActionOptions,
+} from '#app/modules/actions/domain/contracts/action.repository'
 import type Action from '#app/modules/actions/domain/action.entity'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
-import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { type ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 
 export class FakeActionRepository implements ActionRepository {
@@ -15,21 +17,25 @@ export class FakeActionRepository implements ActionRepository {
     return this.actions.find((a) => a.code === code) || null
   }
 
-  async index(options?: PaginationDto): Promise<PaginatedResult<Action>> {
+  async index(options?: IndexActionOptions): Promise<PaginatedResult<Action>> {
     const page = options?.page || 1
     const limit = options?.limit || 10
+
+    const filtered = options?.includeInactive
+      ? this.actions
+      : this.actions.filter((a) => a.isActive)
+
     const start = (page - 1) * limit
     const end = start + limit
-
-    const items = this.actions.slice(start, end)
+    const items = filtered.slice(start, end)
 
     return {
       data: items,
       meta: {
-        total: this.actions.length,
+        total: filtered.length,
         perPage: limit,
         currentPage: page,
-        lastPage: Math.ceil(this.actions.length / limit),
+        lastPage: Math.ceil(filtered.length / limit),
         firstPage: 1,
       },
     }
