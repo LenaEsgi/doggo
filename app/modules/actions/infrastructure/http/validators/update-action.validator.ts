@@ -19,6 +19,7 @@ export const UpdateActionValidator = vine.create(
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
       .maxLength(100)
       .optional(),
+    code: vine.string().minLength(1).trim().maxLength(100).optional(),
     description: vine.string().minLength(1).nullable().optional(),
     parameterSchema: vine
       .object({ fields: vine.array(parameterFieldSchema) })

@@ -1,6 +1,8 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
 import { ActionRepositoryImplementation } from '#app/modules/actions/infrastructure/database/repositories/action.repository.implementation'
+import { MissionStepUsageGateway } from '#app/modules/actions/domain/contracts/mission-step-usage.gateway'
+import { MissionStepUsageGatewayImplementation } from '#app/modules/actions/infrastructure/gateways/mission-step-usage.gateway.implementation'
 
 export default class ActionProvider {
   constructor(protected app: ApplicationService) {}
@@ -11,6 +13,10 @@ export default class ActionProvider {
   register() {
     this.app.container.bind(ActionRepository, () => {
       return this.app.container.make(ActionRepositoryImplementation)
+    })
+
+    this.app.container.bind(MissionStepUsageGateway, () => {
+      return this.app.container.make(MissionStepUsageGatewayImplementation)
     })
   }
 
