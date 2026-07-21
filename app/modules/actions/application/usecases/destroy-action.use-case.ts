@@ -10,16 +10,17 @@ export class DestroyActionUseCase {
   constructor(private actionRepository: ActionRepository) {}
 
   async execute(dto: DestroyActionDto): Promise<void> {
-    logger.info({ actionId: dto.id }, 'Attempting to destroy action')
+    logger.info({ actionId: dto.id }, 'Attempting to deactivate action')
 
     const actionId = ActionId.fromString(dto.id)
     const action = await this.actionRepository.findById(actionId)
 
     if (!action) {
-      logger.warn({ actionId: dto.id }, 'Destroy action failed: Action not found')
+      logger.warn({ actionId: dto.id }, 'Deactivate action failed: Action not found')
       throw new ActionNotFoundError(actionId.value)
     }
-    logger.debug({ actionId: actionId.value, code: action.code }, 'Deleting action from repository')
-    await this.actionRepository.delete(actionId)
+
+    action.deactivate()
+    await this.actionRepository.save(action)
   }
 }

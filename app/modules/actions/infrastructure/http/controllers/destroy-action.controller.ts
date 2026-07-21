@@ -11,14 +11,14 @@ export default class DestroyActionController {
 
     const id = params.id
 
-    logger.info('Starting Action deletion', { id })
+    logger.info('Starting Action deactivation', { id })
 
     await this.useCase.execute({ id })
 
-    logger.info('Action successfully deleted', { id })
+    logger.info('Action successfully deactivated', { id })
 
-    return response.status(204).json({
-      message: 'Action deleted successfully',
+    return response.status(200).json({
+      message: 'Action deactivated successfully',
     })
   }
 }

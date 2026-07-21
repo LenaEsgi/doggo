@@ -5,16 +5,18 @@ import { DestroyActionUseCase } from '#app/modules/actions/application/usecases/
 import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
 
 test.group('Unit | Actions | DestroyActionUseCase', () => {
-  test('it should delete an existing action', async ({ assert }) => {
+  test('it should deactivate an existing action instead of deleting it', async ({ assert }) => {
     const fakeRepository = new FakeActionRepository()
-    const action = Action.create('DELETE_ME', 'Delete Me', 'delete-me', null)
+    const action = Action.create('DEACTIVATE_ME', 'Deactivate Me', 'deactivate-me', null)
     await fakeRepository.save(action)
 
     const useCase = new DestroyActionUseCase(fakeRepository)
     await useCase.execute({ id: action.id.value })
 
-    assert.equal(fakeRepository.actions.length, 0)
-    assert.isNull(await fakeRepository.findById(action.id))
+    assert.equal(fakeRepository.actions.length, 1)
+    const stillThere = await fakeRepository.findById(action.id)
+    assert.isNotNull(stillThere)
+    assert.isFalse(stillThere?.isActive)
   })
 
   test('it should throw ActionNotFoundError when action does not exist', async ({ assert }) => {
