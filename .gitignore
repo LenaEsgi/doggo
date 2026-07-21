@@ -47,3 +47,6 @@ config/firebase/serviceAccountKey.json
 /.adonisjs/server/routes.d.ts
 /database/schema.ts
 /.adonisjs/server/controllers.ts
+
+# Local git worktrees (superpowers subagent-driven-development)
+.worktrees/
