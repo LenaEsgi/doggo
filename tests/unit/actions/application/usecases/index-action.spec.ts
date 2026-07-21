@@ -46,4 +46,22 @@ test.group('Unit | Actions | IndexActionUseCase', () => {
     assert.equal(result.data.length, 0)
     assert.equal(result.meta.total, 0)
   })
+
+  test('it forwards includeInactive to the repository', async ({ assert }) => {
+    const fakeRepository = new FakeActionRepository()
+    const active = Action.create('ACTIVE', 'Active', 'active', null)
+    const inactive = Action.create('INACTIVE', 'Inactive', 'inactive', null)
+    inactive.deactivate()
+    await fakeRepository.save(active)
+    await fakeRepository.save(inactive)
+
+    const useCase = new IndexActionUseCase(fakeRepository)
+
+    const defaultResult = await useCase.execute({})
+    assert.lengthOf(defaultResult.data, 1)
+    assert.equal(defaultResult.data[0].code, 'ACTIVE')
+
+    const fullResult = await useCase.execute({ includeInactive: true })
+    assert.lengthOf(fullResult.data, 2)
+  })
 })

@@ -1,19 +1,23 @@
 import { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
 import ActionTransformer from '#app/modules/actions/infrastructure/http/transformers/action.transformer'
-import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { type IndexActionOptions } from '#app/modules/actions/domain/contracts/action.repository'
 import { IndexActionUseCase } from '#app/modules/actions/application/usecases/index-action.use-case'
+import { UserRole } from '#users/domain/enums/user.role'
 
 @inject()
 export default class IndexActionController {
   constructor(private readonly useCase: IndexActionUseCase) {}
 
-  async handle({ request, serialize, response, bouncer }: HttpContext) {
+  async handle({ request, serialize, response, bouncer, authenticatedUser }: HttpContext) {
     await bouncer.with('ActionPolicy').authorize('index')
 
-    const params: PaginationDto = {
+    const isAdmin = authenticatedUser.role === UserRole.ADMIN
+
+    const params: IndexActionOptions = {
       page: Number(request.input('page', 1)),
       limit: Number(request.input('limit', 20)),
+      includeInactive: isAdmin && request.input('includeInactive') === 'true',
     }
 
     const result = await this.useCase.execute(params)
