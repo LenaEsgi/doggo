@@ -6,6 +6,7 @@ import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mis
 import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
 import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
+import { ActionNotAvailableError } from '#app/modules/actions/domain/exceptions/action-not-available.error'
 import type Mission from '#app/modules/missions/domain/entities/mission.entity'
 import type { SyncMissionStepsDto } from '#app/modules/missions/application/dto/sync-mission-steps.dto'
 
@@ -35,8 +36,15 @@ export class SyncMissionStepsUseCase {
         throw new ActionNotFoundError(actionId)
       }
 
+      const stepsForAction = dto.steps.filter((s) => s.actionId === actionId)
+      const hasNewStep = stepsForAction.some((s) => !s.id)
+
+      if (hasNewStep && !action.isActive) {
+        throw new ActionNotAvailableError(actionId)
+      }
+
       // Valider tous les steps qui utilisent cette action
-      for (const step of dto.steps.filter((s) => s.actionId === actionId)) {
+      for (const step of stepsForAction) {
         action.validateParameters(step.parameters)
       }
     }

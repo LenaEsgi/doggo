@@ -12,6 +12,7 @@ import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { InvalidMissionNotEditableError } from '#app/modules/missions/domain/exceptions/invalid-mission-not-editable.error'
 import type { ActionParameterSchema } from '#app/modules/actions/domain/value-objects/action-parameter-schema'
+import { ActionNotAvailableError } from '#app/modules/actions/domain/exceptions/action-not-available.error'
 
 // Schema de test : action MOVE avec distance_cm requis (1-5000)
 const moveSchema: ActionParameterSchema = {
@@ -28,8 +29,12 @@ const moveSchema: ActionParameterSchema = {
   ],
 }
 
-function makeAction(id: string, schema: ActionParameterSchema | null = null): Action {
-  return Action.rehydrate(id, 'MOVE', 'Move', 'move', null, schema)
+function makeAction(
+  id: string,
+  schema: ActionParameterSchema | null = null,
+  isActive = true
+): Action {
+  return Action.rehydrate(id, 'MOVE', 'Move', 'move', null, schema, isActive)
 }
 
 test.group('SyncMissionStepsUseCase', () => {
@@ -191,5 +196,62 @@ test.group('SyncMissionStepsUseCase', () => {
         }),
       InvalidMissionNotEditableError
     )
+  })
+
+  test('lance ActionNotAvailableError si un nouveau step référence une action désactivée', async ({
+    assert,
+  }) => {
+    const missionRepo = new FakeMissionRepository()
+    const actionRepo = new FakeActionRepository()
+    const useCase = new SyncMissionStepsUseCase(
+      missionRepo,
+      new FakeMissionRunRepository(),
+      actionRepo
+    )
+
+    const actionId = '550e8400-e29b-41d4-a716-446655440005'
+    actionRepo.actions.push(makeAction(actionId, null, false))
+
+    const mission = Mission.create('Mission Test', 'user-001')
+    await missionRepo.save(mission)
+
+    await assert.rejects(
+      async () =>
+        useCase.execute({
+          missionId: mission.id.value,
+          steps: [{ actionId, parameters: '{}' }],
+        }),
+      ActionNotAvailableError
+    )
+  })
+
+  test('autorise à conserver un step existant même si son action a été désactivée depuis', async ({
+    assert,
+  }) => {
+    const missionRepo = new FakeMissionRepository()
+    const actionRepo = new FakeActionRepository()
+    const useCase = new SyncMissionStepsUseCase(
+      missionRepo,
+      new FakeMissionRunRepository(),
+      actionRepo
+    )
+
+    const actionId = '550e8400-e29b-41d4-a716-446655440006'
+    actionRepo.actions.push(makeAction(actionId, null))
+
+    const mission = Mission.create('Mission Test', 'user-001')
+    mission.addStep(actionId, '{}')
+    await missionRepo.save(mission)
+    const [existingStep] = mission.missionSteps
+
+    // L'action est désactivée après coup, une fois déjà utilisée par ce step
+    actionRepo.actions[0] = Action.rehydrate(actionId, 'MOVE', 'Move', 'move', null, null, false)
+
+    const result = await useCase.execute({
+      missionId: mission.id.value,
+      steps: [{ id: existingStep.id.value, actionId, parameters: '{}' }],
+    })
+
+    assert.lengthOf(result.missionSteps, 1)
   })
 })

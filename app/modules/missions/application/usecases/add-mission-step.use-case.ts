@@ -3,13 +3,18 @@ import { MissionRepository } from '#app/modules/missions/domain/contracts/missio
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
+import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
+import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
+import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
+import { ActionNotAvailableError } from '#app/modules/actions/domain/exceptions/action-not-available.error'
 import { inject } from '@adonisjs/core'
 
 @inject()
 export class AddMissionStepUseCase {
   constructor(
     private missionRepository: MissionRepository,
-    private missionRunRepository: MissionRunRepository
+    private missionRunRepository: MissionRunRepository,
+    private actionRepository: ActionRepository
   ) {}
 
   async execute(dto: AddMissionStepDto): Promise<void> {
@@ -18,6 +23,14 @@ export class AddMissionStepUseCase {
 
     if (!mission) {
       throw new MissionNotFoundError(dto.missionId)
+    }
+
+    const action = await this.actionRepository.findById(ActionId.fromString(dto.actionId))
+    if (!action) {
+      throw new ActionNotFoundError(dto.actionId)
+    }
+    if (!action.isActive) {
+      throw new ActionNotAvailableError(dto.actionId)
     }
 
     const hasActiveRun = await this.missionRunRepository.hasActiveRunForMission(dto.missionId)
