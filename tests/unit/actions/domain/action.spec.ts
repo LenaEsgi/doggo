@@ -121,4 +121,48 @@ test.group('Unit | Actions | ActionEntity', () => {
     const action = Action.create('MOVE', 'Move', 'move', null, moveSchema)
     assert.throws(() => action.validateParameters('not-json'), InvalidActionParametersError)
   })
+
+  // -------------------
+  // isActive / activate / deactivate / updateCode
+  // -------------------
+
+  test('it should be active by default when created', ({ assert }) => {
+    const action = Action.create('ACT', 'Name', 'slug', null)
+    assert.isTrue(action.isActive)
+  })
+
+  test('it should rehydrate as active by default when isActive is omitted', ({ assert }) => {
+    const action = Action.rehydrate('550e8400-e29b-41d4-a716-446655440000', 'CODE', 'Name', 'slug', null)
+    assert.isTrue(action.isActive)
+  })
+
+  test('it should rehydrate with the given isActive value', ({ assert }) => {
+    const action = Action.rehydrate(
+      '550e8400-e29b-41d4-a716-446655440000',
+      'CODE',
+      'Name',
+      'slug',
+      null,
+      null,
+      false
+    )
+    assert.isFalse(action.isActive)
+  })
+
+  test('it should deactivate and reactivate', ({ assert }) => {
+    const action = Action.create('ACT', 'Name', 'slug', null)
+
+    action.deactivate()
+    assert.isFalse(action.isActive)
+
+    action.activate()
+    assert.isTrue(action.isActive)
+  })
+
+  test('it should update the code and uppercase it', ({ assert }) => {
+    const action = Action.create('old_code', 'Name', 'slug', null)
+
+    action.updateCode('new_code')
+    assert.equal(action.code, 'NEW_CODE')
+  })
 })

@@ -6,11 +6,12 @@ import type { ActionParameterSchema } from '#app/modules/actions/domain/value-ob
 export default class Action {
   private constructor(
     private readonly _id: ActionId,
-    private readonly _code: string,
+    private _code: string,
     private _name: string,
     private _slug: string,
     private _description: string | null,
-    private _parameterSchema: ActionParameterSchema | null
+    private _parameterSchema: ActionParameterSchema | null,
+    private _isActive: boolean
   ) {}
 
   public static create(
@@ -26,7 +27,8 @@ export default class Action {
       name,
       slug,
       description ?? null,
-      parameterSchema
+      parameterSchema,
+      true
     )
   }
 
@@ -36,7 +38,8 @@ export default class Action {
     name: string,
     slug: string,
     description: string | null,
-    parameterSchema: ActionParameterSchema | null = null
+    parameterSchema: ActionParameterSchema | null = null,
+    isActive: boolean = true
   ): Action {
     return new Action(
       ActionId.fromString(id),
@@ -44,7 +47,8 @@ export default class Action {
       name,
       slug,
       description ?? null,
-      parameterSchema
+      parameterSchema,
+      isActive
     )
   }
 
@@ -76,6 +80,10 @@ export default class Action {
     return this._parameterSchema
   }
 
+  public get isActive(): boolean {
+    return this._isActive
+  }
+
   // -------------------
   // Business
   // -------------------
@@ -92,12 +100,24 @@ export default class Action {
     this._slug = this.validateString(slug, 'slug').toLowerCase()
   }
 
+  public updateCode(code: string): void {
+    this._code = code.toUpperCase()
+  }
+
   public updateDescription(description: string | null): void {
     this._description = description ?? null
   }
 
   public updateParameterSchema(schema: ActionParameterSchema | null): void {
     this._parameterSchema = schema
+  }
+
+  public activate(): void {
+    this._isActive = true
+  }
+
+  public deactivate(): void {
+    this._isActive = false
   }
 
   /**
