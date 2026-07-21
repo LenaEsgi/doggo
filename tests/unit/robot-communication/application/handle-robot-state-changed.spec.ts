@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import emitter from '@adonisjs/core/services/emitter'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
@@ -11,6 +12,7 @@ import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
+import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 
 test.group('HandleRobotStateChangedUseCase', (group) => {
   let dogRepo: FakeRobotDogRepository
@@ -18,6 +20,7 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
   let timeoutQueue: FakeMissionTimeoutQueue
   let communicationService: FakeRobotCommunicationService
   let useCase: HandleRobotStateChangedUseCase
+  let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     dogRepo = new FakeRobotDogRepository()
@@ -25,6 +28,8 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
     timeoutQueue = new FakeMissionTimeoutQueue()
     communicationService = new FakeRobotCommunicationService()
     useCase = new HandleRobotStateChangedUseCase(dogRepo, runRepo, timeoutQueue, communicationService)
+    events = emitter.fake()
+    return () => emitter.restore()
   })
 
   test('confirme le run PENDING et annule le job timeout quand robot publie IN_MISSION', async ({
@@ -106,5 +111,25 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
 
     const unchanged = await dogRepo.findById(dog.id)
     assert.equal(unchanged!.state, RobotDogState.IDLE)
+  })
+
+  test('émet DogStateChangedEvent sur une transition réelle', async () => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await dogRepo.save(dog)
+
+    await useCase.execute(dog.id.value, RobotDogState.ERROR)
+
+    events.assertEmittedCount(DogStateChangedEvent, 1)
+  })
+
+  test("n'émet pas DogStateChangedEvent en boucle si le robot répète le même state (anti-spam)", async () => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await dogRepo.save(dog)
+
+    await useCase.execute(dog.id.value, RobotDogState.ERROR)
+    await useCase.execute(dog.id.value, RobotDogState.ERROR)
+    await useCase.execute(dog.id.value, RobotDogState.ERROR)
+
+    events.assertEmittedCount(DogStateChangedEvent, 1)
   })
 })

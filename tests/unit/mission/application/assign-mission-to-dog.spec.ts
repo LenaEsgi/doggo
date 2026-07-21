@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import emitter from '@adonisjs/core/services/emitter'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { FakeRobotDogGateway } from '#tests/unit/fakes/fake-robot-dog-gateway'
@@ -6,16 +7,39 @@ import { AssignMissionToDogUseCase } from '#app/modules/missions/application/use
 import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { RobotAlreadyAssignedError } from '#app/modules/missions/domain/exceptions/robot-already-assigned.error'
+import MissionAssignedToDogEvent from '#app/modules/missions/domain/events/mission-assigned-to-dog.event'
 
 test.group('AssignMissionToDogUseCase', (group) => {
   let repo: FakeMissionRepository
   let dogGateway: FakeRobotDogGateway
   let useCase: AssignMissionToDogUseCase
+  let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     repo = new FakeMissionRepository()
     dogGateway = new FakeRobotDogGateway()
     useCase = new AssignMissionToDogUseCase(repo, dogGateway)
+    events = emitter.fake()
+    return () => emitter.restore()
+  })
+
+  test('émet MissionAssignedToDogEvent pour notifier tous les propriétaires du robot', async () => {
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    const dogId = '8570f711-2895-4632-9599-281083096058'
+
+    await repo.save(mission)
+    dogGateway.addRobot(dogId, 'Rex')
+
+    await useCase.execute(mission.id.value, dogId)
+
+    events.assertEmitted(
+      MissionAssignedToDogEvent,
+      ({ data }) =>
+        data.missionId === mission.id.value &&
+        data.missionName === 'Bridge patrol' &&
+        data.robotDogId === dogId &&
+        data.robotDogName === 'Rex'
+    )
   })
 
   test('should assign mission to robot dog when both exist', async ({ assert }) => {

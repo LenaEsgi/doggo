@@ -150,4 +150,38 @@ test.group('RobotDog Entity', () => {
 
     assert.notEqual(dog.state, RobotDogState.OFFLINE)
   })
+
+  test('hasEnteredLowBatteryZone: true en franchissant le seuil bas vers le bas', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 30)
+    const previousLevel = dog.batteryLevel
+    dog.updateBatteryLevel(18)
+
+    assert.isTrue(dog.hasEnteredLowBatteryZone(previousLevel))
+  })
+
+  test('hasEnteredLowBatteryZone: false si déjà sous le seuil avant', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 18)
+    const previousLevel = dog.batteryLevel
+    dog.updateBatteryLevel(15)
+
+    assert.isFalse(dog.hasEnteredLowBatteryZone(previousLevel))
+  })
+
+  test('hasEnteredLowBatteryZone: false si la batterie tombe directement en zone critique', ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 30)
+    const previousLevel = dog.batteryLevel
+    dog.updateBatteryLevel(5)
+
+    assert.isFalse(dog.hasEnteredLowBatteryZone(previousLevel))
+  })
+
+  test('hasEnteredLowBatteryZone: false si la batterie reste au-dessus du seuil', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    const previousLevel = dog.batteryLevel
+    dog.updateBatteryLevel(75)
+
+    assert.isFalse(dog.hasEnteredLowBatteryZone(previousLevel))
+  })
 })

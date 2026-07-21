@@ -5,6 +5,7 @@ export type MissionStartFailureReason =
   | 'ROBOT_ERROR'
   | 'ROBOT_BUSY'
   | 'BATTERY_TOO_LOW'
+  | 'TIMEOUT'
 
 export default class MissionStartFailedEvent extends BaseEvent {
   constructor(

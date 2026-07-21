@@ -15,12 +15,17 @@ export type NotificationType =
   | 'dog.revoked'
   | 'dog.member.assigned'
   | 'dog.member.revoked'
+  | 'dog.offline'
+  | 'dog.error'
+  | 'dog.battery_low'
   | 'mission.started'
   | 'mission.completed'
   | 'mission.failed'
   | 'mission.start_failed'
   | 'mission.skipped'
   | 'mission.interrupted'
+  | 'mission.assigned_to_dog'
+  | 'mission.removed_from_dog'
 
 const AUDIT_LOCALE: UserLocale = 'fr'
 

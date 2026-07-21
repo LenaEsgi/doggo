@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import emitter from '@adonisjs/core/services/emitter'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { FakeRobotDogGateway } from '#tests/unit/fakes/fake-robot-dog-gateway'
@@ -10,18 +11,22 @@ import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
+import MissionRemovedFromDogEvent from '#app/modules/missions/domain/events/mission-removed-from-dog.event'
 
 test.group('RemoveMissionToDogUseCase', (group) => {
   let repo: FakeMissionRepository
   let dogGateway: FakeRobotDogGateway
   let runRepo: FakeMissionRunRepository
   let useCase: RemoveMissionToDogUseCase
+  let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     repo = new FakeMissionRepository()
     dogGateway = new FakeRobotDogGateway()
     runRepo = new FakeMissionRunRepository()
     useCase = new RemoveMissionToDogUseCase(repo, dogGateway, runRepo)
+    events = emitter.fake()
+    return () => emitter.restore()
   })
 
   test('should remove mission from robot dog when both exist', async ({ assert }) => {
@@ -37,6 +42,26 @@ test.group('RemoveMissionToDogUseCase', (group) => {
     const result = await repo.listByRobotDog(dogId, { page: 1, limit: 10 })
     assert.lengthOf(result.data, 0)
     assert.equal(result.meta.total, 0)
+  })
+
+  test('émet MissionRemovedFromDogEvent pour notifier tous les propriétaires du robot', async () => {
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    const dogId = '8570f711-2895-4632-9599-281083096058'
+
+    await repo.save(mission)
+    await repo.assignToDog(mission.id.value, dogId)
+    dogGateway.addRobot(dogId, 'Rex')
+
+    await useCase.execute(mission.id.value, dogId)
+
+    events.assertEmitted(
+      MissionRemovedFromDogEvent,
+      ({ data }) =>
+        data.missionId === mission.id.value &&
+        data.missionName === 'Bridge patrol' &&
+        data.robotDogId === dogId &&
+        data.robotDogName === 'Rex'
+    )
   })
 
   test('should throw RobotDogNotFoundError when robot does not exist', async ({ assert }) => {

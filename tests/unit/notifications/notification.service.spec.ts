@@ -234,4 +234,82 @@ test.group('NotificationService', () => {
       "Patrouille n'a pas pu démarrer sur le robot Rex : batterie du robot trop faible"
     )
   })
+
+  test('message mission.start_failed mentionne le timeout de confirmation pour TIMEOUT', async ({
+    assert,
+  }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'mission.start_failed', 'critical', {
+      missionName: 'Patrouille',
+      robotDogName: 'Rex',
+      reason: 'TIMEOUT',
+    })
+
+    assert.equal(
+      repo.created[0].message,
+      "Patrouille n'a pas pu démarrer sur le robot Rex : le robot n'a pas confirmé le lancement à temps"
+    )
+  })
+
+  test('message dog.offline', async ({ assert }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'dog.offline', 'warning', { robotDogName: 'Rex' })
+
+    assert.equal(repo.created[0].message, 'Le robot Rex est passé hors ligne')
+  })
+
+  test('message dog.error', async ({ assert }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'dog.error', 'critical', { robotDogName: 'Rex' })
+
+    assert.equal(repo.created[0].message, 'Le robot Rex signale une erreur')
+  })
+
+  test('message dog.battery_low interpole le niveau de batterie', async ({ assert }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'dog.battery_low', 'warning', {
+      robotDogName: 'Rex',
+      batteryLevel: 18,
+    })
+
+    assert.equal(repo.created[0].message, 'La batterie du robot Rex est faible (18%)')
+  })
+
+  test('message mission.assigned_to_dog', async ({ assert }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'mission.assigned_to_dog', 'info', {
+      missionName: 'Patrouille',
+      robotDogName: 'Rex',
+    })
+
+    assert.equal(repo.created[0].message, 'Patrouille a été assignée au robot Rex')
+  })
+
+  test('message mission.removed_from_dog', async ({ assert }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'mission.removed_from_dog', 'warning', {
+      missionName: 'Patrouille',
+      robotDogName: 'Rex',
+    })
+
+    assert.equal(repo.created[0].message, 'Patrouille a été retirée du robot Rex')
+  })
 })

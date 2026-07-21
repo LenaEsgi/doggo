@@ -147,7 +147,6 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
         data.missionScheduleId === schedule.id.value &&
         data.missionId === missionB.id.value &&
         data.robotDogId === dog.id.value &&
-        data.userId === missionB.userId &&
         data.missionName === missionB.name
     )
   })

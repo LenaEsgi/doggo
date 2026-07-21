@@ -49,7 +49,6 @@ export class HandleMissionScheduleDispatchUseCase {
             payload.scheduleId,
             payload.missionId,
             payload.dogId,
-            mission.userId,
             mission.name
           )
         }

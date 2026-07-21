@@ -2,16 +2,16 @@ import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { NotificationService } from '#app/modules/notifications/application/notification.service'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
-import type MissionScheduleSkippedEvent from '#app/modules/missions/domain/events/mission-schedule-skipped.event'
+import type RobotBatteryLowEvent from '#dogs/domain/events/robot-battery-low.event'
 
 @inject()
-export default class MissionScheduleSkippedSseListener {
+export default class RobotBatteryLowSseListener {
   constructor(
     private readonly notificationService: NotificationService,
     private readonly ownershipReadRepository: OwnershipReadRepository
   ) {}
 
-  async handle(event: MissionScheduleSkippedEvent): Promise<void> {
+  async handle(event: RobotBatteryLowEvent): Promise<void> {
     try {
       const ownerIds = await this.ownershipReadRepository.findAllActiveUserIdsByRobotDogId(
         event.robotDogId
@@ -19,24 +19,17 @@ export default class MissionScheduleSkippedSseListener {
 
       await this.notificationService.createBulk(
         ownerIds,
-        'mission.skipped',
+        'dog.battery_low',
         'warning',
-        { missionName: event.missionName },
+        { robotDogName: event.robotDogName, batteryLevel: event.batteryLevel },
         event.robotDogId
       )
       logger.info(
-        {
-          robotDogId: event.robotDogId,
-          missionScheduleId: event.missionScheduleId,
-          ownerCount: ownerIds.length,
-        },
-        'MissionScheduleSkippedSseListener: notifications created'
+        { robotDogId: event.robotDogId, batteryLevel: event.batteryLevel, ownerCount: ownerIds.length },
+        'RobotBatteryLowSseListener: notifications created'
       )
     } catch (error) {
-      logger.error(
-        { err: error, missionScheduleId: event.missionScheduleId },
-        'MissionScheduleSkippedSseListener: failed'
-      )
+      logger.error({ err: error, robotDogId: event.robotDogId }, 'RobotBatteryLowSseListener: failed')
     }
   }
 }

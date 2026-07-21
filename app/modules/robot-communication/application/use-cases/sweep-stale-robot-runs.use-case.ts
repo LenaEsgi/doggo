@@ -96,13 +96,7 @@ export class SweepStaleRobotRunsUseCase {
 
     const mission = await this.missionRepository.findById(MissionId.fromString(result.missionId))
     if (mission) {
-      void MissionAutoInterruptedEvent.dispatch(
-        mission.userId,
-        result.missionId,
-        mission.name,
-        dogId,
-        reason
-      )
+      void MissionAutoInterruptedEvent.dispatch(result.missionId, mission.name, dogId, reason)
     }
     void DogStateChangedEvent.dispatch(dogId, nextDogState)
   }

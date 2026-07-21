@@ -6,7 +6,6 @@ import {
   NotificationRepository,
   type NotificationRecord,
   type CreateNotificationData,
-  type FindNotificationsParams,
 } from '#app/modules/notifications/domain/contracts/notification.repository'
 import type { UserLocale } from '#users/domain/user.entity'
 import type { PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'

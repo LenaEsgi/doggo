@@ -1,23 +1,32 @@
 import { test } from '@japa/runner'
+import emitter from '@adonisjs/core/services/emitter'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
+import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
 import { HandlePendingRunTimeoutUseCase } from '#app/modules/robot-communication/application/use-cases/handle-pending-run-timeout.use-case'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
+import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { MissionStepId } from '#app/modules/missions/domain/value-objects/mission-step-id'
 import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run-status'
+import MissionStartFailedEvent from '#app/modules/missions/domain/events/mission-start-failed.event'
 
 test.group('HandlePendingRunTimeoutUseCase', (group) => {
   let runRepo: FakeMissionRunRepository
   let dogRepo: FakeRobotDogRepository
+  let missionRepo: FakeMissionRepository
   let useCase: HandlePendingRunTimeoutUseCase
+  let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     runRepo = new FakeMissionRunRepository()
     dogRepo = new FakeRobotDogRepository()
-    useCase = new HandlePendingRunTimeoutUseCase(runRepo, dogRepo)
+    missionRepo = new FakeMissionRepository()
+    useCase = new HandlePendingRunTimeoutUseCase(runRepo, dogRepo, missionRepo)
+    events = emitter.fake()
+    return () => emitter.restore()
   })
 
   test('interrompt le run PENDING et repasse le dog IDLE quand le robot ne confirme jamais', async ({
@@ -28,7 +37,10 @@ test.group('HandlePendingRunTimeoutUseCase', (group) => {
     await dogRepo.save(dog)
     assert.equal(dog.state, RobotDogState.IN_MISSION)
 
-    const run = MissionRun.start(MissionId.generate(), dog.id, [MissionStepId.generate()])
+    const mission = Mission.create('Patrouille', 'user-1')
+    await missionRepo.save(mission)
+
+    const run = MissionRun.start(mission.id, dog.id, [MissionStepId.generate()])
     await runRepo.save(run)
 
     await useCase.execute(run.id.value, dog.id.value)
@@ -38,6 +50,16 @@ test.group('HandlePendingRunTimeoutUseCase', (group) => {
 
     const savedDog = await dogRepo.findById(dog.id)
     assert.equal(savedDog!.state, RobotDogState.IDLE)
+
+    events.assertEmitted(
+      MissionStartFailedEvent,
+      ({ data }) =>
+        data.missionId === mission.id.value &&
+        data.missionName === 'Patrouille' &&
+        data.robotDogId === dog.id.value &&
+        data.robotDogName === 'Rex' &&
+        data.reason === 'TIMEOUT'
+    )
   })
 
   test('ne touche pas à un run déjà confirmé (RUNNING)', async ({ assert }) => {

@@ -3,6 +3,9 @@ dog:
   revoked: "You have been removed from robot dog {dog}"
   member_assigned: "{member} joined robot dog {dog}"
   member_revoked: "{member} left robot dog {dog}"
+  offline: "Robot dog {dog} has gone offline"
+  error: "Robot dog {dog} is reporting an error"
+  battery_low: "Robot dog {dog}'s battery is low ({level}%)"
 
 mission:
   started: "{mission} started on robot dog {dog}"
@@ -11,12 +14,15 @@ mission:
   start_failed: "{mission} could not start on robot dog {dog}: {reasonText}"
   skipped: "{mission} could not start: robot dog {dog} was already busy"
   interrupted: "{mission} was interrupted on robot dog {dog}: {reasonText}"
+  assigned_to_dog: "{mission} was assigned to robot dog {dog}"
+  removed_from_dog: "{mission} was removed from robot dog {dog}"
 
 reasons:
   robot_offline: "robot offline"
   robot_error: "robot in error state"
   robot_busy: "robot already busy"
   battery_too_low: "robot battery too low"
+  timeout: "the robot did not confirm launch in time"
   max_duration: "maximum duration reached"
 
 defaults:

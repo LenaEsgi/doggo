@@ -62,8 +62,14 @@ export class HandleRobotStateChangedUseCase {
       }
     }
 
+    const previousState = dog.state
     dog.applyStateFromRobot(state)
     await this.dogRepository.save(dog)
-    void DogStateChangedEvent.dispatch(dogId, state)
+
+    // Évite de re-notifier à chaque message si le robot répète le même état (ex: boucle
+    // d'erreur qui renvoie ERROR en continu) - seule la transition compte.
+    if (previousState !== state) {
+      void DogStateChangedEvent.dispatch(dogId, state)
+    }
   }
 }

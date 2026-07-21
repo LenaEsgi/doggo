@@ -9,6 +9,9 @@ import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 import MissionAutoInterruptedEvent from '#app/modules/missions/domain/events/mission-auto-interrupted.event'
 import MissionStartedEvent from '#app/modules/missions/domain/events/mission-started.event'
 import MissionStartFailedEvent from '#app/modules/missions/domain/events/mission-start-failed.event'
+import MissionAssignedToDogEvent from '#app/modules/missions/domain/events/mission-assigned-to-dog.event'
+import MissionRemovedFromDogEvent from '#app/modules/missions/domain/events/mission-removed-from-dog.event'
+import RobotBatteryLowEvent from '#dogs/domain/events/robot-battery-low.event'
 
 const DogAssignedListener = () =>
   import('#app/modules/notifications/application/listeners/dog-assigned.listener')
@@ -46,13 +49,28 @@ const MissionStartedSseListener = () =>
 const MissionStartFailedSseListener = () =>
   import('#app/modules/notifications/application/listeners/mission-start-failed-sse.listener')
 
+const MissionAssignedToDogSseListener = () =>
+  import('#app/modules/notifications/application/listeners/mission-assigned-to-dog-sse.listener')
+
+const MissionRemovedFromDogSseListener = () =>
+  import('#app/modules/notifications/application/listeners/mission-removed-from-dog-sse.listener')
+
+const RobotBatteryLowSseListener = () =>
+  import('#app/modules/notifications/application/listeners/robot-battery-low-sse.listener')
+
+const RobotStateAlertSseListener = () =>
+  import('#app/modules/notifications/application/listeners/robot-state-alert-sse.listener')
+
 emitter.listen(OwnershipAssignedEvent, [DogAssignedListener, DogAssignedSseListener])
 emitter.listen(OwnershipRevokedEvent, [DogRevokedListener, DogRevokedSseListener])
 emitter.listen(RobotTelemetryReceivedEvent, [RobotTelemetrySseListener])
 emitter.listen(MissionStepUpdatedEvent, [MissionStepUpdatedSseListener])
 emitter.listen(MissionCompletedEvent, [MissionCompletedSseListener])
 emitter.listen(MissionScheduleSkippedEvent, [MissionScheduleSkippedSseListener])
-emitter.listen(DogStateChangedEvent, [DogStateChangedSseListener])
+emitter.listen(DogStateChangedEvent, [DogStateChangedSseListener, RobotStateAlertSseListener])
 emitter.listen(MissionAutoInterruptedEvent, [MissionAutoInterruptedSseListener])
 emitter.listen(MissionStartedEvent, [MissionStartedSseListener])
 emitter.listen(MissionStartFailedEvent, [MissionStartFailedSseListener])
+emitter.listen(MissionAssignedToDogEvent, [MissionAssignedToDogSseListener])
+emitter.listen(MissionRemovedFromDogEvent, [MissionRemovedFromDogSseListener])
+emitter.listen(RobotBatteryLowEvent, [RobotBatteryLowSseListener])

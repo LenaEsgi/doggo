@@ -92,13 +92,7 @@ export class HandleRobotMissionUpdateUseCase {
     ) {
       const mission = await this.missionRepository.findById(MissionId.fromString(update.missionId))
       if (mission) {
-        void MissionCompletedEvent.dispatch(
-          mission.userId,
-          update.missionId,
-          mission.name,
-          dogId,
-          outcome.runStatus
-        )
+        void MissionCompletedEvent.dispatch(update.missionId, mission.name, dogId, outcome.runStatus)
       }
     }
   }

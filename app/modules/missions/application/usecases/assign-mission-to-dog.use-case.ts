@@ -5,6 +5,7 @@ import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
+import MissionAssignedToDogEvent from '#app/modules/missions/domain/events/mission-assigned-to-dog.event'
 
 @inject()
 export class AssignMissionToDogUseCase {
@@ -27,5 +28,7 @@ export class AssignMissionToDogUseCase {
     mission.assignRobot(RobotDogId.fromString(dogId))
 
     await this.missionRepository.assignToDog(missionId, dogId)
+
+    void MissionAssignedToDogEvent.dispatch(missionId, mission.name, dogId, dog.name)
   }
 }

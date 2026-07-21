@@ -7,6 +7,7 @@ import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-fou
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
+import MissionRemovedFromDogEvent from '#app/modules/missions/domain/events/mission-removed-from-dog.event'
 
 @inject()
 export class RemoveMissionToDogUseCase {
@@ -35,5 +36,7 @@ export class RemoveMissionToDogUseCase {
     }
 
     await this.missionRepository.removeFromDog(missionId, dogId)
+
+    void MissionRemovedFromDogEvent.dispatch(missionId, mission.name, dogId, dog.name)
   }
 }

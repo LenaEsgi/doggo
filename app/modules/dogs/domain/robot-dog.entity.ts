@@ -9,6 +9,7 @@ import { RobotDogKey } from './value-objects/robot-dog-key.js'
 
 export class RobotDog {
   private static readonly MIN_BATTERY_FOR_ACTIVITY = 10
+  private static readonly LOW_BATTERY_WARNING_THRESHOLD = 20
   private static readonly HEARTBEAT_TIMEOUT_MS = 30_000
   private static readonly DEFAULT_BATTERY_LEVEL = 100
 
@@ -158,6 +159,17 @@ export class RobotDog {
     this.ensureBatteryIsValid(batteryLevel)
 
     this._batteryLevel = batteryLevel
+  }
+
+  // Vrai uniquement au moment où la batterie franchit le seuil d'alerte vers le bas
+  // (pas à chaque télémétrie tant qu'elle reste sous le seuil), et seulement si elle
+  // n'est pas déjà dans la zone critique qui bloque le démarrage d'une mission.
+  public hasEnteredLowBatteryZone(previousLevel: number): boolean {
+    return (
+      previousLevel > RobotDog.LOW_BATTERY_WARNING_THRESHOLD &&
+      this._batteryLevel <= RobotDog.LOW_BATTERY_WARNING_THRESHOLD &&
+      this._batteryLevel > RobotDog.MIN_BATTERY_FOR_ACTIVITY
+    )
   }
 
   public updateHeartbeat(date: Date): void {

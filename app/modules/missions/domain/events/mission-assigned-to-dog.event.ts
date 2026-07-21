@@ -1,11 +1,11 @@
 import { BaseEvent } from '@adonisjs/core/events'
 
-export default class MissionScheduleSkippedEvent extends BaseEvent {
+export default class MissionAssignedToDogEvent extends BaseEvent {
   constructor(
-    public readonly missionScheduleId: string,
     public readonly missionId: string,
+    public readonly missionName: string,
     public readonly robotDogId: string,
-    public readonly missionName: string
+    public readonly robotDogName: string
   ) {
     super()
   }

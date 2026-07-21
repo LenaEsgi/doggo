@@ -6,12 +6,15 @@ import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
+import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
+import MissionStartFailedEvent from '#app/modules/missions/domain/events/mission-start-failed.event'
 
 @inject()
 export class HandlePendingRunTimeoutUseCase {
   constructor(
     private readonly missionRunRepository: MissionRunRepository,
-    private readonly dogRepository: RobotDogRepository
+    private readonly dogRepository: RobotDogRepository,
+    private readonly missionRepository: MissionRepository
   ) {}
 
   async execute(runId: string, dogId: string): Promise<void> {
@@ -34,6 +37,17 @@ export class HandlePendingRunTimeoutUseCase {
     if (dog) {
       dog.applyStateFromRobot(RobotDogState.IDLE)
       await this.dogRepository.save(dog)
+    }
+
+    const mission = await this.missionRepository.findById(run.missionId)
+    if (mission && dog) {
+      void MissionStartFailedEvent.dispatch(
+        run.missionId.value,
+        mission.name,
+        dogId,
+        dog.name,
+        'TIMEOUT'
+      )
     }
 
     void DogStateChangedEvent.dispatch(dogId, RobotDogState.IDLE)

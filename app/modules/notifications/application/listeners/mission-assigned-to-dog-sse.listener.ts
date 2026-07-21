@@ -2,16 +2,16 @@ import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { NotificationService } from '#app/modules/notifications/application/notification.service'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
-import type MissionScheduleSkippedEvent from '#app/modules/missions/domain/events/mission-schedule-skipped.event'
+import type MissionAssignedToDogEvent from '#app/modules/missions/domain/events/mission-assigned-to-dog.event'
 
 @inject()
-export default class MissionScheduleSkippedSseListener {
+export default class MissionAssignedToDogSseListener {
   constructor(
     private readonly notificationService: NotificationService,
     private readonly ownershipReadRepository: OwnershipReadRepository
   ) {}
 
-  async handle(event: MissionScheduleSkippedEvent): Promise<void> {
+  async handle(event: MissionAssignedToDogEvent): Promise<void> {
     try {
       const ownerIds = await this.ownershipReadRepository.findAllActiveUserIdsByRobotDogId(
         event.robotDogId
@@ -19,23 +19,19 @@ export default class MissionScheduleSkippedSseListener {
 
       await this.notificationService.createBulk(
         ownerIds,
-        'mission.skipped',
-        'warning',
-        { missionName: event.missionName },
+        'mission.assigned_to_dog',
+        'info',
+        { missionName: event.missionName, robotDogName: event.robotDogName },
         event.robotDogId
       )
       logger.info(
-        {
-          robotDogId: event.robotDogId,
-          missionScheduleId: event.missionScheduleId,
-          ownerCount: ownerIds.length,
-        },
-        'MissionScheduleSkippedSseListener: notifications created'
+        { missionId: event.missionId, robotDogId: event.robotDogId, ownerCount: ownerIds.length },
+        'MissionAssignedToDogSseListener: notifications created'
       )
     } catch (error) {
       logger.error(
-        { err: error, missionScheduleId: event.missionScheduleId },
-        'MissionScheduleSkippedSseListener: failed'
+        { err: error, missionId: event.missionId },
+        'MissionAssignedToDogSseListener: failed'
       )
     }
   }
