@@ -7,8 +7,10 @@ export default class ActionTransformer extends BaseTransformer<Action> {
       id: this.resource.id.value,
       code: this.resource.code,
       name: this.resource.name,
+      slug: this.resource.slug,
       description: this.resource.description,
       parameterSchema: this.resource.parameterSchema,
+      isActive: this.resource.isActive,
     }
   }
 }
