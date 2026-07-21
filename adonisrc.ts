@@ -77,6 +77,7 @@ export default defineConfig({
       file: () => import('#providers/mqtt_provider'),
       environment: ['web', 'console'],
     },
+    () => import('#providers/robot_control_websocket_provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/mail/mail_provider'),
     () => import('@adonisjs/core/providers/edge_provider'),

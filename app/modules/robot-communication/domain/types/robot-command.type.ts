@@ -4,7 +4,13 @@ export enum RobotCommand {
   EMERGENCY_STOP = 'emergency_stop',
   START_SESSION = 'start_session',
   END_SESSION = 'end_session',
+  DRIVE = 'drive',
 }
+
+// Deux axes indépendants façon voiture : on ne tourne (steering) que si on
+// avance ou recule (throttle) en même temps — impossible de pivoter sur place.
+export type Throttle = 'forward' | 'backward' | 'none'
+export type Steering = 'left' | 'right' | 'none'
 
 /**
  * Une étape de mission dénormalisée pour le robot : il reçoit le CODE machine de
@@ -25,6 +31,8 @@ export interface RobotCommandData {
   runId?: string
   missionId?: string
   steps?: RobotCommandStep[]
+  throttle?: Throttle
+  steering?: Steering
 }
 
 export interface RobotCommandPayload extends RobotCommandData {

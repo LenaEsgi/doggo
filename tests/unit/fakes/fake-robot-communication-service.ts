@@ -1,5 +1,7 @@
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
 import {
+  type Throttle,
+  type Steering,
   type RobotCommand,
   type RobotCommandData,
   type RobotCommandStep,
@@ -12,6 +14,8 @@ export class FakeRobotCommunicationService extends RobotCommunicationService {
     runId?: string
     missionId?: string
     steps?: RobotCommandStep[]
+    throttle?: Throttle
+    steering?: Steering
   }[] = []
   public shouldFail = false
 
@@ -25,6 +29,8 @@ export class FakeRobotCommunicationService extends RobotCommunicationService {
       runId: data?.runId,
       missionId: data?.missionId,
       steps: data?.steps,
+      throttle: data?.throttle,
+      steering: data?.steering,
     })
   }
 }

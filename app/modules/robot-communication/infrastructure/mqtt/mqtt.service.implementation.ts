@@ -11,6 +11,7 @@ import {
 } from '#app/modules/robot-communication/domain/types/robot-command.type'
 import { type RobotTelemetry } from '#app/modules/robot-communication/domain/types/robot-telemetry.type'
 import { type RobotMissionUpdate } from '#app/modules/robot-communication/domain/types/robot-mission-update.type'
+import { type RobotPosition } from '#app/modules/robot-communication/domain/types/robot-position.type'
 import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { HandleRobotTelemetryUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-telemetry.use-case'
 import { HandleRobotMissionUpdateUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-mission-update.use-case'
@@ -18,6 +19,8 @@ import { HandleRobotStateChangedUseCase } from '#app/modules/robot-communication
 import { robotTelemetryValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-telemetry.validator'
 import { robotMissionUpdateValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-mission-update.validator'
 import { robotStateValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-state.validator'
+import { robotPositionValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-position.validator'
+import { RobotControlHub } from '#app/modules/robot-communication/infrastructure/websocket/robot-control-hub'
 
 export class MqttServiceImplementation implements RobotCommunicationService {
   private client!: MqttClient
@@ -40,10 +43,18 @@ export class MqttServiceImplementation implements RobotCommunicationService {
 
     logger.info({ host, port, tls: useTls }, 'MqttService: connected to broker')
 
-    await this.client.subscribeAsync('robot/+/telemetry')
-    await this.client.subscribeAsync('robot/+/mission/step')
-    await this.client.subscribeAsync('robot/+/connected')
-    await this.client.subscribeAsync('robot/+/state')
+    await this.subscribeToTopics()
+
+    // La session est "clean" (voir options ci-dessus) : le broker oublie les
+    // abonnements à chaque déconnexion. 'connect' se redéclenche après chaque
+    // reconnexion automatique (pas seulement la première) — sans ça, une simple
+    // coupure réseau ou un restart du broker laisse ce client silencieusement
+    // sourd à tous les topics, sans jamais lever d'erreur.
+    this.client.on('connect', () => {
+      this.subscribeToTopics().catch((err) => {
+        logger.error({ err }, 'MqttService: failed to (re)subscribe after connect')
+      })
+    })
 
     this.client.on('message', (topic, payload) => {
       this.handleMessage(topic, payload).catch((err) => {
@@ -65,6 +76,14 @@ export class MqttServiceImplementation implements RobotCommunicationService {
       await this.client.endAsync()
       logger.info('MqttService: disconnected from broker')
     }
+  }
+
+  private async subscribeToTopics(): Promise<void> {
+    await this.client.subscribeAsync('robot/+/telemetry')
+    await this.client.subscribeAsync('robot/+/mission/step')
+    await this.client.subscribeAsync('robot/+/connected')
+    await this.client.subscribeAsync('robot/+/state')
+    await this.client.subscribeAsync('robot/+/position')
   }
 
   async sendCommand(dogId: string, command: RobotCommand, data?: RobotCommandData): Promise<void> {
@@ -96,6 +115,8 @@ export class MqttServiceImplementation implements RobotCommunicationService {
       this.handleConnectionStatus(dogId, raw)
     } else if (topic === `robot/${dogId}/state`) {
       await this.handleStateChanged(dogId, raw)
+    } else if (topic === `robot/${dogId}/position`) {
+      await this.handlePositionUpdate(dogId, raw)
     }
   }
 
@@ -138,6 +159,20 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     }
     const useCase = await app.container.make(HandleRobotStateChangedUseCase)
     await useCase.execute(dogId, payload.state)
+  }
+
+  private async handlePositionUpdate(dogId: string, raw: string): Promise<void> {
+    let position: RobotPosition
+
+    try {
+      position = await robotPositionValidator.validate(JSON.parse(raw))
+    } catch {
+      logger.warn({ dogId, raw }, 'MqttService: invalid position payload')
+      return
+    }
+
+    const hub = await app.container.make(RobotControlHub)
+    hub.push(dogId, { type: 'position', ...position })
   }
 
   private handleConnectionStatus(dogId: string, status: string): void {
