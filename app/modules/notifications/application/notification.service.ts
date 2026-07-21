@@ -18,6 +18,7 @@ export type NotificationType =
   | 'mission.started'
   | 'mission.completed'
   | 'mission.failed'
+  | 'mission.start_failed'
   | 'mission.skipped'
   | 'mission.interrupted'
 

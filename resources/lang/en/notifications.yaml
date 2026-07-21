@@ -8,11 +8,15 @@ mission:
   started: "{mission} started on robot dog {dog}"
   completed: "{mission} completed successfully on robot dog {dog}"
   failed: "{mission} failed on robot dog {dog}"
+  start_failed: "{mission} could not start on robot dog {dog}: {reasonText}"
   skipped: "{mission} could not start: robot dog {dog} was already busy"
   interrupted: "{mission} was interrupted on robot dog {dog}: {reasonText}"
 
 reasons:
   robot_offline: "robot offline"
+  robot_error: "robot in error state"
+  robot_busy: "robot already busy"
+  battery_too_low: "robot battery too low"
   max_duration: "maximum duration reached"
 
 defaults:

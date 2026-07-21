@@ -1,5 +1,8 @@
 import { test } from '@japa/runner'
+import emitter from '@adonisjs/core/services/emitter'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
+import MissionStartedEvent from '#app/modules/missions/domain/events/mission-started.event'
+import MissionStartFailedEvent from '#app/modules/missions/domain/events/mission-start-failed.event'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
 import { FakeRobotCommunicationService } from '#tests/unit/fakes/fake-robot-communication-service'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
@@ -16,6 +19,7 @@ import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
 import Action from '#app/modules/actions/domain/action.entity'
 import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
+import { InvalidDogStateError } from '#dogs/domain/exceptions/invalid-dog-state-error'
 
 test.group('StartMissionCommandUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
@@ -26,6 +30,7 @@ test.group('StartMissionCommandUseCase', (group) => {
   let actionRepo: FakeActionRepository
   let action: Action
   let useCase: StartMissionCommandUseCase
+  let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     fakeRepo = new FakeRobotDogRepository()
@@ -44,6 +49,8 @@ test.group('StartMissionCommandUseCase', (group) => {
       timeoutQueue,
       actionRepo
     )
+    events = emitter.fake()
+    return () => emitter.restore()
   })
 
   test('exposes RobotCommand.START_MISSION as its command', ({ assert }) => {
@@ -77,6 +84,37 @@ test.group('StartMissionCommandUseCase', (group) => {
     const run = await runRepo.findActiveRun(mission.id.value, dog.id.value)
     assert.isNotNull(run)
     assert.equal(run!.id.value, returned.id.value)
+
+    events.assertEmitted(MissionStartedEvent)
+  })
+
+  test('émet MissionStartFailedEvent (reason ROBOT_OFFLINE) quand le robot est hors ligne, pour historisation dans les alertes', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.markOffline()
+    await fakeRepo.save(dog)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep(action.id.value, '{"angle":90}')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    await assert.rejects(
+      () => useCase.execute(dog.id.value, mission.id.value),
+      InvalidDogStateError
+    )
+
+    assert.lengthOf(fakeMqtt.calls, 0)
+    events.assertEmitted(
+      MissionStartFailedEvent,
+      ({ data }) =>
+        data.missionId === mission.id.value &&
+        data.missionName === 'Patrol' &&
+        data.robotDogId === dog.id.value &&
+        data.robotDogName === 'Rex' &&
+        data.reason === 'ROBOT_OFFLINE'
+    )
   })
 
   test("refuse si le robot n'est pas assigné à la mission", async ({ assert }) => {

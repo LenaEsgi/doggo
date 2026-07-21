@@ -100,7 +100,7 @@ export class RobotDog {
 
   public endSession(): void {
     if (this._state !== RobotDogState.IN_SESSION) {
-      throw new InvalidDogStateError(`No active session to end`)
+      throw new InvalidDogStateError('NO_ACTIVE_SESSION', this._state)
     }
 
     this._state = RobotDogState.IDLE
@@ -108,7 +108,7 @@ export class RobotDog {
 
   public endMission(): void {
     if (this._state !== RobotDogState.IN_MISSION) {
-      throw new InvalidDogStateError(`No active mission to end`)
+      throw new InvalidDogStateError('NO_ACTIVE_MISSION', this._state)
     }
 
     this._state = RobotDogState.IDLE
@@ -132,7 +132,7 @@ export class RobotDog {
 
   public stopCharging(): void {
     if (this._state !== RobotDogState.CHARGING) {
-      throw new InvalidDogStateError(`Robot is not charging`)
+      throw new InvalidDogStateError('NOT_CHARGING', this._state)
     }
 
     this._state = RobotDogState.IDLE
@@ -148,7 +148,7 @@ export class RobotDog {
 
   public restoreOnline(): void {
     if (this._state !== RobotDogState.OFFLINE) {
-      throw new InvalidDogStateError(`Robot is not offline`)
+      throw new InvalidDogStateError('NOT_OFFLINE', this._state)
     }
 
     this._state = RobotDogState.IDLE
@@ -186,19 +186,22 @@ export class RobotDog {
 
   private ensureIdle(): void {
     if (this._state !== RobotDogState.IDLE) {
-      throw new InvalidDogStateError(`Robot must be IDLE. Current state: ${this._state}`)
+      throw new InvalidDogStateError('NOT_IDLE', this._state)
     }
   }
 
   private ensureOnline(): void {
     if (this._state === RobotDogState.OFFLINE || this._state === RobotDogState.ERROR) {
-      throw new InvalidDogStateError(`Robot is not available. Current state: ${this._state}`)
+      throw new InvalidDogStateError(
+        this._state === RobotDogState.OFFLINE ? 'OFFLINE' : 'ERROR',
+        this._state
+      )
     }
   }
 
   private ensureBatterySufficient(): void {
     if (this._batteryLevel < RobotDog.MIN_BATTERY_FOR_ACTIVITY) {
-      throw new BatteryTooLowError('Battery level too low')
+      throw new BatteryTooLowError(this._batteryLevel)
     }
   }
 

@@ -20,6 +20,12 @@ import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
 import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
+import { InvalidDogStateError } from '#dogs/domain/exceptions/invalid-dog-state-error'
+import { BatteryTooLowError } from '#dogs/domain/exceptions/battery-too-low-error'
+import MissionStartedEvent from '#app/modules/missions/domain/events/mission-started.event'
+import MissionStartFailedEvent, {
+  type MissionStartFailureReason,
+} from '#app/modules/missions/domain/events/mission-start-failed.event'
 
 const PENDING_RUN_TIMEOUT_MS = 60_000
 
@@ -61,7 +67,20 @@ export class StartMissionCommandUseCase {
       throw new MissionNotFoundError(missionId)
     }
 
-    dog.validateForMission()
+    try {
+      dog.validateForMission()
+    } catch (error) {
+      if (error instanceof InvalidDogStateError || error instanceof BatteryTooLowError) {
+        void MissionStartFailedEvent.dispatch(
+          mission.id.value,
+          mission.name,
+          dog.id.value,
+          dog.name,
+          this.toStartFailureReason(error)
+        )
+      }
+      throw error
+    }
 
     // Résout le plan dénormalisé AVANT de créer le run : si une action référencée
     // n'existe plus, on échoue vite sans laisser d'artefact (run/timeout) en base.
@@ -94,7 +113,18 @@ export class StartMissionCommandUseCase {
       throw error
     }
 
+    void MissionStartedEvent.dispatch(mission.id.value, mission.name, dog.id.value, dog.name)
+
     return run
+  }
+
+  private toStartFailureReason(
+    error: InvalidDogStateError | BatteryTooLowError
+  ): MissionStartFailureReason {
+    if (error instanceof BatteryTooLowError) return 'BATTERY_TOO_LOW'
+    if (error.reason === 'OFFLINE') return 'ROBOT_OFFLINE'
+    if (error.reason === 'ERROR') return 'ROBOT_ERROR'
+    return 'ROBOT_BUSY'
   }
 
   private async buildRobotSteps(mission: Mission): Promise<RobotCommandStep[]> {

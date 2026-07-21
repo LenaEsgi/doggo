@@ -196,4 +196,42 @@ test.group('NotificationService', () => {
 
     assert.notEqual(repo.created[0].message, repo.created[1].message)
   })
+
+  test('message mission.start_failed mentionne "robot hors ligne" pour ROBOT_OFFLINE', async ({
+    assert,
+  }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'mission.start_failed', 'critical', {
+      missionName: 'Patrouille',
+      robotDogName: 'Rex',
+      reason: 'ROBOT_OFFLINE',
+    })
+
+    assert.equal(
+      repo.created[0].message,
+      "Patrouille n'a pas pu démarrer sur le robot Rex : robot hors ligne"
+    )
+  })
+
+  test('message mission.start_failed mentionne la batterie faible pour BATTERY_TOO_LOW', async ({
+    assert,
+  }) => {
+    const repo = new FakeNotificationRepository()
+    const broadcaster = new FakeBroadcaster()
+    const service = new NotificationService(repo, broadcaster, new FakeNotificationUserGateway())
+
+    await service.create('user-1', 'mission.start_failed', 'critical', {
+      missionName: 'Patrouille',
+      robotDogName: 'Rex',
+      reason: 'BATTERY_TOO_LOW',
+    })
+
+    assert.equal(
+      repo.created[0].message,
+      "Patrouille n'a pas pu démarrer sur le robot Rex : batterie du robot trop faible"
+    )
+  })
 })

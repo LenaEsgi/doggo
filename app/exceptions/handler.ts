@@ -27,6 +27,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       return ctx.response.status(error.httpStatus).json({
         error: error.code,
         message: error.message,
+        details: error.details,
       })
     }
 

@@ -10,8 +10,16 @@ const MESSAGE_KEYS: Record<NotificationType, string> = {
   'mission.started': 'notifications.mission.started',
   'mission.completed': 'notifications.mission.completed',
   'mission.failed': 'notifications.mission.failed',
+  'mission.start_failed': 'notifications.mission.start_failed',
   'mission.skipped': 'notifications.mission.skipped',
   'mission.interrupted': 'notifications.mission.interrupted',
+}
+
+const START_FAILURE_REASON_KEYS: Record<string, string> = {
+  ROBOT_OFFLINE: 'notifications.reasons.robot_offline',
+  ROBOT_ERROR: 'notifications.reasons.robot_error',
+  ROBOT_BUSY: 'notifications.reasons.robot_busy',
+  BATTERY_TOO_LOW: 'notifications.reasons.battery_too_low',
 }
 
 export class NotificationMessageTranslator {
@@ -34,6 +42,14 @@ export class NotificationMessageTranslator {
         reason === 'ROBOT_OFFLINE'
           ? i18n.t('notifications.reasons.robot_offline')
           : i18n.t('notifications.reasons.max_duration')
+
+      return i18n.t(MESSAGE_KEYS[type], { mission, dog, reasonText })
+    }
+
+    if (type === 'mission.start_failed') {
+      const reason = payload?.reason as string | undefined
+      const reasonKey = (reason && START_FAILURE_REASON_KEYS[reason]) || 'notifications.reasons.robot_busy'
+      const reasonText = i18n.t(reasonKey)
 
       return i18n.t(MESSAGE_KEYS[type], { mission, dog, reasonText })
     }

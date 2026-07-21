@@ -1,8 +1,10 @@
 import { DomainError } from '#app/modules/share/exceptions/domain-error'
 
 export class NoActiveMissionRunError extends DomainError {
-  constructor(robotDogId: string) {
-    super(`Robot dog ${robotDogId} has no active mission run`)
+  readonly code = 'NO_ACTIVE_MISSION_RUN'
+
+  constructor(public readonly robotDogId: string) {
+    super(`Robot dog ${robotDogId} has no active mission run`, { robotDogId })
     this.name = 'NoActiveMissionRunError'
   }
 }
