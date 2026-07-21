@@ -16,6 +16,9 @@ const DestroyController = () =>
 const UpdateController = () =>
   import('#app/modules/actions/infrastructure/http/controllers/update-action.controller')
 
+const ToggleController = () =>
+  import('#app/modules/actions/infrastructure/http/controllers/toggle-action.controller')
+
 router
   .group(() => {
     router.post('/', [CreateActionController])
@@ -23,6 +26,7 @@ router
     router.get('/:id', [ShowController])
     router.delete('/:id', [DestroyController])
     router.patch('/:id', [UpdateController])
+    router.patch('/:id/toggle', [ToggleController])
   })
   .prefix('/api/v1/actions')
   .use(middleware.firebaseAuth())
