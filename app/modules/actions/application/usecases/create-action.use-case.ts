@@ -9,7 +9,7 @@ import Action from '#app/modules/actions/domain/action.entity'
 export class CreateActionUseCase {
   constructor(private actionRepository: ActionRepository) {}
 
-  async execute(dto: CreateActionDto) {
+  async execute(dto: CreateActionDto): Promise<Action> {
     logger.info({ code: dto.code, name: dto.name }, 'CreateAction started')
 
     const existing = await this.actionRepository.findByCode(dto.code)
@@ -29,5 +29,7 @@ export class CreateActionUseCase {
     logger.debug({ actionId: action.id.value }, 'Domain entity instantiated')
 
     await this.actionRepository.save(action)
+
+    return action
   }
 }

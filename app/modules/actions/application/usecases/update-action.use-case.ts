@@ -1,3 +1,4 @@
+import type Action from '#app/modules/actions/domain/action.entity'
 import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
 import { UpdateActionDto } from '#app/modules/actions/application/dto/update-action.dto'
 import { inject } from '@adonisjs/core'
@@ -15,7 +16,7 @@ export class UpdateActionUseCase {
     private missionStepUsageGateway: MissionStepUsageGateway
   ) {}
 
-  async execute(dto: UpdateActionDto): Promise<void> {
+  async execute(dto: UpdateActionDto): Promise<Action> {
     logger.info('UpdateActionUseCase started', { dto })
 
     const actionId = ActionId.fromString(dto.id)
@@ -52,5 +53,7 @@ export class UpdateActionUseCase {
     }
 
     await this.actionRepository.save(action)
+
+    return action
   }
 }
