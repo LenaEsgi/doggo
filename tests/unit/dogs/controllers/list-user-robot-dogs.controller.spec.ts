@@ -33,6 +33,7 @@ test('ListUserRobotDogsController returns dogs list', async ({ assert }) => {
       validateUsing: async () => ({ id: '7b27cc5b-e591-48f2-85ba-f29f96eb9971' }),
     },
     response: { ok: (body: any) => ((out.status = 200), (out.body = body), body) },
+    bouncer: { with: () => ({ authorize: async () => {} }) },
     logger: { info: () => {} },
   } as any)
 
