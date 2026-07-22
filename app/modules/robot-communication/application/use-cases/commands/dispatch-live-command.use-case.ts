@@ -2,15 +2,14 @@ import { inject } from '@adonisjs/core'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
-import { ActionRepository } from '#app/modules/actions/domain/contracts/action.repository'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
 import { LiveControlGateway } from '#app/modules/robot-communication/domain/contracts/live-control.gateway'
+import { findLiveControlAction } from '#app/modules/robot-communication/domain/live-control-action.catalog'
 
 @inject()
 export class DispatchLiveCommandUseCase {
   constructor(
     private readonly dogRepository: RobotDogRepository,
-    private readonly actionRepository: ActionRepository,
     private readonly liveControlGateway: LiveControlGateway
   ) {}
 
@@ -26,7 +25,9 @@ export class DispatchLiveCommandUseCase {
 
     dog.ensureLiveControlAllowed()
 
-    const action = await this.actionRepository.findByCode(actionCode)
+    // Catalogue figé en code, jamais en base : une commande live doit être
+    // validée instantanément, sans dépendre de la disponibilité de la DB.
+    const action = findLiveControlAction(actionCode)
     if (!action) {
       throw new ActionNotFoundError(actionCode)
     }
