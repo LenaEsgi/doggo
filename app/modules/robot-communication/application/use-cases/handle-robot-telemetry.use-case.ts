@@ -3,6 +3,8 @@ import logger from '@adonisjs/core/services/logger'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import RobotTelemetryReceivedEvent from '#dogs/domain/events/robot-telemetry-received.event'
+import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { type RobotTelemetry } from '#app/modules/robot-communication/domain/types/robot-telemetry.type'
 
 @inject()
@@ -17,10 +19,20 @@ export class HandleRobotTelemetryUseCase {
       return
     }
 
+    const wasOffline = dog.state === RobotDogState.OFFLINE
+    if (wasOffline) {
+      dog.restoreOnline()
+    }
+
     dog.updateBatteryLevel(telemetry.battery)
     dog.updateHeartbeat(new Date())
 
     await this.dogRepository.save(dog)
+
+    if (wasOffline) {
+      logger.info({ dogId }, 'HandleRobotTelemetry: robot back online')
+      void DogStateChangedEvent.dispatch(dogId, dog.state)
+    }
 
     void RobotTelemetryReceivedEvent.dispatch(dogId, dog.batteryLevel, dog.state)
   }
