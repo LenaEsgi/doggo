@@ -4,6 +4,7 @@ import { type GoogleLoginDto } from '#auth/application/dto/google-login.dto'
 import { GoogleLoginAuthProvider } from '#auth/domain/contracts/google.login.auth.provider'
 import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
 import type { GoogleUserInfo } from '#auth/domain/types/google.user.info'
+import { maskEmail } from '#app/modules/share/utils/mask-email'
 
 @inject()
 export class GoogleLoginAuthUseCase {
@@ -25,7 +26,7 @@ export class GoogleLoginAuthUseCase {
     })
 
     logger.info(
-      { uid: userInfo.uid, email: userInfo.email },
+      { uid: userInfo.uid, email: maskEmail(userInfo.email) },
       'GoogleLoginAuthUseCase completed successfully'
     )
 

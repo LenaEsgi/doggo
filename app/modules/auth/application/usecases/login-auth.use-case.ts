@@ -3,15 +3,16 @@ import logger from '@adonisjs/core/services/logger'
 import { type LoginDto } from '#auth/application/dto/login.dto'
 import { LoginAuthProvider } from '#auth/domain/contracts/login.auth.provider'
 import { type LoginResult } from '#auth/domain/types/login.result'
+import { maskEmail } from '#app/modules/share/utils/mask-email'
 
 @inject()
 export class LoginAuthUseCase {
   constructor(private readonly authProvider: LoginAuthProvider) {}
 
   async execute(payload: LoginDto): Promise<LoginResult> {
-    logger.info({ email: payload.email }, 'LoginAuthUseCase started')
+    logger.info({ email: maskEmail(payload.email) }, 'LoginAuthUseCase started')
     const result = await this.authProvider.login(payload.email, payload.password)
-    logger.info({ email: payload.email }, 'LoginAuthUseCase completed successfully')
+    logger.info({ email: maskEmail(payload.email) }, 'LoginAuthUseCase completed successfully')
     return result
   }
 }

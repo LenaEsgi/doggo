@@ -5,6 +5,7 @@ import type { MfaInfo } from '#auth/domain/types/mfa.info'
 import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase-auth.base'
 import { FirebaseAuthProviderError } from '#auth/domain/exceptions/firebase-auth-provider.error'
 import logger from '@adonisjs/core/services/logger'
+import { maskEmail } from '#app/modules/share/utils/mask-email'
 
 export class FirebaseLoginAuthProvider
   extends FirebaseAuthProviderBase
@@ -50,7 +51,7 @@ export class FirebaseLoginAuthProvider
 
       logger.warn(
         {
-          email,
+          email: maskEmail(email),
           code: error instanceof FirebaseAuthProviderError ? error.code : undefined,
         },
         'FirebaseLoginAuthProvider login failed'

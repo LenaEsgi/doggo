@@ -4,6 +4,7 @@ import { type RegisterDto } from '#auth/application/dto/register.dto'
 import { LocalUserRepository } from '#auth/domain/contracts/local-user.repository'
 import { RegisterAuthProvider } from '#auth/domain/contracts/register.auth.provider'
 import { type AuthTokens } from '#auth/domain/types/auth.tokens'
+import { maskEmail } from '#app/modules/share/utils/mask-email'
 
 @inject()
 export class RegisterAuthUseCase {
@@ -13,7 +14,7 @@ export class RegisterAuthUseCase {
   ) {}
 
   async execute(payload: RegisterDto): Promise<AuthTokens> {
-    logger.info({ email: payload.email }, 'RegisterAuthUseCase started')
+    logger.info({ email: maskEmail(payload.email) }, 'RegisterAuthUseCase started')
     const authUser = await this.authProvider.register(payload.email, payload.password)
 
     await this.localUserRepository.ensureUserProfile({
@@ -24,7 +25,7 @@ export class RegisterAuthUseCase {
     })
 
     logger.info(
-      { firebaseUid: authUser.localId, email: payload.email },
+      { firebaseUid: authUser.localId, email: maskEmail(payload.email) },
       'RegisterAuthUseCase completed successfully'
     )
 
