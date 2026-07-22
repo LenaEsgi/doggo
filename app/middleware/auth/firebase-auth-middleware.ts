@@ -22,6 +22,7 @@ export default class FirebaseAuthMiddleware {
     const bearerMatch = authHeader?.match(/^Bearer\s+(.+)$/i)
 
     if (!bearerMatch) {
+      ctx.logger.warn({ path: ctx.request.url() }, 'FirebaseAuthMiddleware rejected: token missing')
       return ctx.response.unauthorized({ message: 'Token missing' })
     }
 
@@ -31,12 +32,17 @@ export default class FirebaseAuthMiddleware {
       const decodedToken = await this.tokenVerifier.handle(idToken)
 
       if (!decodedToken.email_verified) {
+        ctx.logger.warn(
+          { uid: decodedToken.uid },
+          'FirebaseAuthMiddleware rejected: email not verified'
+        )
         return ctx.response.unauthorized({ message: 'Email not verified' })
       }
 
       const user = await this.userRepository.findByFirebaseUid(decodedToken.uid)
 
       if (!user) {
+        ctx.logger.warn({ uid: decodedToken.uid }, 'FirebaseAuthMiddleware rejected: user not found')
         return ctx.response.unauthorized({ message: 'User not found' })
       }
 
@@ -45,6 +51,10 @@ export default class FirebaseAuthMiddleware {
       await next()
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Invalid or expired token'
+      ctx.logger.warn(
+        { reason: message },
+        'FirebaseAuthMiddleware rejected: invalid or expired token'
+      )
       return ctx.response.unauthorized({
         message: 'Invalid or expired token',
         reason: message,

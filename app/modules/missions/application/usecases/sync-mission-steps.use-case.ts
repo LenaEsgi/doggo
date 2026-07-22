@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
@@ -52,6 +53,11 @@ export class SyncMissionStepsUseCase {
     const hasActiveRun = await this.missionRunRepository.hasActiveRunForMission(dto.missionId)
     mission.syncSteps(dto.steps, hasActiveRun)
     await this.missionRepository.save(mission)
+
+    logger.info('SyncMissionStepsUseCase completed successfully', {
+      missionId: dto.missionId,
+      stepsCount: dto.steps.length,
+    })
 
     return mission
   }

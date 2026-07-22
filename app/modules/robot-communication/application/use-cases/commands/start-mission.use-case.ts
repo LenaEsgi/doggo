@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
@@ -71,12 +72,17 @@ export class StartMissionCommandUseCase {
       dog.validateForMission()
     } catch (error) {
       if (error instanceof InvalidDogStateError || error instanceof BatteryTooLowError) {
+        const reason = this.toStartFailureReason(error)
+        logger.warn(
+          { missionId, dogId, reason },
+          'StartMissionCommandUseCase rejected: dog not eligible for mission'
+        )
         void MissionStartFailedEvent.dispatch(
           mission.id.value,
           mission.name,
           dog.id.value,
           dog.name,
-          this.toStartFailureReason(error)
+          reason
         )
       }
       throw error
@@ -110,9 +116,22 @@ export class StartMissionCommandUseCase {
       await this.missionTimeoutQueue.cancel(run.id.value)
       run.markLaunchFailed()
       await this.missionRunRepository.save(run)
+      logger.error(
+        {
+          runId: run.id.value,
+          missionId,
+          dogId,
+          reason: error instanceof Error ? error.message : String(error),
+        },
+        'StartMissionCommandUseCase mission run marked LAUNCH_FAILED'
+      )
       throw error
     }
 
+    logger.info(
+      { runId: run.id.value, missionId, dogId },
+      'StartMissionCommandUseCase mission started'
+    )
     void MissionStartedEvent.dispatch(mission.id.value, mission.name, dog.id.value, dog.name)
 
     return run

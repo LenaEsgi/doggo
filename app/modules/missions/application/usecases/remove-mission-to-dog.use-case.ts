@@ -1,5 +1,6 @@
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
@@ -37,6 +38,7 @@ export class RemoveMissionToDogUseCase {
 
     await this.missionRepository.removeFromDog(missionId, dogId)
 
+    logger.info('RemoveMissionToDogUseCase completed successfully', { missionId, dogId })
     void MissionRemovedFromDogEvent.dispatch(missionId, mission.name, dogId, dog.name)
   }
 }

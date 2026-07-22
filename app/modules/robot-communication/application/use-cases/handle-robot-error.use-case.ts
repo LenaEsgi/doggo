@@ -21,6 +21,7 @@ export class HandleRobotErrorUseCase {
       return
     }
 
+    logger.error({ dogId, payload }, 'HandleRobotError: robot reported an error')
     await this.diagnosticRepository.save(RobotDiagnosticEvent.fromError(dogId, payload))
   }
 }

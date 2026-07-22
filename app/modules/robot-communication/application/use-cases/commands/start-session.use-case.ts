@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
@@ -22,8 +23,17 @@ export class StartSessionCommandUseCase {
 
     dog.startSession()
 
-    await this.communicationService.sendCommand(dogId, this.command)
+    try {
+      await this.communicationService.sendCommand(dogId, this.command)
+    } catch (error) {
+      logger.error(
+        { dogId, reason: error instanceof Error ? error.message : String(error) },
+        'StartSessionCommandUseCase failed to send start-session command to robot'
+      )
+      throw error
+    }
 
     await this.dogRepository.save(dog)
+    logger.info({ dogId }, 'StartSessionCommandUseCase session started')
   }
 }

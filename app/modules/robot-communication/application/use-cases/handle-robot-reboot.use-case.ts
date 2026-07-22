@@ -21,6 +21,7 @@ export class HandleRobotRebootUseCase {
       return
     }
 
+    logger.warn({ dogId, payload }, 'HandleRobotReboot: robot rebooted')
     await this.diagnosticRepository.save(RobotDiagnosticEvent.fromReboot(dogId, payload))
   }
 }

@@ -4,6 +4,7 @@ import type { LoginResult } from '#auth/domain/types/login.result'
 import type { MfaInfo } from '#auth/domain/types/mfa.info'
 import { FirebaseAuthProviderBase } from '#auth/infrastructure/providers/firebase-auth.base'
 import { FirebaseAuthProviderError } from '#auth/domain/exceptions/firebase-auth-provider.error'
+import logger from '@adonisjs/core/services/logger'
 
 export class FirebaseLoginAuthProvider
   extends FirebaseAuthProviderBase
@@ -47,6 +48,13 @@ export class FirebaseLoginAuthProvider
         }
       }
 
+      logger.warn(
+        {
+          email,
+          code: error instanceof FirebaseAuthProviderError ? error.code : undefined,
+        },
+        'FirebaseLoginAuthProvider login failed'
+      )
       throw error
     }
   }

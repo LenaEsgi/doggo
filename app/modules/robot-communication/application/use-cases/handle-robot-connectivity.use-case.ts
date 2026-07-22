@@ -21,6 +21,10 @@ export class HandleRobotConnectivityUseCase {
       return
     }
 
+    logger.info(
+      { dogId, status: payload.status, reason: payload.reason, rssi: payload.rssi },
+      'HandleRobotConnectivity: robot connectivity changed'
+    )
     await this.diagnosticRepository.save(RobotDiagnosticEvent.fromConnectivity(dogId, payload))
   }
 }

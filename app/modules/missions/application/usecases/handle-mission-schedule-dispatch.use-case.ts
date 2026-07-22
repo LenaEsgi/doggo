@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { DateTime } from 'luxon'
 import { StartMissionCommandUseCase } from '#app/modules/robot-communication/application/use-cases/commands/start-mission.use-case'
 import { MissionScheduleRepository } from '#app/modules/missions/domain/contracts/mission-schedule.repository'
@@ -35,6 +36,10 @@ export class HandleMissionScheduleDispatchUseCase {
       return
     } catch (error) {
       if (error instanceof InvalidMissionAlreadyRunningError) {
+        logger.warn(
+          { scheduleId: payload.scheduleId, missionId: payload.missionId, dogId: payload.dogId },
+          'HandleMissionScheduleDispatch skipped: robot already running a mission'
+        )
         await this.firingRepository.recordOutcome(
           payload.scheduleId,
           firedForMinute,
@@ -56,6 +61,10 @@ export class HandleMissionScheduleDispatchUseCase {
       }
 
       if (error instanceof MissionNotAssignedToRobotError) {
+        logger.warn(
+          { scheduleId: payload.scheduleId, missionId: payload.missionId, dogId: payload.dogId },
+          'HandleMissionScheduleDispatch: mission no longer assigned to robot, disabling schedule'
+        )
         await this.firingRepository.recordOutcome(
           payload.scheduleId,
           firedForMinute,
@@ -72,6 +81,15 @@ export class HandleMissionScheduleDispatchUseCase {
         return
       }
 
+      logger.error(
+        {
+          scheduleId: payload.scheduleId,
+          missionId: payload.missionId,
+          dogId: payload.dogId,
+          reason: error instanceof Error ? error.message : String(error),
+        },
+        'HandleMissionScheduleDispatch failed unexpectedly'
+      )
       await this.firingRepository.recordOutcome(
         payload.scheduleId,
         firedForMinute,

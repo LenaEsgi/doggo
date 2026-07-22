@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
@@ -37,7 +38,19 @@ export class StopMissionCommandUseCase {
     }
     const wasPending = preRun.status === MissionRunStatus.PENDING
 
-    await this.communicationService.sendCommand(dogId, this.command)
+    try {
+      await this.communicationService.sendCommand(dogId, this.command)
+    } catch (error) {
+      logger.error(
+        {
+          runId: preRun.id.value,
+          dogId,
+          reason: error instanceof Error ? error.message : String(error),
+        },
+        'StopMissionCommandUseCase failed to send stop command to robot'
+      )
+      throw error
+    }
 
     await this.uow.run(async (tx) => {
       const run = await this.missionRunRepository.findActiveRunByRobotDogForUpdate(dogId, tx)
@@ -53,6 +66,7 @@ export class StopMissionCommandUseCase {
     if (wasPending) {
       await this.timeoutQueue.cancel(preRun.id.value)
     }
+    logger.info({ runId: preRun.id.value, dogId }, 'StopMissionCommandUseCase mission stopped')
     void DogStateChangedEvent.dispatch(dog.id.toString(), dog.state)
 
     return dog

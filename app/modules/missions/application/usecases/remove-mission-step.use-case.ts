@@ -1,5 +1,6 @@
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
 import { RemoveMissionStepDto } from '#app/modules/missions/application/dto/remove-mission-step.dto'
@@ -24,5 +25,10 @@ export default class RemoveMissionStep {
     mission.removeStep(MissionStepId.fromString(dto.stepId), hasActiveRun)
 
     await this.missionRepository.save(mission)
+
+    logger.info('RemoveMissionStep completed successfully', {
+      missionId: dto.missionId,
+      stepId: dto.stepId,
+    })
   }
 }

@@ -10,11 +10,25 @@ export class LoginWithTotpAuthUseCase {
 
   async execute(payload: LoginWithTotpDto): Promise<AuthTokens> {
     logger.info({ mfaEnrollmentId: payload.mfaEnrollmentId }, 'LoginWithTotpAuthUseCase started')
-    const result = await this.authProvider.completeMfaLogin(
-      payload.pendingCredential,
-      payload.mfaEnrollmentId,
-      payload.verificationCode
-    )
+
+    let result: AuthTokens
+    try {
+      result = await this.authProvider.completeMfaLogin(
+        payload.pendingCredential,
+        payload.mfaEnrollmentId,
+        payload.verificationCode
+      )
+    } catch (error) {
+      logger.warn(
+        {
+          mfaEnrollmentId: payload.mfaEnrollmentId,
+          reason: error instanceof Error ? error.message : String(error),
+        },
+        'LoginWithTotpAuthUseCase failed: invalid or expired TOTP code'
+      )
+      throw error
+    }
+
     logger.info(
       { mfaEnrollmentId: payload.mfaEnrollmentId },
       'LoginWithTotpAuthUseCase completed successfully'

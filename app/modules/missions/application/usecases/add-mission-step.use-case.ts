@@ -8,6 +8,7 @@ import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
 import { ActionNotAvailableError } from '#app/modules/actions/domain/exceptions/action-not-available.error'
 import { inject } from '@adonisjs/core'
+import logger from '@adonisjs/core/services/logger'
 
 @inject()
 export class AddMissionStepUseCase {
@@ -37,5 +38,10 @@ export class AddMissionStepUseCase {
     mission.addStep(dto.actionId, dto.parameters, hasActiveRun)
 
     await this.missionRepository.save(mission)
+
+    logger.info('AddMissionStepUseCase completed successfully', {
+      missionId: dto.missionId,
+      actionId: dto.actionId,
+    })
   }
 }
