@@ -92,6 +92,59 @@ test.group('RobotDiagnosticEventRepositoryImplementation', (group) => {
     assert.equal(bySeverity.data.length, 1)
   })
 
+  test('findAll filtre par plage de dates (from/to)', async ({ assert }) => {
+    const repo = new RobotDiagnosticEventRepositoryImplementation()
+    const dogId = await createDog('F')
+    const now = new Date()
+    const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000)
+    const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
+    const oneDayAgo = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000)
+
+    await repo.save(
+      RobotDiagnosticEvent.rehydrate(
+        randomUUID(),
+        dogId,
+        RobotDiagnosticEventType.REBOOT,
+        RobotDiagnosticSeverity.INFO,
+        { firmwareVersion: '1.0.0', bootReason: RobotBootReason.POWER_ON },
+        threeDaysAgo
+      )
+    )
+    await repo.save(
+      RobotDiagnosticEvent.rehydrate(
+        randomUUID(),
+        dogId,
+        RobotDiagnosticEventType.REBOOT,
+        RobotDiagnosticSeverity.INFO,
+        { firmwareVersion: '1.0.0', bootReason: RobotBootReason.POWER_ON },
+        twoDaysAgo
+      )
+    )
+    await repo.save(
+      RobotDiagnosticEvent.rehydrate(
+        randomUUID(),
+        dogId,
+        RobotDiagnosticEventType.REBOOT,
+        RobotDiagnosticSeverity.INFO,
+        { firmwareVersion: '1.0.0', bootReason: RobotBootReason.POWER_ON },
+        oneDayAgo
+      )
+    )
+
+    const onlyMiddle = await repo.findAll({
+      from: new Date(twoDaysAgo.getTime() - 1000),
+      to: new Date(twoDaysAgo.getTime() + 1000),
+    })
+    assert.equal(onlyMiddle.data.length, 1)
+    assert.equal(onlyMiddle.data[0].occurredAt.getTime(), twoDaysAgo.getTime())
+
+    const fromTwoDaysAgo = await repo.findAll({ from: twoDaysAgo })
+    assert.equal(fromTwoDaysAgo.data.length, 2)
+
+    const toTwoDaysAgo = await repo.findAll({ to: twoDaysAgo })
+    assert.equal(toTwoDaysAgo.data.length, 2)
+  })
+
   test('findAll trie par occurredAt décroissant et pagine', async ({ assert }) => {
     const repo = new RobotDiagnosticEventRepositoryImplementation()
     const dogId = await createDog('E')
