@@ -13,6 +13,8 @@ import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogKey } from '#dogs/domain/value-objects/robot-dog-key'
 import { UserRole } from '#users/domain/enums/user.role'
 import { DispatchLiveCommandUseCase } from '#app/modules/robot-communication/application/use-cases/commands/dispatch-live-command.use-case'
+import { EndSessionCommandUseCase } from '#app/modules/robot-communication/application/use-cases/commands/end-session.use-case'
+import { endSessionOnOperatorDisconnect } from '#app/modules/robot-communication/infrastructure/socketio/end-session-on-operator-disconnect'
 import { DomainError } from '#app/modules/share/exceptions/domain-error'
 
 type CommandAck = { ok: true } | { ok: false; error: string; message: string }
@@ -40,6 +42,10 @@ export class SocketIoServiceImplementation extends LiveControlGateway {
         origin: env.get('FRONTEND_URL'),
         credentials: true,
       },
+      // Détecte une coupure réseau silencieuse (wifi qui lâche sans fermeture propre du
+      // socket) en ~15s au lieu des ~45s par défaut, pour couper la session live au plus vite.
+      pingInterval: 10_000,
+      pingTimeout: 5_000,
     })
 
     const operators = this.io.of('/ws/operators')
@@ -124,6 +130,15 @@ export class SocketIoServiceImplementation extends LiveControlGateway {
 
       socket.on('disconnect', () => {
         logger.info({ dogId, socketId: socket.id }, 'SocketIoService: operator disconnected')
+
+        // La room a déjà exclu ce socket à ce stade (Socket.IO le fait avant d'émettre
+        // 'disconnect') : si elle est vide, plus aucun onglet opérateur ne pilote ce chien.
+        const room = operators.adapter.rooms.get(`dog:${dogId}`)
+        const roomIsEmpty = !room || room.size === 0
+
+        void app.container
+          .make(EndSessionCommandUseCase)
+          .then((endSession) => endSessionOnOperatorDisconnect(dogId, roomIsEmpty, endSession))
       })
     })
 
