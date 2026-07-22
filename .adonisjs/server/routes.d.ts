@@ -31,6 +31,7 @@ export type ScannedRoutes = {
     'create_robot_dog': { paramsTuple?: []; params?: {} }
     'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'find_robot_dog_by_serial_number': { paramsTuple: [ParamValue]; params: {'serialNumber': ParamValue} }
     'create_mission': { paramsTuple?: []; params?: {} }
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
@@ -75,6 +76,7 @@ export type ScannedRoutes = {
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'list_user_robot_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'find_robot_dog_by_serial_number': { paramsTuple: [ParamValue]; params: {'serialNumber': ParamValue} }
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -96,6 +98,7 @@ export type ScannedRoutes = {
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'list_user_robot_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'find_robot_dog_by_serial_number': { paramsTuple: [ParamValue]; params: {'serialNumber': ParamValue} }
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
