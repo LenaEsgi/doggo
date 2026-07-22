@@ -59,6 +59,8 @@ export type ScannedRoutes = {
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'start_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'end_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'get_backoffice_stats': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'subscribe': { paramsTuple?: []; params?: {} }
@@ -127,6 +129,7 @@ export type ScannedRoutes = {
     'assign_to_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
     'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'start_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
   }
@@ -140,6 +143,7 @@ export type ScannedRoutes = {
     'remove_from_dog': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'missionId': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'end_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

@@ -68,4 +68,14 @@ test.group('EndSessionCommandUseCase', (group) => {
     const saved = await fakeRepo.findById(dog.id)
     assert.equal(saved!.state, RobotDogState.IDLE)
   })
+
+  test('retourne le robot dog mis à jour', async ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.startSession()
+    await fakeRepo.save(dog)
+
+    const returned = await useCase.execute(dog.id.value)
+
+    assert.equal(returned.state, RobotDogState.IDLE)
+  })
 })
