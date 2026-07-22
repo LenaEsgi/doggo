@@ -54,6 +54,7 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_notifications': { paramsTuple?: []; params?: {} }
     'mark_notifications_read': { paramsTuple?: []; params?: {} }
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -145,6 +146,7 @@ export type ScannedRoutes = {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'toggle_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'mark_notifications_read': { paramsTuple?: []; params?: {} }
   }
   PUT: {

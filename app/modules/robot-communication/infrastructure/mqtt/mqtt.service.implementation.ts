@@ -11,13 +11,22 @@ import {
 } from '#app/modules/robot-communication/domain/types/robot-command.type'
 import { type RobotTelemetry } from '#app/modules/robot-communication/domain/types/robot-telemetry.type'
 import { type RobotMissionUpdate } from '#app/modules/robot-communication/domain/types/robot-mission-update.type'
+import { type RobotRebootEvent } from '#app/modules/robot-communication/domain/types/robot-reboot-event.type'
+import { type RobotErrorEvent } from '#app/modules/robot-communication/domain/types/robot-error-event.type'
+import { type RobotConnectivityEvent } from '#app/modules/robot-communication/domain/types/robot-connectivity-event.type'
 import { type RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { HandleRobotTelemetryUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-telemetry.use-case'
 import { HandleRobotMissionUpdateUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-mission-update.use-case'
 import { HandleRobotStateChangedUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-state-changed.use-case'
+import { HandleRobotRebootUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-reboot.use-case'
+import { HandleRobotErrorUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-error.use-case'
+import { HandleRobotConnectivityUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-connectivity.use-case'
 import { robotTelemetryValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-telemetry.validator'
 import { robotMissionUpdateValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-mission-update.validator'
 import { robotStateValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-state.validator'
+import { robotRebootEventValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-reboot-event.validator'
+import { robotErrorEventValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-error-event.validator'
+import { robotConnectivityEventValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-connectivity-event.validator'
 
 export class MqttServiceImplementation implements RobotCommunicationService {
   private client!: MqttClient
@@ -44,6 +53,8 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     await this.client.subscribeAsync('robot/+/mission/step')
     await this.client.subscribeAsync('robot/+/connected')
     await this.client.subscribeAsync('robot/+/state')
+    await this.client.subscribeAsync('robot/+/system')
+    await this.client.subscribeAsync('robot/+/error')
 
     this.client.on('message', (topic, payload) => {
       this.handleMessage(topic, payload).catch((err) => {
@@ -93,9 +104,13 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     } else if (topic === `robot/${dogId}/mission/step`) {
       await this.handleMissionUpdate(dogId, raw)
     } else if (topic === `robot/${dogId}/connected`) {
-      this.handleConnectionStatus(dogId, raw)
+      await this.handleConnectionStatus(dogId, raw)
     } else if (topic === `robot/${dogId}/state`) {
       await this.handleStateChanged(dogId, raw)
+    } else if (topic === `robot/${dogId}/system`) {
+      await this.handleReboot(dogId, raw)
+    } else if (topic === `robot/${dogId}/error`) {
+      await this.handleError(dogId, raw)
     }
   }
 
@@ -140,7 +155,45 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     await useCase.execute(dogId, payload.state)
   }
 
-  private handleConnectionStatus(dogId: string, status: string): void {
-    logger.info({ dogId, status }, 'MqttService: robot connection status changed')
+  private async handleConnectionStatus(dogId: string, raw: string): Promise<void> {
+    let connectivity: RobotConnectivityEvent
+
+    try {
+      connectivity = await robotConnectivityEventValidator.validate(JSON.parse(raw))
+    } catch {
+      logger.warn({ dogId, raw }, 'MqttService: invalid connectivity payload')
+      return
+    }
+
+    const useCase = await app.container.make(HandleRobotConnectivityUseCase)
+    await useCase.execute(dogId, connectivity)
+  }
+
+  private async handleReboot(dogId: string, raw: string): Promise<void> {
+    let reboot: RobotRebootEvent
+
+    try {
+      reboot = await robotRebootEventValidator.validate(JSON.parse(raw))
+    } catch {
+      logger.warn({ dogId, raw }, 'MqttService: invalid system/reboot payload')
+      return
+    }
+
+    const useCase = await app.container.make(HandleRobotRebootUseCase)
+    await useCase.execute(dogId, reboot)
+  }
+
+  private async handleError(dogId: string, raw: string): Promise<void> {
+    let error: RobotErrorEvent
+
+    try {
+      error = await robotErrorEventValidator.validate(JSON.parse(raw))
+    } catch {
+      logger.warn({ dogId, raw }, 'MqttService: invalid error payload')
+      return
+    }
+
+    const useCase = await app.container.make(HandleRobotErrorUseCase)
+    await useCase.execute(dogId, error)
   }
 }
