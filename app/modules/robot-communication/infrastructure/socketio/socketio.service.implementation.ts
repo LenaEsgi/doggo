@@ -12,6 +12,10 @@ import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogKey } from '#dogs/domain/value-objects/robot-dog-key'
 import { UserRole } from '#users/domain/enums/user.role'
+import { DispatchLiveCommandUseCase } from '#app/modules/robot-communication/application/use-cases/commands/dispatch-live-command.use-case'
+import { DomainError } from '#app/modules/share/exceptions/domain-error'
+
+type CommandAck = { ok: true } | { ok: false; error: string; message: string }
 
 interface OperatorSocketData {
   userId: string
@@ -88,12 +92,34 @@ export class SocketIoServiceImplementation extends LiveControlGateway {
       socket.join(`dog:${dogId}`)
       logger.info({ dogId, socketId: socket.id }, 'SocketIoService: operator connected')
 
-      socket.on('command', (_payload: unknown, ack?: (response: unknown) => void) => {
-        ack?.({
-          ok: false,
-          error: 'NOT_IMPLEMENTED',
-          message: 'Live command dispatch lands in a later phase',
-        })
+      socket.on('command', async (payload: unknown, ack?: (response: CommandAck) => void) => {
+        try {
+          const { actionCode, parameters } = (payload ?? {}) as {
+            actionCode?: string
+            parameters?: Record<string, unknown>
+          }
+
+          if (!actionCode || typeof actionCode !== 'string') {
+            ack?.({ ok: false, error: 'INVALID_PAYLOAD', message: 'actionCode is required' })
+            return
+          }
+
+          const dispatchLiveCommand = await app.container.make(DispatchLiveCommandUseCase)
+          await dispatchLiveCommand.execute(dogId, actionCode, parameters ?? {})
+
+          ack?.({ ok: true })
+        } catch (error) {
+          if (error instanceof DomainError) {
+            ack?.({ ok: false, error: error.code, message: error.message })
+            return
+          }
+
+          logger.error(
+            { err: error, dogId },
+            'SocketIoService: unexpected error dispatching live command'
+          )
+          ack?.({ ok: false, error: 'INTERNAL_ERROR', message: 'Unexpected error' })
+        }
       })
 
       socket.on('disconnect', () => {
