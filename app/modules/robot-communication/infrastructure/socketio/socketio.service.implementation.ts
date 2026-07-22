@@ -10,10 +10,15 @@ import { UserReadRepository } from '#users/domain/contracts/user.read.repository
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
+import { RobotDogKey } from '#dogs/domain/value-objects/robot-dog-key'
 import { UserRole } from '#users/domain/enums/user.role'
 
 interface OperatorSocketData {
   userId: string
+  dogId: string
+}
+
+interface RobotSocketData {
   dogId: string
 }
 
@@ -95,10 +100,64 @@ export class SocketIoServiceImplementation extends LiveControlGateway {
         logger.info({ dogId, socketId: socket.id }, 'SocketIoService: operator disconnected')
       })
     })
+
+    const robots = this.io.of('/ws/robots')
+
+    robots.use(async (socket, next) => {
+      try {
+        const { dogId, deviceKey } = socket.handshake.auth as {
+          dogId?: string
+          deviceKey?: string
+        }
+
+        if (!dogId || !deviceKey) {
+          next(new Error('dogId and deviceKey are required'))
+          return
+        }
+
+        const dogRepository = await app.container.make(RobotDogRepository)
+        const dog = await dogRepository.findById(RobotDogId.fromString(dogId))
+
+        if (!dog) {
+          next(new Error('robot dog not found'))
+          return
+        }
+
+        if (!dog.key.equals(RobotDogKey.fromString(deviceKey))) {
+          next(new Error('invalid device key'))
+          return
+        }
+
+        const data: RobotSocketData = { dogId }
+        socket.data = data
+        next()
+      } catch (error) {
+        logger.warn({ err: error }, 'SocketIoService: robot handshake rejected')
+        next(new Error('authentication failed'))
+      }
+    })
+
+    robots.on('connection', (socket) => {
+      const { dogId } = socket.data as RobotSocketData
+
+      socket.join(`dog:${dogId}`)
+      logger.info({ dogId, socketId: socket.id }, 'SocketIoService: robot connected')
+
+      socket.on('disconnect', () => {
+        logger.info({ dogId, socketId: socket.id }, 'SocketIoService: robot disconnected')
+      })
+    })
   }
 
-  async relayCommand(): Promise<void> {
-    throw new Error('LiveControlGateway.relayCommand: /ws/robots namespace not wired yet')
+  async relayCommand(
+    dogId: string,
+    payload: { actionCode: string; parameters: Record<string, unknown> }
+  ): Promise<void> {
+    if (!this.io) {
+      throw new Error('SocketIoService: not attached')
+    }
+
+    this.io.of('/ws/robots').to(`dog:${dogId}`).emit('command', payload)
   }
 
   async detach(): Promise<void> {
