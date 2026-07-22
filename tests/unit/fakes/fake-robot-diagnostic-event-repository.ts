@@ -23,6 +23,8 @@ export class FakeRobotDiagnosticEventRepository extends RobotDiagnosticEventRepo
     if (filters.dogId) events = events.filter((e) => e.dogId === filters.dogId)
     if (filters.type) events = events.filter((e) => e.type === filters.type)
     if (filters.severity) events = events.filter((e) => e.severity === filters.severity)
+    if (filters.from) events = events.filter((e) => e.occurredAt >= filters.from!)
+    if (filters.to) events = events.filter((e) => e.occurredAt <= filters.to!)
 
     const total = events.length
     const start = (page - 1) * limit
