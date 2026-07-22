@@ -6,6 +6,7 @@ import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/
 import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
 import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
 import DogAssignedMail from '#app/modules/notifications/infrastructure/mail/dog-assigned.mail'
+import { maskEmail } from '#app/modules/share/utils/mask-email'
 
 @inject()
 export default class DogAssignedListener {
@@ -43,7 +44,7 @@ export default class DogAssignedListener {
 
       const robotDogUrl = `${env.get('FRONTEND_URL')}/robots/${robotDog.id.value}`
       await this.doSendMail(new DogAssignedMail(user, robotDog, robotDogUrl))
-      logger.info({ to: user.email }, 'DogAssignedListener: mail sent successfully')
+      logger.info({ to: maskEmail(user.email) }, 'DogAssignedListener: mail sent successfully')
     } catch (error) {
       logger.error(
         {

@@ -5,6 +5,7 @@ import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/
 import { RobotDogOwnershipGateway } from '#app/modules/users/ownerships/application/gateways/robot-dog-ownership.gateway'
 import OwnershipRevokedEvent from '#users/ownerships/domain/events/ownership-revoked.event'
 import DogRevokedMail from '#app/modules/notifications/infrastructure/mail/dog-revoked.mail'
+import { maskEmail } from '#app/modules/share/utils/mask-email'
 
 @inject()
 export default class DogRevokedListener {
@@ -41,7 +42,7 @@ export default class DogRevokedListener {
       }
 
       await this.doSendMail(new DogRevokedMail(user, robotDog))
-      logger.info({ to: user.email }, 'DogRevokedListener: mail sent successfully')
+      logger.info({ to: maskEmail(user.email) }, 'DogRevokedListener: mail sent successfully')
     } catch (error) {
       logger.error({ err: error, userId: event.userId }, 'DogRevokedListener: failed to send mail')
     }
