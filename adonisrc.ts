@@ -68,6 +68,7 @@ export default defineConfig({
     () => import('#providers/api_provider'),
     () => import('#providers/mission_provider'),
     () => import('#providers/robot_dog_provider'),
+    () => import('#providers/robot_diagnostic_provider'),
     () => import('#providers/user_provider'),
     () => import('#providers/action_provider'),
     () => import('#providers/notification_provider'),
