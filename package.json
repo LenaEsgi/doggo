@@ -78,6 +78,7 @@
     "mqtt": "^5.15.1",
     "pg": "8.18.0",
     "reflect-metadata": "0.2.2",
+    "socket.io": "^4.8.3",
     "yaml": "^2.9.0"
   },
   "hotHook": {

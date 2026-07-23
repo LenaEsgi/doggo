@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "../doggo-frontend", "run", "dev", "--", "--port", "5199", "--strictPort"],
+      "port": 5199,
+      "autoPort": false
+    },
+    {
+      "name": "dog-simulator",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "../Dog-Simulator", "start"],
+      "port": 4300,
+      "autoPort": false
+    }
+  ]
+}

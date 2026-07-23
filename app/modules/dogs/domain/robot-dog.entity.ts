@@ -121,6 +121,12 @@ export class RobotDog {
     this.ensureBatterySufficient()
   }
 
+  public ensureLiveControlAllowed(): void {
+    if (this._state !== RobotDogState.IN_SESSION) {
+      throw new InvalidDogStateError('NO_ACTIVE_SESSION', this._state)
+    }
+  }
+
   public applyStateFromRobot(state: RobotDogState): void {
     this._state = state
   }

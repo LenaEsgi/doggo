@@ -4,6 +4,8 @@ import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import RobotTelemetryReceivedEvent from '#dogs/domain/events/robot-telemetry-received.event'
 import RobotBatteryLowEvent from '#dogs/domain/events/robot-battery-low.event'
+import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
+import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { type RobotTelemetry } from '#app/modules/robot-communication/domain/types/robot-telemetry.type'
 
 @inject()
@@ -19,6 +21,11 @@ export class HandleRobotTelemetryUseCase {
     }
 
     const previousBatteryLevel = dog.batteryLevel
+    const wasOffline = dog.state === RobotDogState.OFFLINE
+    if (wasOffline) {
+      dog.restoreOnline()
+    }
+
     dog.updateBatteryLevel(telemetry.battery)
     dog.updateHeartbeat(new Date())
 
@@ -26,6 +33,11 @@ export class HandleRobotTelemetryUseCase {
 
     if (dog.hasEnteredLowBatteryZone(previousBatteryLevel)) {
       void RobotBatteryLowEvent.dispatch(dogId, dog.name, dog.batteryLevel)
+    }
+
+    if (wasOffline) {
+      logger.info({ dogId }, 'HandleRobotTelemetry: robot back online')
+      void DogStateChangedEvent.dispatch(dogId, dog.state)
     }
 
     void RobotTelemetryReceivedEvent.dispatch(dogId, dog.batteryLevel, dog.state)

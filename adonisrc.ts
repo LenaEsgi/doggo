@@ -78,11 +78,15 @@ export default defineConfig({
       file: () => import('#providers/mqtt_provider'),
       environment: ['web', 'console'],
     },
+    {
+      file: () => import('#providers/socketio_provider'),
+      environment: ['web'],
+    },
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/mail/mail_provider'),
     () => import('@adonisjs/core/providers/edge_provider'),
     () => import('@adonisjs/transmit/transmit_provider'),
-    () => import('@adonisjs/i18n/i18n_provider')
+    () => import('@adonisjs/i18n/i18n_provider'),
   ],
 
   /*
@@ -132,6 +136,6 @@ export default defineConfig({
     {
       pattern: 'resources/lang/**/*.{json,yaml,yml}',
       reloadServer: false,
-    }
+    },
   ],
 })

@@ -439,6 +439,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MessageResponse'
+  /api/v1/dogs/by-serial/{serialNumber}:
+    get:
+      tags:
+        - Dogs
+      summary: Get a robot dog id by serial number
+      description: |-
+        Called by the robot/simulator itself at boot, before any Firebase
+        authentication is possible. Returns only the id, never the device key.
+      security: [ ]
+      parameters:
+        - in: path
+          name: serialNumber
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dog found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RobotDogIdResponse'
+        '404':
+          description: Dog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/users/dogs/assign:
     post:
       tags:
@@ -1384,6 +1412,19 @@ components:
         message:
           type: string
           example: RobotDog created
+    RobotDogIdResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              format: uuid
     RobotDogOwnersResponse:
       type: object
       required:

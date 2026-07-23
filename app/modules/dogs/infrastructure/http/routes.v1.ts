@@ -6,6 +6,8 @@ const ShowRobotDogController = () => import('./controllers/show-robot-dog.contro
 const IndexRobotDogController = () => import('./controllers/index-robot-dog.controller.js')
 const UpdateRobotDogController = () => import('./controllers/update-robot-dog.controller.js')
 const ListUserRobotDogsController = () => import('./controllers/list-user-robot-dogs.controller.js')
+const FindRobotDogBySerialNumberController = () =>
+  import('./controllers/find-robot-dog-by-serial-number.controller.js')
 
 router
   .group(() => {
@@ -18,3 +20,11 @@ router
   })
   .prefix('/api/v1/dogs')
   .use(middleware.firebaseAuth())
+
+// Pas de session utilisateur possible ici : appelé par le robot/simulateur
+// lui-même au démarrage, avant toute authentification Firebase.
+router
+  .group(() => {
+    router.get('/by-serial/:serialNumber', [FindRobotDogBySerialNumberController])
+  })
+  .prefix('/api/v1/dogs')
