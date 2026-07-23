@@ -8,17 +8,22 @@ import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { RobotAlreadyAssignedError } from '#app/modules/missions/domain/exceptions/robot-already-assigned.error'
 import MissionAssignedToDogEvent from '#app/modules/missions/domain/events/mission-assigned-to-dog.event'
+import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
+import Action from '#app/modules/actions/domain/action.entity'
+import { IncompatibleRobotActionsError } from '#app/modules/missions/domain/exceptions/incompatible-robot-actions.error'
 
 test.group('AssignMissionToDogUseCase', (group) => {
   let repo: FakeMissionRepository
   let dogGateway: FakeRobotDogGateway
+  let actionRepo: FakeActionRepository
   let useCase: AssignMissionToDogUseCase
   let events: ReturnType<typeof emitter.fake>
 
   group.each.setup(() => {
     repo = new FakeMissionRepository()
     dogGateway = new FakeRobotDogGateway()
-    useCase = new AssignMissionToDogUseCase(repo, dogGateway)
+    actionRepo = new FakeActionRepository()
+    useCase = new AssignMissionToDogUseCase(repo, dogGateway, actionRepo)
     events = emitter.fake()
     return () => emitter.restore()
   })
@@ -88,6 +93,72 @@ test.group('AssignMissionToDogUseCase', (group) => {
     const resultB = await repo.listByRobotDog(dogB, { page: 1, limit: 10 })
     assert.lengthOf(resultA.data, 1)
     assert.lengthOf(resultB.data, 1)
+  })
+
+  test('should reject assignment when robot firmware is below an action minFirmwareVersion', async ({
+    assert,
+  }) => {
+    const bark = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
+    await actionRepo.save(bark)
+
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    mission.addStep(bark.id.value, '{}', false)
+    await repo.save(mission)
+
+    const dogId = '8570f711-2895-4632-9599-281083096058'
+    dogGateway.addRobot(dogId, 'Rex', '1.0.0')
+
+    let error: unknown
+    try {
+      await useCase.execute(mission.id.value, dogId)
+    } catch (e) {
+      error = e
+    }
+
+    assert.instanceOf(error, IncompatibleRobotActionsError)
+    assert.equal((error as IncompatibleRobotActionsError).details?.robotFirmwareVersion, '1.0.0')
+    assert.deepEqual(
+      (error as IncompatibleRobotActionsError).details?.actions,
+      [{ code: 'BARK', name: 'Aboyer', minFirmwareVersion: '2.0.0' }]
+    )
+  })
+
+  test('should allow assignment when robot firmware satisfies all action requirements', async ({
+    assert,
+  }) => {
+    const bark = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
+    await actionRepo.save(bark)
+
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    mission.addStep(bark.id.value, '{}', false)
+    await repo.save(mission)
+
+    const dogId = '8570f711-2895-4632-9599-281083096058'
+    dogGateway.addRobot(dogId, 'Rex', '2.0.0')
+
+    await useCase.execute(mission.id.value, dogId)
+
+    const result = await repo.listByRobotDog(dogId, { page: 1, limit: 10 })
+    assert.lengthOf(result.data, 1)
+  })
+
+  test('should allow assignment when the action has no minFirmwareVersion restriction', async ({
+    assert,
+  }) => {
+    const wait = Action.create('WAIT', 'Attendre', 'wait', null)
+    await actionRepo.save(wait)
+
+    const mission = Mission.create('Bridge patrol', 'user-1')
+    mission.addStep(wait.id.value, '{}', false)
+    await repo.save(mission)
+
+    const dogId = '8570f711-2895-4632-9599-281083096058'
+    dogGateway.addRobot(dogId, 'Rex', '1.0.0')
+
+    await useCase.execute(mission.id.value, dogId)
+
+    const result = await repo.listByRobotDog(dogId, { page: 1, limit: 10 })
+    assert.lengthOf(result.data, 1)
   })
 
   test('should throw RobotDogNotFoundError when robot does not exist', async ({ assert }) => {

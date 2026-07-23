@@ -8,7 +8,7 @@ export class FakeRobotDogGateway implements RobotDogGateway {
     return this.robots.get(id.value) || null
   }
 
-  addRobot(id: string, name: string = 'Rex') {
-    this.robots.set(id, { id, name })
+  addRobot(id: string, name: string = 'Rex', firmwareVersion: string = '1.0.0') {
+    this.robots.set(id, { id, name, firmwareVersion })
   }
 }
