@@ -7,6 +7,7 @@ import { InvalidRobotDogSerialNumberError } from '#dogs/domain/exceptions/invali
 import { InvalidBatteryLevelError } from '#dogs/domain/exceptions/invalid-battery-level-error'
 import { BatteryTooLowError } from '#dogs/domain/exceptions/battery-too-low-error'
 import { InvalidDogStateError } from '#dogs/domain/exceptions/invalid-dog-state-error'
+import { InvalidFirmwareVersionError } from '#dogs/domain/exceptions/invalid-firmware-version.error'
 
 test.group('RobotDog Entity', () => {
   test('should create robot dog successfully', ({ assert }) => {
@@ -22,6 +23,57 @@ test.group('RobotDog Entity', () => {
     const dog = RobotDog.create('SN-001', 'Rex')
 
     assert.equal(dog.batteryLevel, 100)
+  })
+
+  test('should default firmware version to 1.0.0 when created', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+
+    assert.equal(dog.firmwareVersion, '1.0.0')
+  })
+
+  test('should update firmware version', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+
+    dog.updateFirmwareVersion('2.1.0')
+
+    assert.equal(dog.firmwareVersion, '2.1.0')
+  })
+
+  test('should throw InvalidFirmwareVersionError for a malformed version', ({ assert }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+
+    assert.throws(() => {
+      dog.updateFirmwareVersion('not-a-version')
+    }, InvalidFirmwareVersionError)
+  })
+
+  test('rehydrate should default firmware version to 1.0.0 when omitted', ({ assert }) => {
+    const dog = RobotDog.rehydrate(
+      '11111111-1111-4111-8111-111111111111',
+      'SN-001',
+      'ABCDEFGHIJKLMNOPQR',
+      'Rex',
+      RobotDogState.IDLE,
+      80,
+      new Date()
+    )
+
+    assert.equal(dog.firmwareVersion, '1.0.0')
+  })
+
+  test('rehydrate should accept an explicit firmware version', ({ assert }) => {
+    const dog = RobotDog.rehydrate(
+      '11111111-1111-4111-8111-111111111111',
+      'SN-001',
+      'ABCDEFGHIJKLMNOPQR',
+      'Rex',
+      RobotDogState.IDLE,
+      80,
+      new Date(),
+      '3.0.0'
+    )
+
+    assert.equal(dog.firmwareVersion, '3.0.0')
   })
 
   test('should throw if serial number is empty', async ({ assert }) => {

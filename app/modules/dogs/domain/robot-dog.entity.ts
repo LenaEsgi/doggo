@@ -6,12 +6,15 @@ import { RobotDogId } from './value-objects/robot-dog-id.js'
 import { InvalidRobotDogNameError } from './exceptions/invalid-robot-dog-name.error.js'
 import { InvalidRobotDogSerialNumberError } from './exceptions/invalid-robot-dog-serial-number.error.js'
 import { RobotDogKey } from './value-objects/robot-dog-key.js'
+import { InvalidFirmwareVersionError } from './exceptions/invalid-firmware-version.error.js'
+import { isValidSemver } from '#app/modules/share/utils/semver'
 
 export class RobotDog {
   private static readonly MIN_BATTERY_FOR_ACTIVITY = 10
   private static readonly LOW_BATTERY_WARNING_THRESHOLD = 20
   private static readonly HEARTBEAT_TIMEOUT_MS = 30_000
   private static readonly DEFAULT_BATTERY_LEVEL = 100
+  private static readonly DEFAULT_FIRMWARE_VERSION = '1.0.0'
 
   private constructor(
     public readonly id: RobotDogId,
@@ -20,7 +23,8 @@ export class RobotDog {
     public name: string,
     private _state: RobotDogState,
     private _batteryLevel: number,
-    private _lastHeartbeat: Date
+    private _lastHeartbeat: Date,
+    private _firmwareVersion: string = RobotDog.DEFAULT_FIRMWARE_VERSION
   ) {}
 
   public static create(
@@ -58,7 +62,8 @@ export class RobotDog {
     name: string,
     state: RobotDogState,
     batteryLevel: number,
-    lastHeartbeat: Date
+    lastHeartbeat: Date,
+    firmwareVersion: string = RobotDog.DEFAULT_FIRMWARE_VERSION
   ): RobotDog {
     return new RobotDog(
       RobotDogId.fromString(id),
@@ -67,7 +72,8 @@ export class RobotDog {
       name,
       state,
       batteryLevel,
-      lastHeartbeat
+      lastHeartbeat,
+      firmwareVersion
     )
   }
 
@@ -85,6 +91,10 @@ export class RobotDog {
 
   public get lastHeartbeat(): Date {
     return this._lastHeartbeat
+  }
+
+  public get firmwareVersion(): string {
+    return this._firmwareVersion
   }
 
   // -------------------
@@ -180,6 +190,13 @@ export class RobotDog {
 
   public updateHeartbeat(date: Date): void {
     this._lastHeartbeat = date
+  }
+
+  public updateFirmwareVersion(version: string): void {
+    if (!isValidSemver(version)) {
+      throw new InvalidFirmwareVersionError(version)
+    }
+    this._firmwareVersion = version
   }
 
   public checkHeartbeatTimeout(now: Date): void {

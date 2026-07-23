@@ -26,6 +26,9 @@ export default class RobotDogModel extends BaseModel {
   @column()
   declare batteryLevel: number
 
+  @column()
+  declare firmwareVersion: string
+
   @manyToMany(() => MissionModel, {
     pivotTable: 'mission_robot_dog',
     localKey: 'id',

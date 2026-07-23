@@ -22,7 +22,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       row.name,
       row.state as RobotDogState,
       row.batteryLevel,
-      row.lastHeartbeat?.toJSDate() ? row.lastHeartbeat?.toJSDate() : DateTime.now().toJSDate()
+      row.lastHeartbeat?.toJSDate() ? row.lastHeartbeat?.toJSDate() : DateTime.now().toJSDate(),
+      row.firmwareVersion
     )
   }
 
@@ -41,7 +42,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
         row.name,
         row.state as RobotDogState,
         row.batteryLevel,
-        row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+        row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate(),
+        row.firmwareVersion
       )
     )
   }
@@ -70,7 +72,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
           row.name,
           row.state as RobotDogState,
           row.batteryLevel,
-          row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+          row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate(),
+          row.firmwareVersion
         )
       )
 
@@ -96,6 +99,7 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
         state: dog.state,
         batteryLevel: dog.batteryLevel,
         lastHeartbeat: DateTime.fromJSDate(dog.lastHeartbeat),
+        firmwareVersion: dog.firmwareVersion,
       },
       tx ? { client: tx as unknown as TransactionClientContract } : undefined
     )
@@ -118,7 +122,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
       row.name,
       row.state as RobotDogState,
       row.batteryLevel,
-      row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+      row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate(),
+      row.firmwareVersion
     )
   }
 
@@ -135,7 +140,8 @@ export class RobotDogRepositoryImplementation implements RobotDogRepository {
         row.name,
         row.state as RobotDogState,
         row.batteryLevel,
-        row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate()
+        row.lastHeartbeat?.toJSDate() ?? DateTime.now().toJSDate(),
+        row.firmwareVersion
       )
     )
   }
