@@ -11,6 +11,7 @@ import { MissionScheduleId } from '#app/modules/missions/domain/value-objects/mi
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
 import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
+import { IncompatibleRobotActionsError } from '#app/modules/missions/domain/exceptions/incompatible-robot-actions.error'
 import MissionScheduleSkippedEvent from '#app/modules/missions/domain/events/mission-schedule-skipped.event'
 
 @inject()
@@ -64,6 +65,27 @@ export class HandleMissionScheduleDispatchUseCase {
         logger.warn(
           { scheduleId: payload.scheduleId, missionId: payload.missionId, dogId: payload.dogId },
           'HandleMissionScheduleDispatch: mission no longer assigned to robot, disabling schedule'
+        )
+        await this.firingRepository.recordOutcome(
+          payload.scheduleId,
+          firedForMinute,
+          MissionScheduleFiringOutcome.ERROR,
+          null
+        )
+        const schedule = await this.missionScheduleRepository.findById(
+          MissionScheduleId.fromString(payload.scheduleId)
+        )
+        if (schedule) {
+          schedule.disable()
+          await this.missionScheduleRepository.save(schedule)
+        }
+        return
+      }
+
+      if (error instanceof IncompatibleRobotActionsError) {
+        logger.warn(
+          { scheduleId: payload.scheduleId, missionId: payload.missionId, dogId: payload.dogId },
+          'HandleMissionScheduleDispatch: robot firmware no longer compatible, disabling schedule'
         )
         await this.firingRepository.recordOutcome(
           payload.scheduleId,

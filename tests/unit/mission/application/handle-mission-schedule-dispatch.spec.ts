@@ -186,4 +186,42 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
     assert.isFalse(disabled?.enabled)
     events.assertEmittedCount(MissionScheduleSkippedEvent, 0)
   })
+
+  test('records ERROR and auto-disables the schedule when the robot firmware is incompatible (rollback scenario)', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-SCHED-004', 'Rex', 80)
+    await dogRepo.save(dog)
+
+    const bark = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
+    actionRepo.actions.push(bark)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep(bark.id.value, '{}')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    const schedule = MissionSchedule.create(
+      MissionId.fromString(mission.id.value),
+      RobotDogId.fromString(dog.id.value),
+      [4],
+      12,
+      45
+    )
+    await scheduleRepo.save(schedule)
+
+    await useCase.execute({
+      scheduleId: schedule.id.value,
+      missionId: mission.id.value,
+      dogId: dog.id.value,
+      firedForMinute: '2024-01-04T12:45:00.000Z',
+    })
+
+    assert.lengthOf(firingRepo.outcomes, 1)
+    assert.equal(firingRepo.outcomes[0].outcome, MissionScheduleFiringOutcome.ERROR)
+
+    const disabled = await scheduleRepo.findById(schedule.id)
+    assert.isFalse(disabled?.enabled)
+    events.assertEmittedCount(MissionScheduleSkippedEvent, 0)
+  })
 })
