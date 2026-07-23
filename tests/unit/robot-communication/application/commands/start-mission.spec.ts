@@ -20,6 +20,8 @@ import Action from '#app/modules/actions/domain/action.entity'
 import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
 import { InvalidDogStateError } from '#dogs/domain/exceptions/invalid-dog-state-error'
+import { IncompatibleRobotActionsError } from '#app/modules/missions/domain/exceptions/incompatible-robot-actions.error'
+import { MissionFirmwareCompatibilityService } from '#app/modules/missions/application/services/mission-firmware-compatibility.service'
 
 test.group('StartMissionCommandUseCase', (group) => {
   let fakeRepo: FakeRobotDogRepository
@@ -47,7 +49,8 @@ test.group('StartMissionCommandUseCase', (group) => {
       missionRepo,
       runRepo,
       timeoutQueue,
-      actionRepo
+      actionRepo,
+      new MissionFirmwareCompatibilityService(actionRepo)
     )
     events = emitter.fake()
     return () => emitter.restore()
@@ -291,5 +294,65 @@ test.group('StartMissionCommandUseCase', (group) => {
     assert.lengthOf(runRepo.runs, 0) // aucun run créé
     assert.lengthOf(fakeMqtt.calls, 0) // rien publié
     assert.lengthOf(timeoutQueue.scheduled, 0) // aucun timeout armé
+  })
+
+  test('refuse de lancer si le firmware du robot ne supporte pas une action de la mission', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    await fakeRepo.save(dog)
+
+    const bark = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
+    actionRepo.actions.push(bark)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep(bark.id.value, '{}')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    let error: unknown
+    try {
+      await useCase.execute(dog.id.value, mission.id.value)
+    } catch (e) {
+      error = e
+    }
+
+    assert.instanceOf(error, IncompatibleRobotActionsError)
+    assert.equal((error as IncompatibleRobotActionsError).details?.robotFirmwareVersion, '1.0.0')
+    assert.deepEqual((error as IncompatibleRobotActionsError).details?.actions, [
+      { code: 'BARK', name: 'Aboyer', minFirmwareVersion: '2.0.0' },
+    ])
+
+    assert.lengthOf(fakeMqtt.calls, 0)
+    assert.lengthOf(runRepo.runs, 0)
+    assert.lengthOf(timeoutQueue.scheduled, 0)
+
+    events.assertEmitted(
+      MissionStartFailedEvent,
+      ({ data }) =>
+        data.missionId === mission.id.value &&
+        data.robotDogId === dog.id.value &&
+        data.reason === 'FIRMWARE_INCOMPATIBLE'
+    )
+  })
+
+  test('autorise le lancement quand le firmware du robot satisfait toutes les actions', async ({
+    assert,
+  }) => {
+    const dog = RobotDog.create('SN-001', 'Rex', 80)
+    dog.updateFirmwareVersion('2.0.0')
+    await fakeRepo.save(dog)
+
+    const bark = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
+    actionRepo.actions.push(bark)
+
+    const mission = Mission.create('Patrol', 'user-1')
+    mission.addStep(bark.id.value, '{}')
+    await missionRepo.save(mission)
+    await missionRepo.assignToDog(mission.id.value, dog.id.value)
+
+    await useCase.execute(dog.id.value, mission.id.value)
+
+    assert.lengthOf(fakeMqtt.calls, 1)
   })
 })

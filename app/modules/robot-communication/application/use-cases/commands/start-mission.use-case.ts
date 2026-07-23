@@ -27,6 +27,8 @@ import MissionStartedEvent from '#app/modules/missions/domain/events/mission-sta
 import MissionStartFailedEvent, {
   type MissionStartFailureReason,
 } from '#app/modules/missions/domain/events/mission-start-failed.event'
+import { MissionFirmwareCompatibilityService } from '#app/modules/missions/application/services/mission-firmware-compatibility.service'
+import { IncompatibleRobotActionsError } from '#app/modules/missions/domain/exceptions/incompatible-robot-actions.error'
 
 const PENDING_RUN_TIMEOUT_MS = 60_000
 
@@ -40,7 +42,8 @@ export class StartMissionCommandUseCase {
     private readonly missionRepository: MissionRepository,
     private readonly missionRunRepository: MissionRunRepository,
     private readonly missionTimeoutQueue: MissionTimeoutQueue,
-    private readonly actionRepository: ActionRepository
+    private readonly actionRepository: ActionRepository,
+    private readonly compatibilityService: MissionFirmwareCompatibilityService
   ) {}
 
   async execute(dogId: string, missionId?: string): Promise<MissionRun> {
@@ -86,6 +89,25 @@ export class StartMissionCommandUseCase {
         )
       }
       throw error
+    }
+
+    const incompatibleActions = await this.compatibilityService.findIncompatibleActions(
+      mission.getStepsInOrder().map((step) => step.actionId),
+      dog.firmwareVersion
+    )
+    if (incompatibleActions.length > 0) {
+      logger.warn(
+        { missionId, dogId, incompatibleActions },
+        'StartMissionCommandUseCase rejected: robot firmware incompatible with mission actions'
+      )
+      void MissionStartFailedEvent.dispatch(
+        mission.id.value,
+        mission.name,
+        dog.id.value,
+        dog.name,
+        'FIRMWARE_INCOMPATIBLE'
+      )
+      throw new IncompatibleRobotActionsError(dog.firmwareVersion, incompatibleActions)
     }
 
     // Résout le plan dénormalisé AVANT de créer le run : si une action référencée

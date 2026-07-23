@@ -7,6 +7,7 @@ import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
 import { FakeMissionTimeoutQueue } from '#tests/unit/fakes/fake-mission-timeout-queue'
 import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
+import { MissionFirmwareCompatibilityService } from '#app/modules/missions/application/services/mission-firmware-compatibility.service'
 import { FakeMissionScheduleRepository } from '#tests/unit/fakes/fake-mission-schedule-repository'
 import { FakeMissionScheduleFiringRepository } from '#tests/unit/fakes/fake-mission-schedule-firing-repository'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
@@ -47,7 +48,8 @@ test.group('HandleMissionScheduleDispatchUseCase', (group) => {
       missionRepo,
       runRepo,
       timeoutQueue,
-      actionRepo
+      actionRepo,
+      new MissionFirmwareCompatibilityService(actionRepo)
     )
     useCase = new HandleMissionScheduleDispatchUseCase(
       startMissionUseCase,
