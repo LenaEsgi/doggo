@@ -1,6 +1,8 @@
 import { ActionId } from './value-objects/action-id.js'
 import { InvalidActionPropertyError } from '#app/modules/actions/domain/exceptions/invalid-action-property.error'
 import { InvalidActionParametersError } from '#app/modules/actions/domain/exceptions/invalid-action-parameters.error'
+import { InvalidFirmwareVersionError } from '#dogs/domain/exceptions/invalid-firmware-version.error'
+import { isValidSemver } from '#app/modules/share/utils/semver'
 import type { ActionParameterSchema } from '#app/modules/actions/domain/value-objects/action-parameter-schema'
 
 export default class Action {
@@ -11,7 +13,8 @@ export default class Action {
     private _slug: string,
     private _description: string | null,
     private _parameterSchema: ActionParameterSchema | null,
-    private _isActive: boolean
+    private _isActive: boolean,
+    private _minFirmwareVersion: string | null = null
   ) {}
 
   public static create(
@@ -19,8 +22,13 @@ export default class Action {
     name: string,
     slug: string,
     description: string | null,
-    parameterSchema: ActionParameterSchema | null = null
+    parameterSchema: ActionParameterSchema | null = null,
+    minFirmwareVersion: string | null = null
   ): Action {
+    if (minFirmwareVersion !== null && !isValidSemver(minFirmwareVersion)) {
+      throw new InvalidFirmwareVersionError(minFirmwareVersion)
+    }
+
     return new Action(
       ActionId.generate(),
       code.toUpperCase(),
@@ -28,7 +36,8 @@ export default class Action {
       slug,
       description ?? null,
       parameterSchema,
-      true
+      true,
+      minFirmwareVersion
     )
   }
 
@@ -39,7 +48,8 @@ export default class Action {
     slug: string,
     description: string | null,
     parameterSchema: ActionParameterSchema | null = null,
-    isActive: boolean = true
+    isActive: boolean = true,
+    minFirmwareVersion: string | null = null
   ): Action {
     return new Action(
       ActionId.fromString(id),
@@ -48,7 +58,8 @@ export default class Action {
       slug,
       description ?? null,
       parameterSchema,
-      isActive
+      isActive,
+      minFirmwareVersion
     )
   }
 
@@ -82,6 +93,10 @@ export default class Action {
 
   public get isActive(): boolean {
     return this._isActive
+  }
+
+  public get minFirmwareVersion(): string | null {
+    return this._minFirmwareVersion
   }
 
   // -------------------
@@ -118,6 +133,13 @@ export default class Action {
 
   public deactivate(): void {
     this._isActive = false
+  }
+
+  public updateMinFirmwareVersion(version: string | null): void {
+    if (version !== null && !isValidSemver(version)) {
+      throw new InvalidFirmwareVersionError(version)
+    }
+    this._minFirmwareVersion = version
   }
 
   /**

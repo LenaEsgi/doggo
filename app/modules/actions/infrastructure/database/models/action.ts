@@ -26,6 +26,9 @@ export default class ActionModel extends BaseModel {
   @column()
   declare isActive: boolean
 
+  @column()
+  declare minFirmwareVersion: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

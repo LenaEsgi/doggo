@@ -19,7 +19,8 @@ export class ActionRepositoryImplementation implements ActionRepository {
       row.slug,
       row.description,
       row.parameterSchema ?? null,
-      row.isActive
+      row.isActive,
+      row.minFirmwareVersion ?? null
     )
   }
 
@@ -33,7 +34,8 @@ export class ActionRepositoryImplementation implements ActionRepository {
       row.slug,
       row.description,
       row.parameterSchema ?? null,
-      row.isActive
+      row.isActive,
+      row.minFirmwareVersion ?? null
     )
   }
 
@@ -56,7 +58,8 @@ export class ActionRepositoryImplementation implements ActionRepository {
         row.slug,
         row.description,
         row.parameterSchema ?? null,
-        row.isActive
+        row.isActive,
+        row.minFirmwareVersion ?? null
       )
     })
 
@@ -83,6 +86,7 @@ export class ActionRepositoryImplementation implements ActionRepository {
           name: action.name,
           parameterSchema: action.parameterSchema,
           isActive: action.isActive,
+          minFirmwareVersion: action.minFirmwareVersion,
         },
         { client: trx }
       )

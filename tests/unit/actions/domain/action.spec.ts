@@ -1,6 +1,7 @@
 import { test } from '@japa/runner'
 import Action from '#app/modules/actions/domain/action.entity'
 import { InvalidActionParametersError } from '#app/modules/actions/domain/exceptions/invalid-action-parameters.error'
+import { InvalidFirmwareVersionError } from '#dogs/domain/exceptions/invalid-firmware-version.error'
 import type { ActionParameterSchema } from '#app/modules/actions/domain/value-objects/action-parameter-schema'
 
 test.group('Unit | Actions | ActionEntity', () => {
@@ -164,5 +165,47 @@ test.group('Unit | Actions | ActionEntity', () => {
 
     action.updateCode('new_code')
     assert.equal(action.code, 'NEW_CODE')
+  })
+
+  // -------------------
+  // minFirmwareVersion
+  // -------------------
+
+  test('should default minFirmwareVersion to null when not provided', ({ assert }) => {
+    const action = Action.create('BARK', 'Aboyer', 'bark', null)
+
+    assert.isNull(action.minFirmwareVersion)
+  })
+
+  test('should accept a minFirmwareVersion at creation', ({ assert }) => {
+    const action = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
+
+    assert.equal(action.minFirmwareVersion, '2.0.0')
+  })
+
+  test('should update minFirmwareVersion', ({ assert }) => {
+    const action = Action.create('BARK', 'Aboyer', 'bark', null)
+
+    action.updateMinFirmwareVersion('2.0.0')
+
+    assert.equal(action.minFirmwareVersion, '2.0.0')
+  })
+
+  test('should clear minFirmwareVersion when updated with null', ({ assert }) => {
+    const action = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
+
+    action.updateMinFirmwareVersion(null)
+
+    assert.isNull(action.minFirmwareVersion)
+  })
+
+  test('should throw InvalidFirmwareVersionError for a malformed minFirmwareVersion', ({
+    assert,
+  }) => {
+    const action = Action.create('BARK', 'Aboyer', 'bark', null)
+
+    assert.throws(() => {
+      action.updateMinFirmwareVersion('not-a-version')
+    }, InvalidFirmwareVersionError)
   })
 })
