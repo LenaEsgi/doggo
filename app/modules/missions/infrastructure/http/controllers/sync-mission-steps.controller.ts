@@ -1,12 +1,16 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/core'
 import { SyncMissionStepsUseCase } from '#app/modules/missions/application/usecases/sync-mission-steps.use-case'
+import { CheckMissionRobotsFirmwareCompatibilityUseCase } from '#app/modules/missions/application/usecases/check-mission-robots-firmware-compatibility.use-case'
 import { SyncMissionStepsValidator } from '#app/modules/missions/infrastructure/http/validators/sync-mission-steps.validator'
 import MissionTransformer from '#app/modules/missions/infrastructure/http/transformers/mission.transformer'
 
 @inject()
 export default class SyncMissionStepsController {
-  constructor(private readonly syncMissionStepsUseCase: SyncMissionStepsUseCase) {}
+  constructor(
+    private readonly syncMissionStepsUseCase: SyncMissionStepsUseCase,
+    private readonly checkCompatibilityUseCase: CheckMissionRobotsFirmwareCompatibilityUseCase
+  ) {}
 
   public async handle({ request, params, bouncer, serialize }: HttpContext) {
     await bouncer.with('MissionPolicy').authorize('syncSteps', params.id)
@@ -18,6 +22,8 @@ export default class SyncMissionStepsController {
       steps: payload.steps,
     })
 
-    return serialize(MissionTransformer.transform(mission))
+    const firmwareWarnings = await this.checkCompatibilityUseCase.execute(params.id)
+
+    return serialize({ ...MissionTransformer.transform(mission), firmwareWarnings })
   }
 }
