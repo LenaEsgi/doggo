@@ -176,4 +176,19 @@ test.group('Unit | Actions | UpdateActionUseCase', () => {
     const updated = await fakeRepository.findById(action.id)
     assert.equal(updated?.name, 'New Name')
   })
+
+  test('should update minFirmwareVersion', async ({ assert }) => {
+    const fakeRepository = new FakeActionRepository()
+    const action = Action.create('BARK', 'Aboyer', 'bark', null)
+    await fakeRepository.save(action)
+
+    const useCase = new UpdateActionUseCase(fakeRepository, new FakeMissionStepUsageGateway())
+
+    const updated = await useCase.execute({
+      id: action.id.value,
+      minFirmwareVersion: '2.0.0',
+    })
+
+    assert.equal(updated.minFirmwareVersion, '2.0.0')
+  })
 })

@@ -24,7 +24,8 @@ export class CreateActionUseCase {
       dto.name,
       dto.slug,
       dto.description ?? null,
-      dto.parameterSchema ?? null
+      dto.parameterSchema ?? null,
+      dto.minFirmwareVersion ?? null
     )
     logger.debug({ actionId: action.id.value }, 'Domain entity instantiated')
 

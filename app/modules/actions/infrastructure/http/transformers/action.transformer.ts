@@ -11,6 +11,7 @@ export default class ActionTransformer extends BaseTransformer<Action> {
       description: this.resource.description,
       parameterSchema: this.resource.parameterSchema,
       isActive: this.resource.isActive,
+      minFirmwareVersion: this.resource.minFirmwareVersion,
     }
   }
 }

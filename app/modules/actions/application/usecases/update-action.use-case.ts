@@ -52,6 +52,10 @@ export class UpdateActionUseCase {
       action.updateParameterSchema(dto.parameterSchema ?? null)
     }
 
+    if (dto.minFirmwareVersion !== undefined) {
+      action.updateMinFirmwareVersion(dto.minFirmwareVersion)
+    }
+
     await this.actionRepository.save(action)
 
     return action

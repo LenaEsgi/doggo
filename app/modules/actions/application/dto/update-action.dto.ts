@@ -7,6 +7,7 @@ export class UpdateActionDto {
     public readonly slug?: string,
     public readonly code?: string,
     public readonly description?: string | null,
-    public readonly parameterSchema?: ActionParameterSchema | null
+    public readonly parameterSchema?: ActionParameterSchema | null,
+    public readonly minFirmwareVersion?: string | null
   ) {}
 }

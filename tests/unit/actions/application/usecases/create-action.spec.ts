@@ -39,4 +39,18 @@ test.group('Unit | Actions | CreateActionUseCase', () => {
 
     assert.equal(fakeRepository.actions.length, 1)
   })
+
+  test('should create an action with a minFirmwareVersion', async ({ assert }) => {
+    const fakeRepository = new FakeActionRepository()
+    const useCase = new CreateActionUseCase(fakeRepository)
+
+    const action = await useCase.execute({
+      code: 'BARK',
+      name: 'Aboyer',
+      slug: 'bark',
+      minFirmwareVersion: '2.0.0',
+    })
+
+    assert.equal(action.minFirmwareVersion, '2.0.0')
+  })
 })

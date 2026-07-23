@@ -25,5 +25,10 @@ export const UpdateActionValidator = vine.create(
       .object({ fields: vine.array(parameterFieldSchema) })
       .nullable()
       .optional(),
+    minFirmwareVersion: vine
+      .string()
+      .regex(/^\d+(\.\d+){1,2}$/)
+      .nullable()
+      .optional(),
   })
 )
