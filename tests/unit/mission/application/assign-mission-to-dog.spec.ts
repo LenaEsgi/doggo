@@ -11,6 +11,7 @@ import MissionAssignedToDogEvent from '#app/modules/missions/domain/events/missi
 import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
 import Action from '#app/modules/actions/domain/action.entity'
 import { IncompatibleRobotActionsError } from '#app/modules/missions/domain/exceptions/incompatible-robot-actions.error'
+import { MissionFirmwareCompatibilityService } from '#app/modules/missions/application/services/mission-firmware-compatibility.service'
 
 test.group('AssignMissionToDogUseCase', (group) => {
   let repo: FakeMissionRepository
@@ -23,7 +24,11 @@ test.group('AssignMissionToDogUseCase', (group) => {
     repo = new FakeMissionRepository()
     dogGateway = new FakeRobotDogGateway()
     actionRepo = new FakeActionRepository()
-    useCase = new AssignMissionToDogUseCase(repo, dogGateway, actionRepo)
+    useCase = new AssignMissionToDogUseCase(
+      repo,
+      dogGateway,
+      new MissionFirmwareCompatibilityService(actionRepo)
+    )
     events = emitter.fake()
     return () => emitter.restore()
   })
