@@ -1,5 +1,6 @@
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
+import { isValidSemver } from '#app/modules/share/utils/semver'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDiagnosticEventRepository } from '#app/modules/robot-communication/domain/contracts/robot-diagnostic-event.repository'
@@ -23,5 +24,15 @@ export class HandleRobotRebootUseCase {
 
     logger.warn({ dogId, payload }, 'HandleRobotReboot: robot rebooted')
     await this.diagnosticRepository.save(RobotDiagnosticEvent.fromReboot(dogId, payload))
+
+    if (isValidSemver(payload.firmwareVersion)) {
+      dog.updateFirmwareVersion(payload.firmwareVersion)
+      await this.dogRepository.save(dog)
+    } else {
+      logger.warn(
+        { dogId, firmwareVersion: payload.firmwareVersion },
+        'HandleRobotReboot: malformed firmwareVersion, keeping previous value'
+      )
+    }
   }
 }
