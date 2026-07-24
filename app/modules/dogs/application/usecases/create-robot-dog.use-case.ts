@@ -41,7 +41,6 @@ export class CreateRobotDogUseCase {
     try {
       await this.mqttAccountProvisioner.provisionRobotAccount(robotDog.id.value, mqttPassword.value)
     } catch (error) {
-      await this.robotDogRepository.delete(robotDog.id)
       logger.error(
         {
           robotDogId: robotDog.id.value,
@@ -50,6 +49,7 @@ export class CreateRobotDogUseCase {
         },
         'CreateRobotDogUseCase: MQTT provisioning failed, robot dog creation rolled back'
       )
+      await this.robotDogRepository.delete(robotDog.id)
       throw new MqttAccountProvisioningFailedError(robotDog.id.value, error)
     }
 
