@@ -6,6 +6,5 @@ export class InvalidRobotCommandError extends DomainError {
 
   constructor(message: string) {
     super(message)
-    this.name = 'InvalidRobotCommandError'
   }
 }

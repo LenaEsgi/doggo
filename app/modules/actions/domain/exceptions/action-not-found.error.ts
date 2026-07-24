@@ -6,6 +6,5 @@ export class ActionNotFoundError extends DomainError {
 
   constructor(id: string) {
     super('Action with id ' + id + ' not found')
-    this.name = 'ActionNotFoundError'
   }
 }

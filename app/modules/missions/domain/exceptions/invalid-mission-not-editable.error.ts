@@ -6,6 +6,5 @@ export class InvalidMissionNotEditableError extends DomainError {
 
   constructor() {
     super('Mission cannot be modified while a run is active on at least one robot')
-    this.name = 'MissionNotEditableError'
   }
 }

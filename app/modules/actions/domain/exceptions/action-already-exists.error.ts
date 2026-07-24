@@ -6,6 +6,5 @@ export class ActionAlreadyExistsError extends DomainError {
 
   constructor(code: string) {
     super('Action with code ' + code + ' already exist')
-    this.name = 'ActionAlreadyExistsError'
   }
 }

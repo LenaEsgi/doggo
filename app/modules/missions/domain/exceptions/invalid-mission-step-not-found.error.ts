@@ -7,6 +7,5 @@ export class InvalidMissionStepNotFoundError extends DomainError {
 
   constructor(stepId: MissionStepId) {
     super(`MissionStep with id ${stepId.toString()} was not found in this mission`)
-    this.name = 'MissionStepNotFoundError'
   }
 }
