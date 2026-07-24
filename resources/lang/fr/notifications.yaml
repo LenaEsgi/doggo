@@ -23,6 +23,7 @@ reasons:
   robot_busy: "robot déjà occupé"
   battery_too_low: "batterie du robot trop faible"
   timeout: "le robot n'a pas confirmé le lancement à temps"
+  firmware_incompatible: "le firmware du robot n'est pas compatible avec cette mission"
   max_duration: "durée maximale atteinte"
 
 defaults:
