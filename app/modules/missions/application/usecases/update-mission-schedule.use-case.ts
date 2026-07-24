@@ -4,6 +4,7 @@ import { MissionScheduleRepository } from '#app/modules/missions/domain/contract
 import { UpdateMissionScheduleDto } from '#app/modules/missions/application/dto/update-mission-schedule.dto'
 import { MissionScheduleId } from '#app/modules/missions/domain/value-objects/mission-schedule-id'
 import { MissionScheduleNotFoundError } from '#app/modules/missions/domain/exceptions/mission-schedule-not-found.error'
+import { findOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class UpdateMissionScheduleUseCase {
@@ -13,11 +14,11 @@ export class UpdateMissionScheduleUseCase {
     logger.info('UpdateMissionScheduleUseCase started', { dto })
 
     const scheduleId = MissionScheduleId.fromString(dto.id)
-    const schedule = await this.missionScheduleRepository.findById(scheduleId)
-
-    if (!schedule) {
-      throw new MissionScheduleNotFoundError(dto.id)
-    }
+    const schedule = await findOrThrow(
+      () => this.missionScheduleRepository.findById(scheduleId),
+      MissionScheduleNotFoundError,
+      dto.id
+    )
 
     if (schedule.missionId.value !== dto.missionId) {
       throw new MissionScheduleNotFoundError(dto.id)
