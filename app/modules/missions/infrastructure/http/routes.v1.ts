@@ -13,14 +13,6 @@ const UpdateMissionController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/update-mission.controller')
 const DestroyMissionController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/destroy-mission.controller')
-const AddStepController = () =>
-  import('#app/modules/missions/infrastructure/http/controllers/add-step.controller')
-const DestroyMissionStepController = () =>
-  import('#app/modules/missions/infrastructure/http/controllers/destroy-mission-step.controller')
-
-const MoveMissionStepController = () =>
-  import('#app/modules/missions/infrastructure/http/controllers/move-mission-step.controller')
-
 const SyncMissionStepsController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/sync-mission-steps.controller')
 
@@ -53,10 +45,7 @@ router
     router.put('/:id', [UpdateMissionController])
     router.delete('/:id', [DestroyMissionController])
 
-    router.post('/:id/steps', [AddStepController])
     router.put('/:id/steps', [SyncMissionStepsController])
-    router.delete('/:missionId/steps/:stepId', [DestroyMissionStepController])
-    router.put('/:missionId/steps/:stepId', [MoveMissionStepController])
 
     router.post('/:id/schedules', [CreateMissionScheduleController])
     router.get('/:id/schedules', [ListMissionSchedulesController])
