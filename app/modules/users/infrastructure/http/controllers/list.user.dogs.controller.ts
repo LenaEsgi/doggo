@@ -4,7 +4,7 @@ import { ListUserRobotDogsUseCase } from '#app/modules/users/ownerships/applicat
 import { RobotDogSerializer } from '#dogs/infrastructure/http/serializers/robot-dog.serializer'
 import { showUserParamValidator } from '#users/infrastructure/http/validators/show.user.validator'
 import UserPolicy from '#users/application/policies/user.policy'
-import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { parsePaginationParams } from '#app/modules/share/utils/parse-pagination-params'
 
 @inject()
 export default class ListUserDogsController {
@@ -17,10 +17,7 @@ export default class ListUserDogsController {
 
     await bouncer.with(UserPolicy).authorize('listDogs', id)
 
-    const pagination: PaginationDto = {
-      page: Math.max(1, Number(request.input('page', 1))),
-      limit: Math.min(Number(request.input('limit', 20)), 100),
-    }
+    const pagination = parsePaginationParams(request)
 
     logger.info({ userId: id }, 'ListUserDogsController called')
     const result = await this.useCase.execute(id, pagination)
