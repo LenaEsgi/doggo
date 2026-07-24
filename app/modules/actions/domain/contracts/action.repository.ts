@@ -15,6 +15,4 @@ export abstract class ActionRepository {
   abstract index(options?: IndexActionOptions): Promise<PaginatedResult<Action>>
 
   abstract save(action: Action): Promise<void>
-
-  abstract delete(id: ActionId): Promise<void>
 }
