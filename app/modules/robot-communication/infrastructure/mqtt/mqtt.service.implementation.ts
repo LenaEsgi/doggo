@@ -27,9 +27,23 @@ import { robotStateValidator } from '#app/modules/robot-communication/infrastruc
 import { robotRebootEventValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-reboot-event.validator'
 import { robotErrorEventValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-error-event.validator'
 import { robotConnectivityEventValidator } from '#app/modules/robot-communication/infrastructure/mqtt/validators/robot-connectivity-event.validator'
+import { type MqttAccountProvisioner } from '#app/modules/robot-communication/domain/contracts/mqtt-account-provisioner'
 
-export class MqttServiceImplementation implements RobotCommunicationService {
+type DynamicSecurityResponse = {
+  responses: { command: string; error?: string }[]
+}
+
+export class MqttServiceImplementation implements RobotCommunicationService, MqttAccountProvisioner {
+  private static readonly CONTROL_TOPIC = '$CONTROL/dynamic-security/v1'
+  private static readonly CONTROL_RESPONSE_TOPIC = '$CONTROL/dynamic-security/v1/response'
+  private static readonly CONTROL_TIMEOUT_MS = 5000
+
   private client!: MqttClient
+  private controlMutex: Promise<void> = Promise.resolve()
+  private pendingControlRequest: {
+    resolve: (response: DynamicSecurityResponse) => void
+    reject: (error: Error) => void
+  } | null = null
 
   async connect(): Promise<void> {
     const host = env.get('MQTT_HOST')
@@ -55,6 +69,7 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     await this.client.subscribeAsync('robot/+/state')
     await this.client.subscribeAsync('robot/+/system')
     await this.client.subscribeAsync('robot/+/error')
+    await this.client.subscribeAsync(MqttServiceImplementation.CONTROL_RESPONSE_TOPIC)
 
     this.client.on('message', (topic, payload) => {
       this.handleMessage(topic, payload).catch((err) => {
@@ -91,7 +106,85 @@ export class MqttServiceImplementation implements RobotCommunicationService {
     logger.info({ dogId, command }, 'MqttService: command sent')
   }
 
+  async provisionRobotAccount(username: string, password: string): Promise<void> {
+    await this.sendDynamicSecurityCommand({
+      command: 'createClient',
+      username,
+      password,
+      roles: [{ rolename: 'robot' }],
+    })
+    logger.info({ username }, 'MqttService: robot MQTT account provisioned')
+  }
+
+  async deprovisionRobotAccount(username: string): Promise<void> {
+    await this.sendDynamicSecurityCommand({ command: 'deleteClient', username })
+    logger.info({ username }, 'MqttService: robot MQTT account deprovisioned')
+  }
+
+  private async withControlLock<T>(fn: () => Promise<T>): Promise<T> {
+    const run = this.controlMutex.then(fn, fn)
+    this.controlMutex = run.then(
+      () => undefined,
+      () => undefined
+    )
+    return run
+  }
+
+  private async sendDynamicSecurityCommand(command: Record<string, unknown>): Promise<void> {
+    return this.withControlLock(async () => {
+      if (!this.client?.connected) {
+        throw new Error('MQTT client is not connected')
+      }
+
+      const responsePromise = new Promise<DynamicSecurityResponse>((resolve, reject) => {
+        this.pendingControlRequest = { resolve, reject }
+      })
+
+      const timeout = setTimeout(() => {
+        if (this.pendingControlRequest) {
+          this.pendingControlRequest.reject(new Error('Dynamic security control command timed out'))
+          this.pendingControlRequest = null
+        }
+      }, MqttServiceImplementation.CONTROL_TIMEOUT_MS)
+
+      try {
+        await this.client.publishAsync(
+          MqttServiceImplementation.CONTROL_TOPIC,
+          JSON.stringify({ commands: [command] }),
+          { qos: 1 }
+        )
+
+        const response = await responsePromise
+        const [result] = response.responses
+
+        if (result?.error) {
+          throw new Error(result.error)
+        }
+      } finally {
+        clearTimeout(timeout)
+      }
+    })
+  }
+
+  private handleDynamicSecurityResponse(raw: string): void {
+    if (!this.pendingControlRequest) return
+
+    const { resolve, reject } = this.pendingControlRequest
+    this.pendingControlRequest = null
+
+    try {
+      resolve(JSON.parse(raw) as DynamicSecurityResponse)
+    } catch (err) {
+      reject(new Error(`Invalid dynamic security response payload: ${String(err)}`))
+    }
+  }
+
   private async handleMessage(topic: string, rawPayload: Buffer): Promise<void> {
+    if (topic === MqttServiceImplementation.CONTROL_RESPONSE_TOPIC) {
+      this.handleDynamicSecurityResponse(rawPayload.toString())
+      return
+    }
+
     const segments = topic.split('/')
     const dogId = segments[1]
 
