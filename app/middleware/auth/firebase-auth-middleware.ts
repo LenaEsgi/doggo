@@ -3,6 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { FirebaseTokenVerifier } from '#middleware/auth/contracts/firebase-token-verifier'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import type { User } from '#users/domain/user.entity'
+import { extractBearerToken } from '#auth/infrastructure/http/helpers/extract-bearer-token'
 
 declare module '@adonisjs/core/http' {
   interface HttpContext {
@@ -18,15 +19,13 @@ export default class FirebaseAuthMiddleware {
   ) {}
 
   async handle(ctx: HttpContext, next: () => Promise<void>) {
-    const authHeader = ctx.request.header('authorization')
-    const bearerMatch = authHeader?.match(/^Bearer\s+(.+)$/i)
-
-    if (!bearerMatch) {
+    let idToken: string
+    try {
+      idToken = extractBearerToken(ctx.request)
+    } catch {
       ctx.logger.warn({ path: ctx.request.url() }, 'FirebaseAuthMiddleware rejected: token missing')
       return ctx.response.unauthorized({ message: 'Token missing' })
     }
-
-    const idToken = bearerMatch[1].trim()
 
     try {
       const decodedToken = await this.tokenVerifier.handle(idToken)
