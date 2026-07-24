@@ -31,7 +31,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       })
     }
 
-    if (!this.debug && !this.isSelfHandled(error)) {
+    if (!this.debug && this.isUnclassifiedServerError(error)) {
       return this.renderSanitizedError(error, ctx)
     }
 
@@ -46,6 +46,20 @@ export default class HttpExceptionHandler extends ExceptionHandler {
   private isSelfHandled(error: unknown): boolean {
     const candidate = error as { handle?: unknown; code?: unknown }
     return typeof candidate?.handle === 'function' || candidate?.code === 'E_VALIDATION_ERROR'
+  }
+
+  /**
+   * True only for errors that are neither self-handled nor carry a known
+   * client-facing (< 500) status - i.e. a raw DB/third-party/unexpected error
+   * whose `.message` was never meant to be shown to a client. Framework
+   * exceptions like a 404 route-not-found already have a safe, intentional
+   * message and are left alone even without a `.handle()` method.
+   */
+  private isUnclassifiedServerError(error: unknown): boolean {
+    if (this.isSelfHandled(error)) return false
+    const status = (error as { status?: unknown })?.status
+    const numericStatus = typeof status === 'number' ? status : 500
+    return numericStatus >= 500
   }
 
   /**

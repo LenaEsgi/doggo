@@ -149,4 +149,23 @@ test.group('HttpExceptionHandler', () => {
     assert.equal(calls.status, 422)
     assert.notEqual(calls.body, undefined)
   })
+
+  test('does not sanitize a framework error with a known client-facing status (e.g. 404 route not found) even when debug is disabled', async ({
+    assert,
+  }) => {
+    const handler = new HttpExceptionHandler()
+    ;(handler as unknown as { debug: boolean }).debug = false
+    const { ctx, calls } = fakeCtx()
+
+    const routeNotFound = {
+      message: 'Cannot GET:/api/v1/nope',
+      status: 404,
+      code: 'E_ROUTE_NOT_FOUND',
+    }
+
+    await handler.handle(routeNotFound, ctx)
+
+    assert.equal(calls.status, 404)
+    assert.include(JSON.stringify(calls.body), 'Cannot GET:/api/v1/nope')
+  })
 })
