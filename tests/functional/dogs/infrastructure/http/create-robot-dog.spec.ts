@@ -20,6 +20,10 @@ test.group('POST /api/v1/dogs', (group) => {
 
     const body = response.body()
     assert.exists(body.id)
+    assert.exists(body.mqtt)
+    assert.equal(body.mqtt.username, body.id)
+    assert.isString(body.mqtt.password)
+    assert.isAbove(body.mqtt.password.length, 16)
 
     const created = await RobotDogModel.find(body.id)
     assert.exists(created)
