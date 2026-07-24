@@ -9,6 +9,7 @@ export class RobotDogSerializer {
       state: summary.robotDog.state,
       batteryLevel: summary.robotDog.batteryLevel,
       lastHeartbeat: summary.robotDog.lastHeartbeat,
+      firmwareVersion: summary.robotDog.firmwareVersion,
       ...(options.includeKey ? { key: summary.robotDog.key.value } : {}),
       users: {
         count: summary.usersCount,

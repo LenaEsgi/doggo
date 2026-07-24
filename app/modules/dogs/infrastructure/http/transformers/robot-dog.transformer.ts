@@ -9,6 +9,7 @@ export default class RobotDogTransformer extends BaseTransformer<RobotDog> {
       state: this.resource.state,
       batteryLevel: this.resource.batteryLevel,
       lastHeartbeat: this.resource.lastHeartbeat,
+      firmwareVersion: this.resource.firmwareVersion,
     }
   }
 }
