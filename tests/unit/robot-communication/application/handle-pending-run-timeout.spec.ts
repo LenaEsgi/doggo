@@ -5,6 +5,7 @@ import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-repository'
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
+import { FakeUnitOfWork } from '#tests/unit/fakes/fake-unit-of-work'
 import { HandlePendingRunTimeoutUseCase } from '#app/modules/robot-communication/application/use-cases/handle-pending-run-timeout.use-case'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
@@ -17,6 +18,7 @@ test.group('HandlePendingRunTimeoutUseCase', (group) => {
   let runRepo: FakeMissionRunRepository
   let dogRepo: FakeRobotDogRepository
   let missionRepo: FakeMissionRepository
+  let uow: FakeUnitOfWork
   let useCase: HandlePendingRunTimeoutUseCase
   let events: ReturnType<typeof emitter.fake>
 
@@ -24,7 +26,8 @@ test.group('HandlePendingRunTimeoutUseCase', (group) => {
     runRepo = new FakeMissionRunRepository()
     dogRepo = new FakeRobotDogRepository()
     missionRepo = new FakeMissionRepository()
-    useCase = new HandlePendingRunTimeoutUseCase(runRepo, dogRepo, missionRepo)
+    uow = new FakeUnitOfWork()
+    useCase = new HandlePendingRunTimeoutUseCase(runRepo, dogRepo, missionRepo, uow)
     events = emitter.fake()
     return () => emitter.restore()
   })
