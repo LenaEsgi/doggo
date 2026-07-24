@@ -3,7 +3,6 @@ import { inject } from '@adonisjs/core'
 import { StartSessionCommandUseCase } from '#app/modules/robot-communication/application/use-cases/commands/start-session.use-case'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
-import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import RobotDogTransformer from '#dogs/infrastructure/http/transformers/robot-dog.transformer'
 import RobotDogPolicy from '#dogs/application/policies/robot-dog.policy'
 
@@ -21,10 +20,9 @@ export default class StartSessionController {
 
     await this.startSession.execute(params.id)
 
-    const dog = await this.dogRepository.findById(RobotDogId.fromString(params.id))
-    if (!dog) {
-      throw new RobotDogNotFoundError(params.id)
-    }
+    // StartSessionCommandUseCase already guarantees the dog exists (it throws
+    // RobotDogNotFoundError itself otherwise), so this re-fetch cannot come back null.
+    const dog = (await this.dogRepository.findById(RobotDogId.fromString(params.id)))!
 
     logger.info(
       { robotDogId: params.id, state: dog.state },
