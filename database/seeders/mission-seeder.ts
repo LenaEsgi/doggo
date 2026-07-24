@@ -175,6 +175,226 @@ export default class extends BaseSeeder {
           ],
         },
       },
+      {
+        code: 'MOVE_BACKWARD_DURATION',
+        name: 'Reculer (durée)',
+        slug: 'move-backward-duration',
+        description: 'Faire reculer le robot pendant une durée donnée à une vitesse donnée',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'duration_sec',
+              label: 'Durée',
+              type: 'number',
+              required: true,
+              unit: 's',
+              min: 1,
+              max: 300,
+              defaultValue: 5,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
+      {
+        code: 'MOVE_BACKWARD_DISTANCE',
+        name: 'Reculer (distance)',
+        slug: 'move-backward-distance',
+        description: 'Faire reculer le robot sur une distance donnée à une vitesse donnée',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'distance_cm',
+              label: 'Distance',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 5000,
+              defaultValue: 100,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
+      {
+        code: 'TURN_RIGHT_90',
+        name: 'Tourner à droite (90°)',
+        slug: 'turn-right-90',
+        description: 'Virage à droite de 90° en marche',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'distance_cm',
+              label: 'Distance parcourue',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 500,
+              defaultValue: 80,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
+      {
+        code: 'TURN_LEFT_90',
+        name: 'Tourner à gauche (90°)',
+        slug: 'turn-left-90',
+        description: 'Virage à gauche de 90° en marche',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'distance_cm',
+              label: 'Distance parcourue',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 500,
+              defaultValue: 80,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
+      {
+        code: 'TURN_RIGHT_180',
+        name: 'Demi-tour à droite',
+        slug: 'turn-right-180',
+        description: 'Demi-tour à droite en marche',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'distance_cm',
+              label: 'Distance parcourue',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 500,
+              defaultValue: 160,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
+      {
+        code: 'TURN_LEFT_180',
+        name: 'Demi-tour à gauche',
+        slug: 'turn-left-180',
+        description: 'Demi-tour à gauche en marche',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'distance_cm',
+              label: 'Distance parcourue',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 500,
+              defaultValue: 160,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
+      {
+        code: 'TURN',
+        name: 'Tourner (libre)',
+        slug: 'turn',
+        description: 'Virage en marche avec angle personnalisé (positif = droite, négatif = gauche)',
+        parameter_schema: {
+          fields: [
+            {
+              name: 'angle_deg',
+              label: 'Angle',
+              type: 'number',
+              required: true,
+              unit: '°',
+              min: -180,
+              max: 180,
+              defaultValue: 90,
+            },
+            {
+              name: 'distance_cm',
+              label: 'Distance parcourue',
+              type: 'number',
+              required: true,
+              unit: 'cm',
+              min: 1,
+              max: 500,
+              defaultValue: 100,
+            },
+            {
+              name: 'speed_pct',
+              label: 'Vitesse',
+              type: 'number',
+              required: true,
+              unit: '%',
+              min: 1,
+              max: 100,
+              defaultValue: 50,
+            },
+          ],
+        },
+      },
     ]
 
     for (const seed of seedActions) {
@@ -187,7 +407,19 @@ export default class extends BaseSeeder {
       }
     }
 
-    return ActionModel.query().whereIn('code', ['MOVE_DISTANCE', 'MOVE_DURATION', 'BARK', 'WAIT'])
+    return ActionModel.query().whereIn('code', [
+      'MOVE_DISTANCE',
+      'MOVE_DURATION',
+      'MOVE_BACKWARD_DURATION',
+      'MOVE_BACKWARD_DISTANCE',
+      'TURN_RIGHT_90',
+      'TURN_LEFT_90',
+      'TURN_RIGHT_180',
+      'TURN_LEFT_180',
+      'TURN',
+      'BARK',
+      'WAIT',
+    ])
   }
 }
 
@@ -195,9 +427,19 @@ export default class extends BaseSeeder {
 function defaultParametersFor(code: string): string {
   switch (code) {
     case 'MOVE_DISTANCE':
+    case 'MOVE_BACKWARD_DISTANCE':
       return JSON.stringify({ distance_cm: 100, speed_pct: 50 })
     case 'MOVE_DURATION':
+    case 'MOVE_BACKWARD_DURATION':
       return JSON.stringify({ duration_sec: 5, speed_pct: 50 })
+    case 'TURN_RIGHT_90':
+    case 'TURN_LEFT_90':
+      return JSON.stringify({ distance_cm: 80, speed_pct: 50 })
+    case 'TURN_RIGHT_180':
+    case 'TURN_LEFT_180':
+      return JSON.stringify({ distance_cm: 160, speed_pct: 50 })
+    case 'TURN':
+      return JSON.stringify({ angle_deg: 90, distance_cm: 100, speed_pct: 50 })
     case 'BARK':
       return JSON.stringify({ duration_sec: 2 })
     case 'WAIT':
