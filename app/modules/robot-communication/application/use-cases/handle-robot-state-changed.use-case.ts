@@ -8,6 +8,7 @@ import { MissionRunStatus } from '#app/modules/missions/domain/enums/mission-run
 import { MissionTimeoutQueue } from '#app/modules/missions/domain/contracts/mission-timeout-queue'
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
 import { RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
+import { UnitOfWork } from '#app/modules/share/domain/contracts/unit-of-work'
 import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 
 @inject()
@@ -16,7 +17,8 @@ export class HandleRobotStateChangedUseCase {
     private readonly dogRepository: RobotDogRepository,
     private readonly missionRunRepository: MissionRunRepository,
     private readonly missionTimeoutQueue: MissionTimeoutQueue,
-    private readonly communicationService: RobotCommunicationService
+    private readonly communicationService: RobotCommunicationService,
+    private readonly uow: UnitOfWork
   ) {}
 
   async execute(dogId: string, rawState: string): Promise<void> {
@@ -33,15 +35,34 @@ export class HandleRobotStateChangedUseCase {
     }
 
     if (state === RobotDogState.IN_MISSION) {
-      const activeRun = await this.missionRunRepository.findActiveRunByRobotDog(dogId)
+      let phantom = false
+      let confirmedRunId: string | null = null
 
-      if (!activeRun) {
+      await this.uow.run(async (tx) => {
+        const activeRun = await this.missionRunRepository.findActiveRunByRobotDogForUpdate(
+          dogId,
+          tx
+        )
+
+        if (!activeRun) {
+          phantom = true
+          dog.applyStateFromRobot(RobotDogState.IDLE)
+          await this.dogRepository.save(dog, tx)
+          return
+        }
+
+        if (activeRun.status === MissionRunStatus.PENDING) {
+          activeRun.confirm()
+          await this.missionRunRepository.save(activeRun, tx)
+          confirmedRunId = activeRun.id.value
+        }
+      })
+
+      if (phantom) {
         logger.warn(
           { dogId },
           'HandleRobotStateChanged: robot reports IN_MISSION without an active run (phantom mission), sending corrective STOP'
         )
-        dog.applyStateFromRobot(RobotDogState.IDLE)
-        await this.dogRepository.save(dog)
         void DogStateChangedEvent.dispatch(dogId, RobotDogState.IDLE)
 
         try {
@@ -55,10 +76,8 @@ export class HandleRobotStateChangedUseCase {
         return
       }
 
-      if (activeRun.status === MissionRunStatus.PENDING) {
-        activeRun.confirm()
-        await this.missionRunRepository.save(activeRun)
-        await this.missionTimeoutQueue.cancel(activeRun.id.value)
+      if (confirmedRunId) {
+        await this.missionTimeoutQueue.cancel(confirmedRunId)
       }
     }
 

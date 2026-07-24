@@ -7,6 +7,7 @@ import { FakeRobotDogRepository } from '#tests/unit/fakes/fake-robot-dog-reposit
 import { FakeMissionRunRepository } from '#tests/unit/fakes/fake-mission-run-repository'
 import { FakeMissionTimeoutQueue } from '#tests/unit/fakes/fake-mission-timeout-queue'
 import { FakeRobotCommunicationService } from '#tests/unit/fakes/fake-robot-communication-service'
+import { FakeUnitOfWork } from '#tests/unit/fakes/fake-unit-of-work'
 import { HandleRobotStateChangedUseCase } from '#app/modules/robot-communication/application/use-cases/handle-robot-state-changed.use-case'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id'
@@ -19,6 +20,7 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
   let runRepo: FakeMissionRunRepository
   let timeoutQueue: FakeMissionTimeoutQueue
   let communicationService: FakeRobotCommunicationService
+  let uow: FakeUnitOfWork
   let useCase: HandleRobotStateChangedUseCase
   let events: ReturnType<typeof emitter.fake>
 
@@ -27,7 +29,14 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
     runRepo = new FakeMissionRunRepository()
     timeoutQueue = new FakeMissionTimeoutQueue()
     communicationService = new FakeRobotCommunicationService()
-    useCase = new HandleRobotStateChangedUseCase(dogRepo, runRepo, timeoutQueue, communicationService)
+    uow = new FakeUnitOfWork()
+    useCase = new HandleRobotStateChangedUseCase(
+      dogRepo,
+      runRepo,
+      timeoutQueue,
+      communicationService,
+      uow
+    )
     events = emitter.fake()
     return () => emitter.restore()
   })
@@ -53,7 +62,9 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
     assert.lengthOf(communicationService.calls, 0)
   })
 
-  test('mission fantôme : renvoie le chien à IDLE et envoie un STOP correctif si IN_MISSION sans run actif', async ({ assert }) => {
+  test('mission fantôme : renvoie le chien à IDLE et envoie un STOP correctif si IN_MISSION sans run actif', async ({
+    assert,
+  }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await dogRepo.save(dog)
 
@@ -68,7 +79,9 @@ test.group('HandleRobotStateChangedUseCase', (group) => {
     assert.equal(communicationService.calls[0].command, RobotCommand.STOP_MISSION)
   })
 
-  test('mission fantôme : ne plante pas si le STOP correctif échoue (robot injoignable)', async ({ assert }) => {
+  test('mission fantôme : ne plante pas si le STOP correctif échoue (robot injoignable)', async ({
+    assert,
+  }) => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await dogRepo.save(dog)
     communicationService.shouldFail = true
