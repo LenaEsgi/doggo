@@ -8,6 +8,7 @@ import { UserWriteRepository } from '#users/domain/contracts/user.write.reposito
 import { UserRole } from '#users/domain/enums/user.role'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 import { User } from '#users/domain/user.entity'
+import { findOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class UpdateUserUseCase {
@@ -19,12 +20,11 @@ export class UpdateUserUseCase {
 
   async execute(id: string, payload: UpdateUserDto): Promise<UserWithDogsSummaryDto> {
     logger.info({ userId: id }, 'UpdateUserUseCase started')
-    const current = await this.userReadRepository.findById(id)
-
-    if (!current) {
-      logger.warn({ userId: id }, 'User not found in UpdateUserUseCase')
-      throw new InvalidUserNotFoundError(id)
-    }
+    const current = await findOrThrow(
+      () => this.userReadRepository.findById(id),
+      InvalidUserNotFoundError,
+      id
+    )
 
     const role = payload.role
       ? payload.role === 'admin'
