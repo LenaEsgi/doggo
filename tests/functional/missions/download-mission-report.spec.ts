@@ -58,4 +58,54 @@ test.group('GET /api/v1/mission-runs/:id/report', (group) => {
 
     response.assertStatus(403)
   })
+
+  test("retourne 403 si l'utilisateur authentifié ne possède pas le robot", async ({
+    client,
+    cleanup,
+  }) => {
+    const owner = await authenticateAs(cleanup, { firebaseUid: 'user-report-owner' })
+    const intruder = await authenticateAs(cleanup, { firebaseUid: 'user-report-intruder' })
+    const dog = await RobotDogModel.create({
+      id: randomUUID(),
+      serialNumber: 'SN-REPORT-DL-002',
+      key: 'ReportDlDogKeyBBB222',
+      name: 'ReportDlDog2',
+      state: RobotDogState.IDLE,
+      batteryLevel: 90,
+    })
+    await OwnershipModel.create({
+      userId: owner.user.id,
+      robotDogId: dog.id,
+      startDate: DateTime.now(),
+      endDate: null,
+    })
+    const mission = await MissionModel.create({
+      id: randomUUID(),
+      name: 'Patrouille',
+      userId: owner.user.id,
+    })
+    const run = await MissionRunModel.create({
+      id: randomUUID(),
+      missionId: mission.id,
+      robotDogId: dog.id,
+      status: MissionRunStatus.SUCCESS,
+      startedAt: DateTime.now(),
+      endedAt: DateTime.now(),
+    })
+    await MissionReportModel.create({
+      id: randomUUID(),
+      missionRunId: run.id,
+      robotDogId: dog.id,
+      status: MissionReportStatus.READY,
+      gcsObjectPath: 'mission-reports/some-path.pdf',
+      requestedAt: DateTime.now(),
+      completedAt: DateTime.now(),
+    })
+
+    const response = await client
+      .get(`/api/v1/mission-runs/${run.id}/report`)
+      .header('Authorization', intruder.header)
+
+    response.assertStatus(403)
+  })
 })

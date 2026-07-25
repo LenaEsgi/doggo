@@ -7,9 +7,10 @@ export default class DownloadMissionReportController {
   constructor(private readonly useCase: GetMissionReportDownloadUrlUseCase) {}
 
   async handle({ params, bouncer, response }: HttpContext) {
-    const { url, report } = await this.useCase.execute(params.id)
+    const report = await this.useCase.findReadyReport(params.id)
     await bouncer.with('MissionPolicy').authorize('downloadReport', report.robotDogId)
 
+    const url = await this.useCase.getSignedUrl(report)
     return response.ok({ url })
   }
 }
