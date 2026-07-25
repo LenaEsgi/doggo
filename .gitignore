@@ -18,6 +18,9 @@ tmp
 mosquitto/passwordfile
 mosquitto/certs/
 
+# GCS worker service-account key (generated locally, never committed)
+worker-secrets/
+
 # Frontend assets compiled code
 public/assets
 
