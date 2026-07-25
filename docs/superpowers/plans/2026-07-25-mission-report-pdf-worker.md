@@ -8,6 +8,29 @@
 
 **Tech Stack:** AdonisJS 6 (TypeScript), `amqplib` (Node AMQP), `@google-cloud/storage` (Node), RabbitMQ (nouveau conteneur), Rust + `lapin` (AMQP) + `printpdf` (PDF) + `google-cloud-storage` crate (GCS), Postgres/Lucid pour la nouvelle table `mission_reports`.
 
+## État d'avancement (2026-07-25, à lire par tout agent qui reprend ce plan)
+
+**Tasks 1 à 15 : terminées, committées, revues clean sur la branche `feat/mission-report-pdf-worker` (non pushée).**
+Historique complet dans `.superpowers/sdd/2026-07-25-mission-report-pdf-worker/progress.md` (ledger SDD — commits exacts, rounds de fix, findings parqués). Briefs/rapports/diffs de chaque tâche dans le même dossier (`task-N-brief.md`, `task-N-report.md`, `review-*.diff`).
+
+Commits (du plus ancien au plus récent) : `97970f6`..`71029b9` (21 commits, voir `git log --oneline 97970f6~1..HEAD`).
+
+**Décisions humaines actées pendant l'exécution (à respecter, ne pas relitiger) :**
+- Task 7 : cast `run.status as 'SUCCESS'|'FAILED'` (builder.ts) gardé tel quel — les Global Constraints garantissent déjà que le trigger ne fire que pour SUCCESS/FAILED.
+- Task 9 : notifications `report_ready`/`report_failed` enrichies avec le vrai nom de mission (lookup MissionRun→Mission ajouté au use case, hors périmètre initial du brief) ; `channel.nack` du consumer sécurisé par son propre try/catch.
+- Task 10 : endpoint de téléchargement — use case restructuré (`findReadyReport`/`getSignedUrl` séparés) pour garantir l'autorisation AVANT tout appel GCS ; test 403 "non-propriétaire" ajouté ; garde `MissionReportStorageMisconfiguredError` ajoutée si `GCS_BUCKET_NAME` absent. Test happy-path (READY→200+URL) toujours manquant, bloqué sur credentials GCS réelles (Task 16).
+- Task 11 : `worker/assets/.gitkeep` ajouté (placeholder) pour que le Dockerfile ne casse pas sur `COPY assets`.
+- Task 12 : police DejaVu Sans récupérée depuis l'archive de release officielle (l'URL raw/master du plan est en 404) — même projet upstream, fichier vérifié valide. Test de génération PDF gardé tel quel (vérifie juste les magic bytes `%PDF`, pas le contenu réel) — décision utilisateur, pas de renforcement.
+- Task 15 (boucle principale du worker) : `publish_response` enveloppé dans `retry::with_backoff` (au lieu d'un simple log-and-ack) pour ne pas perdre silencieusement la garantie "toujours répondre" ; `delivery.ack`/`nack` ne font plus planter tout le process sur un échec transitoire (log-and-continue au lieu de `?`). Gardés tels quels (décision utilisateur) : le cas JSON invalide ne publie jamais de réponse (impossible de corréler sans missionRunId), et `RETRY_DELAYS = [5s, 30s]` reste 2 constantes codées en dur (pas une vraie formule exponentielle).
+
+**Task 16 (Ops — GCP + docker-compose) : NON DÉMARRÉE.** Décision actée avec l'utilisateur : cette tâche se scinde en deux parties de nature différente.
+- **Partie agent (à faire en SDD normal, Steps 4/5/7 du plan)** : `worker/.gitignore` (`config/*.json`), ajout du service `worker` à `docker-compose.yml` (Step 5), documentation dans `deploy/` décrivant la procédure GCP à suivre manuellement (pas de script `gcloud`, cohérent avec le reste du projet).
+- **Partie utilisateur, obligatoirement manuelle (Steps 1-3 et 6 du plan)** : création du bucket GCS réel (`doggo-mission-reports`, projet `doggo-502614`) et des 2 service-accounts IAM (écriture Worker / lecture-signature Backend) via la console GCP, génération des clés JSON — ce sont des changements sur de l'infra cloud réelle et des credentials de sécurité, qu'un agent ne doit pas exécuter lui-même. Puis le round-trip final (`docker compose up -d --build`, déclencher une mission réelle, vérifier `docker compose logs worker`) nécessite ces credentials réels et doit être vérifié par l'utilisateur.
+
+**Pour reprendre :** lancer le skill `superpowers:subagent-driven-development` sur ce plan, le ledger fera sauter directement à la Task 16 (Tasks 1-15 marquées `complete`). Faire uniquement la partie agent de la Task 16 (fichiers locaux), puis demander à l'utilisateur de faire la partie GCP console avant de clore la tâche et le plan.
+
+---
+
 ## Global Constraints
 
 - Le Worker Rust ne doit avoir **aucun accès** à la base de données Postgres du Backend, ni à ses modèles Lucid. Il reçoit toutes les données nécessaires dans le message de requête AMQP.
