@@ -72,7 +72,7 @@ export class HandleMissionReportResponseUseCase {
         return {}
       }
 
-      return { missionName: mission.name }
+      return { missionName: mission.name, missionRunId }
     } catch (error) {
       logger.warn(
         { err: error, missionRunId },

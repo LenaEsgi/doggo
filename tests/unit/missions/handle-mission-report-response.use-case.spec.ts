@@ -135,6 +135,7 @@ test.group('HandleMissionReportResponseUseCase', () => {
     assert.isTrue(
       notificationRepository.created.every((n) => n.payload?.missionName === MISSION_NAME)
     )
+    assert.isTrue(notificationRepository.created.every((n) => n.payload?.missionRunId === 'run-1'))
   })
 
   test('sur échec : marque FAILED avec la raison et notifie en report_failed', async ({ assert }) => {
@@ -166,6 +167,7 @@ test.group('HandleMissionReportResponseUseCase', () => {
     assert.isTrue(
       notificationRepository.created.every((n) => n.payload?.missionName === MISSION_NAME)
     )
+    assert.isTrue(notificationRepository.created.every((n) => n.payload?.missionRunId === 'run-1'))
   })
 
   test('si le run est introuvable : notifie quand même avec un message générique (payload vide)', async ({
