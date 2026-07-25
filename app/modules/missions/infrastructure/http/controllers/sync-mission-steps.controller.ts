@@ -24,6 +24,7 @@ export default class SyncMissionStepsController {
 
     const firmwareWarnings = await this.checkCompatibilityUseCase.execute(params.id)
 
-    return serialize({ ...MissionTransformer.transform(mission), firmwareWarnings })
+    const { data } = await serialize(MissionTransformer.transform(mission))
+    return { data: { ...data, firmwareWarnings } }
   }
 }

@@ -64,4 +64,39 @@ test.group('PUT /api/v1/missions/:id/steps (firmware warning)', (group) => {
     assert.equal(body.data.firmwareWarnings[0].robotFirmwareVersion, '1.0.0')
     assert.equal(body.data.firmwareWarnings[0].incompatibleActions[0].code, 'BARK')
   })
+
+  test('sérialise correctement la mission (id, name, missionSteps) à côté de firmwareWarnings', async ({
+    client,
+    assert,
+    cleanup,
+  }) => {
+    const auth = await authenticateAs(cleanup)
+
+    const action = await ActionModel.create({
+      id: randomUUID(),
+      code: 'BARK',
+      name: 'Aboyer',
+      slug: 'bark',
+      isActive: true,
+    })
+
+    const mission = await MissionModel.create({
+      id: randomUUID(),
+      name: 'Patrol',
+      userId: auth.user.id,
+    })
+
+    const response = await client
+      .put(`/api/v1/missions/${mission.id}/steps`)
+      .header('Authorization', auth.header)
+      .json({ steps: [{ actionId: action.id, parameters: '{}' }] })
+
+    response.assertStatus(200)
+    const body = response.body()
+    assert.equal(body.data.id, mission.id)
+    assert.equal(body.data.name, 'Patrol')
+    assert.lengthOf(body.data.missionSteps, 1)
+    assert.equal(body.data.missionSteps[0].actionId, action.id)
+    assert.isArray(body.data.firmwareWarnings)
+  })
 })
