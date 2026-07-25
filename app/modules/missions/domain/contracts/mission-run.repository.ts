@@ -12,5 +12,6 @@ export abstract class MissionRunRepository {
   abstract findActiveRunByRobotDog(robotDogId: string): Promise<MissionRun | null>
   abstract findActiveRunByRobotDogForUpdate(robotDogId: string, tx: Tx): Promise<MissionRun | null>
   abstract hasActiveRunForMission(missionId: string): Promise<boolean>
+  abstract findById(missionRunId: string): Promise<MissionRun | null>
   abstract save(run: MissionRun, tx?: Tx): Promise<void>
 }
