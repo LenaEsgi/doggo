@@ -76,7 +76,7 @@ export default defineConfig({
     () => import('#providers/firebase_provider'),
     {
       file: () => import('#providers/mqtt_provider'),
-      environment: ['web', 'console'],
+      environment: ['web'],
     },
     {
       file: () => import('#providers/socketio_provider'),
