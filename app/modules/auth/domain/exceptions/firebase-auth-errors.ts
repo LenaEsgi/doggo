@@ -7,8 +7,13 @@ export const DEFAULT_FIREBASE_AUTH_ERROR: FirebaseHttpErrorDefinition = {
 
 export const FIREBASE_AUTH_ERRORS: Record<string, FirebaseHttpErrorDefinition> = {
   EMAIL_EXISTS: { status: 409, message: 'An account with this email already exists' },
-  EMAIL_NOT_FOUND: { status: 404, message: 'No account found with this email' },
-  INVALID_PASSWORD: { status: 401, message: 'Invalid credentials' },
+  // Firebase now returns this unified code for both "no such user" and "wrong
+  // password" on sign-in, to avoid leaking which one is wrong (user
+  // enumeration). EMAIL_NOT_FOUND/INVALID_PASSWORD are kept as a fallback with
+  // the same message, in case Firebase ever returns the older, distinct codes.
+  INVALID_LOGIN_CREDENTIALS: { status: 401, message: 'Invalid email or password' },
+  EMAIL_NOT_FOUND: { status: 401, message: 'Invalid email or password' },
+  INVALID_PASSWORD: { status: 401, message: 'Invalid email or password' },
   USER_DISABLED: { status: 403, message: 'This account is disabled' },
   INVALID_ID_TOKEN: { status: 401, message: 'Invalid authentication token' },
   TOKEN_EXPIRED: { status: 401, message: 'Authentication token expired' },
