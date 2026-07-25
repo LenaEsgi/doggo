@@ -9,6 +9,7 @@ import { MissionNameCannotBeEmptyError } from '#app/modules/missions/domain/exce
 import { MissionNameTooLongError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-too-long.error'
 import { RobotAlreadyAssignedError } from '#app/modules/missions/domain/exceptions/robot-already-assigned.error'
 import { MissionNotAssignedToRobotError } from '#app/modules/missions/domain/exceptions/mission-not-assigned-to-robot.error'
+import type { DateTime } from 'luxon'
 
 export default class Mission {
   private static MAX_NAME_LENGTH = 100
@@ -19,7 +20,8 @@ export default class Mission {
     private _robotDogIds: RobotDogId[],
     private _userId: string,
     private _missionSteps: MissionStep[],
-    private _stepsCount?: number
+    private _stepsCount?: number,
+    private _createdAt?: DateTime
   ) {}
 
   public static create(name: string, userId: string) {
@@ -32,7 +34,8 @@ export default class Mission {
     userId: string,
     missionSteps: MissionStep[] = [],
     robotDogIds?: RobotDogId[],
-    stepsCount?: number
+    stepsCount?: number,
+    createdAt?: DateTime
   ) {
     return new Mission(
       MissionId.fromString(id),
@@ -40,7 +43,8 @@ export default class Mission {
       robotDogIds ?? [],
       userId,
       missionSteps,
-      stepsCount
+      stepsCount,
+      createdAt
     )
   }
 
@@ -196,5 +200,9 @@ export default class Mission {
 
   get stepsCount(): number {
     return this._stepsCount ?? this._missionSteps.length
+  }
+
+  get createdAt(): DateTime | undefined {
+    return this._createdAt
   }
 }

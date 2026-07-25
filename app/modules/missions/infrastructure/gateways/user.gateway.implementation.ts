@@ -10,4 +10,8 @@ export class UserGatewayImplementation implements UserGateway {
   findBy(id: string): Promise<User | null> {
     return this.repo.findById(id)
   }
+
+  findManyBy(ids: string[]): Promise<User[]> {
+    return this.repo.findByIds(ids)
+  }
 }

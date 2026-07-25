@@ -7,6 +7,10 @@ export class FakeUserGateway implements UserGateway {
     return this.users.get(id) || null
   }
 
+  async findManyBy(ids: string[]) {
+    return ids.map((id) => this.users.get(id)).filter((u) => u !== undefined)
+  }
+
   addUser(id: string) {
     this.users.set(id, { id, name: 'John Doe' })
   }

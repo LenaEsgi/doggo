@@ -2,15 +2,18 @@ import { test } from '@japa/runner'
 import { ShowMissionUseCase } from '#app/modules/missions/application/usecases/show-mission.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
+import { FakeUserGateway } from '#tests/unit/fakes/fake-user-gateway'
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 
 test.group('ShowMissionUseCase', (group) => {
   let missionRepo: FakeMissionRepository
+  let userGateway: FakeUserGateway
   let useCase: ShowMissionUseCase
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
-    useCase = new ShowMissionUseCase(missionRepo)
+    userGateway = new FakeUserGateway()
+    useCase = new ShowMissionUseCase(missionRepo, userGateway)
   })
 
   test('should return a mission by id', async ({ assert }) => {
@@ -19,9 +22,28 @@ test.group('ShowMissionUseCase', (group) => {
 
     const result = await useCase.execute(mission.id.value)
 
-    assert.equal(result.id.value, mission.id.value)
-    assert.equal(result.name, 'Specific Mission')
-    assert.equal(result.userId, 'user-123')
+    assert.equal(result.mission.id.value, mission.id.value)
+    assert.equal(result.mission.name, 'Specific Mission')
+    assert.equal(result.mission.userId, 'user-123')
+  })
+
+  test('should include the creator resolved via the user gateway', async ({ assert }) => {
+    const mission = Mission.create('Specific Mission', 'user-123')
+    await missionRepo.save(mission)
+    userGateway.addUser('user-123')
+
+    const result = await useCase.execute(mission.id.value)
+
+    assert.isNotNull(result.creator)
+  })
+
+  test('creator is null when the user gateway has no match', async ({ assert }) => {
+    const mission = Mission.create('Specific Mission', 'user-123')
+    await missionRepo.save(mission)
+
+    const result = await useCase.execute(mission.id.value)
+
+    assert.isNull(result.creator)
   })
 
   test('should throw an error if mission is not found', async ({ assert }) => {

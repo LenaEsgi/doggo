@@ -9,9 +9,53 @@ import Mission from '#app/modules/missions/domain/entities/mission.entity'
 const DOG_ID = '8570f711-2895-4632-9599-281083096058'
 const OTHER_DOG_ID = 'b1c2d3e4-f5a6-7890-abcd-ef1234567890'
 
-function makeUser(id: string): User {
-  return User.rehydrate(id, `fb-${id}`, `${id}@test.com`, 'Test', 'User', UserRole.USER)
+function makeUser(id: string, role: UserRole = UserRole.USER): User {
+  return User.rehydrate(id, `fb-${id}`, `${id}@test.com`, 'Test', 'User', role)
 }
+
+test.group('MissionPolicy.show', (group) => {
+  let missionRepo: FakeMissionRepository
+  let ownershipRepo: FakeOwnershipRepository
+  let policy: MissionPolicy
+
+  group.each.setup(() => {
+    missionRepo = new FakeMissionRepository()
+    ownershipRepo = new FakeOwnershipRepository()
+    policy = new MissionPolicy(missionRepo, ownershipRepo)
+  })
+
+  test('owner can view their own mission', async ({ assert }) => {
+    const owner = makeUser('creator-1')
+    const mission = Mission.create('Patrol', owner.id)
+    await missionRepo.save(mission)
+
+    const result = await policy.show(owner, mission.id.value)
+
+    assert.isTrue(result)
+  })
+
+  test('a stranger cannot view a mission they do not own', async ({ assert }) => {
+    const owner = makeUser('creator-1')
+    const stranger = makeUser('stranger-1')
+    const mission = Mission.create('Patrol', owner.id)
+    await missionRepo.save(mission)
+
+    const result = await policy.show(stranger, mission.id.value)
+
+    assert.isFalse(result)
+  })
+
+  test('an admin can view any mission, even one they do not own', async ({ assert }) => {
+    const owner = makeUser('creator-1')
+    const admin = makeUser('admin-1', UserRole.ADMIN)
+    const mission = Mission.create('Patrol', owner.id)
+    await missionRepo.save(mission)
+
+    const result = await policy.show(admin, mission.id.value)
+
+    assert.isTrue(result)
+  })
+})
 
 test.group('MissionPolicy.removeFromDog', (group) => {
   let missionRepo: FakeMissionRepository

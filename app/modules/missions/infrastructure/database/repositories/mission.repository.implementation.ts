@@ -30,7 +30,15 @@ export class MissionRepositoryImplementation implements MissionRepository {
 
     const robotDogIds = row.robotDogs.map((dog) => RobotDogId.fromString(dog.id))
 
-    return Mission.rehydrate(row.id, row.name, row.userId, this.toSteps(row), robotDogIds)
+    return Mission.rehydrate(
+      row.id,
+      row.name,
+      row.userId,
+      this.toSteps(row),
+      robotDogIds,
+      undefined,
+      row.createdAt
+    )
   }
 
   async findAll(options?: PaginationDto): Promise<PaginatedResult<Mission>> {
@@ -54,7 +62,8 @@ export class MissionRepositoryImplementation implements MissionRepository {
         row.userId,
         this.toSteps(row),
         row.robotDogs.map((d) => RobotDogId.fromString(d.id)),
-        Number(row.$extras.steps_count)
+        Number(row.$extras.steps_count),
+        row.createdAt
       )
     )
   }

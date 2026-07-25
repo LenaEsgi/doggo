@@ -19,7 +19,12 @@ export default class IndexAllMissionsController {
     }
 
     const result = await this.useCase.execute(params)
-    const { data } = await serialize(MissionTransformer.transform(result.data))
+    const data = await Promise.all(
+      result.data.map(async ({ mission, creator }) => {
+        const item = await serialize(MissionTransformer.transform(mission, creator))
+        return item.data
+      })
+    )
 
     response.ok({ data, meta: result.meta })
   }

@@ -29,6 +29,7 @@ export default class MissionPolicy extends BasePolicy {
   }
 
   async show(user: User, missionId: string): Promise<AuthorizerResponse> {
+    if (user.role === UserRole.ADMIN) return true
     return this.missionRepository.isOwner(user.id, missionId)
   }
 

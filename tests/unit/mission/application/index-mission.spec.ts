@@ -3,14 +3,17 @@ import { IndexAllMissionsUseCase } from '#app/modules/missions/application/useca
 import { IndexMyMissionsUseCase } from '#app/modules/missions/application/usecases/index-my-missions.use-case'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { FakeMissionRepository } from '#tests/unit/fakes/fake-mission-repository'
+import { FakeUserGateway } from '#tests/unit/fakes/fake-user-gateway'
 
 test.group('IndexAllMissionsUseCase', (group) => {
   let missionRepo: FakeMissionRepository
+  let userGateway: FakeUserGateway
   let useCase: IndexAllMissionsUseCase
 
   group.each.setup(() => {
     missionRepo = new FakeMissionRepository()
-    useCase = new IndexAllMissionsUseCase(missionRepo)
+    userGateway = new FakeUserGateway()
+    useCase = new IndexAllMissionsUseCase(missionRepo, userGateway)
   })
 
   test('should return all missions paginated', async ({ assert }) => {
@@ -44,7 +47,7 @@ test.group('IndexAllMissionsUseCase', (group) => {
     const result = await useCase.execute({ page: 1, limit: 10, search: 'INSPECTION' })
 
     assert.lengthOf(result.data, 1)
-    assert.equal(result.data[0].name, 'Inspection sud')
+    assert.equal(result.data[0].mission.name, 'Inspection sud')
   })
 
   test('should handle second page correctly', async ({ assert }) => {
@@ -57,7 +60,33 @@ test.group('IndexAllMissionsUseCase', (group) => {
     const result = await useCase.execute({ page: 2, limit: 2 })
 
     assert.lengthOf(result.data, 1)
-    assert.equal(result.data[0].name, 'M3')
+    assert.equal(result.data[0].mission.name, 'M3')
+  })
+
+  test('resolves each mission creator via the user gateway, batched by unique user id', async ({
+    assert,
+  }) => {
+    missionRepo.storedMissions = [
+      Mission.create('Mission 1', 'user-1'),
+      Mission.create('Mission 2', 'user-1'),
+      Mission.create('Mission 3', 'user-2'),
+    ]
+    userGateway.addUser('user-1')
+    userGateway.addUser('user-2')
+
+    const result = await useCase.execute({ page: 1, limit: 10 })
+
+    assert.isNotNull(result.data[0].creator)
+    assert.isNotNull(result.data[1].creator)
+    assert.isNotNull(result.data[2].creator)
+  })
+
+  test('creator is null when the user gateway has no match', async ({ assert }) => {
+    missionRepo.storedMissions = [Mission.create('Mission 1', 'user-1')]
+
+    const result = await useCase.execute({ page: 1, limit: 10 })
+
+    assert.isNull(result.data[0].creator)
   })
 })
 

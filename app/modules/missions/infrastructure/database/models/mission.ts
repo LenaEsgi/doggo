@@ -1,7 +1,7 @@
-import { BaseModel, column, hasMany, hasOne, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
-import type { HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import UserModel from '#users/infrastructure/database/models/user'
 import MissionStepModel from '#app/modules/missions/infrastructure/database/models/mission-step'
 
@@ -31,8 +31,10 @@ export default class MissionModel extends BaseModel {
   @column()
   declare userId: string
 
-  @hasOne(() => UserModel)
-  declare user: HasOne<typeof UserModel>
+  @belongsTo(() => UserModel, {
+    foreignKey: 'userId',
+  })
+  declare user: BelongsTo<typeof UserModel>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -18,7 +18,7 @@ export default class AddStepController {
     const payload = await request.validateUsing(AddStepValidator)
     await this.addStepUseCase.execute({ ...payload, missionId: params.id })
 
-    const mission = await this.showMissionUseCase.execute(params.id)
-    return serialize(MissionTransformer.transform(mission))
+    const { mission, creator } = await this.showMissionUseCase.execute(params.id)
+    return serialize(MissionTransformer.transform(mission, creator))
   }
 }

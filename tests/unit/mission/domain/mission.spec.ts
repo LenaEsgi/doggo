@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { DateTime } from 'luxon'
 import Mission from '#app/modules/missions/domain/entities/mission.entity'
 import { MissionNameCannotBeEmptyError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-cannot-be-empty.error'
 import { MissionNameTooLongError } from '#app/modules/missions/domain/exceptions/invalid-mission-name-too-long.error'
@@ -34,6 +35,27 @@ test.group('Mission entity', () => {
     const mission = Mission.create('M', 'user-1')
     mission.addStep('action-1', '{}')
     assert.equal(mission.stepsCount, 1)
+  })
+
+  test('createdAt is undefined for a freshly created mission', ({ assert }) => {
+    const mission = Mission.create('M', 'user-1')
+    assert.isUndefined(mission.createdAt)
+  })
+
+  test('rehydrate carries createdAt through', ({ assert }) => {
+    const createdAt = DateTime.fromISO('2026-01-15T10:00:00.000Z')
+
+    const mission = Mission.rehydrate(
+      '550e8400-e29b-41d4-a716-446655440000',
+      'M',
+      'user-1',
+      [],
+      [],
+      undefined,
+      createdAt
+    )
+
+    assert.isTrue(mission.createdAt?.equals(createdAt))
   })
 
   // -------------------

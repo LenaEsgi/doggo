@@ -10,8 +10,8 @@ export default class ShowMissionController {
   async handle({ serialize, params, bouncer }: HttpContext) {
     await bouncer.with('MissionPolicy').authorize('show', params.id)
 
-    const mission = await this.showMissionUseCase.execute(params.id)
+    const { mission, creator } = await this.showMissionUseCase.execute(params.id)
 
-    return serialize(MissionTransformer.transform(mission))
+    return serialize(MissionTransformer.transform(mission, creator))
   }
 }
