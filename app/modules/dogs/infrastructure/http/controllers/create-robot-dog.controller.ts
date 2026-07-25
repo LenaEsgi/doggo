@@ -11,17 +11,18 @@ export default class CreateRobotDogController {
   async handle({ request, response, logger, bouncer }: HttpContext) {
     await bouncer.with(RobotDogPolicy).authorize('create')
     const validatedData = await request.validateUsing(CreateRobotDogValidator)
-    logger.info('Creating a new RobotDog', {
-      serialNumber: validatedData.serialNumber,
-      name: validatedData.name,
-    })
+    logger.info('Creating a new RobotDog', { name: validatedData.name })
 
-    const robotDog = await this.createUseCase.execute(validatedData)
+    const { robotDog, mqttPassword } = await this.createUseCase.execute(validatedData)
     logger.info('RobotDog successfully created', {
       id: robotDog.id.value,
       serialNumber: robotDog.serialNumber,
     })
 
-    return response.status(201).json({ id: robotDog.id.value })
+    return response.status(201).json({
+      id: robotDog.id.value,
+      serialNumber: robotDog.serialNumber,
+      mqtt: { username: robotDog.id.value, password: mqttPassword },
+    })
   }
 }

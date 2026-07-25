@@ -1067,23 +1067,12 @@ components:
     CreateRobotDogRequest:
       type: object
       required:
-        - serialNumber
         - name
-        - batteryLevel
       properties:
-        serialNumber:
-          type: string
-          minLength: 3
-          example: SN-001
         name:
           type: string
           minLength: 2
           example: Rex
-        batteryLevel:
-          type: integer
-          minimum: 0
-          maximum: 100
-          example: 80
     UpdateRobotDogRequest:
       type: object
       required:
@@ -1407,11 +1396,27 @@ components:
     RobotDogCreatedResponse:
       type: object
       required:
-        - message
+        - id
+        - serialNumber
+        - mqtt
       properties:
-        message:
+        id:
           type: string
-          example: RobotDog created
+          format: uuid
+        serialNumber:
+          type: string
+          example: SN-000123
+        mqtt:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              format: uuid
+            password:
+              type: string
     RobotDogIdResponse:
       type: object
       required:

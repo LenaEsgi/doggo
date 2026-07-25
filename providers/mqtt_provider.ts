@@ -1,5 +1,6 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
+import { MqttAccountProvisioner } from '#app/modules/robot-communication/domain/contracts/mqtt-account-provisioner'
 import { MqttServiceImplementation } from '#app/modules/robot-communication/infrastructure/mqtt/mqtt.service.implementation'
 
 export default class MqttProvider {
@@ -9,6 +10,9 @@ export default class MqttProvider {
 
   register() {
     this.app.container.bind(RobotCommunicationService, () => {
+      return this.mqttService
+    })
+    this.app.container.bind(MqttAccountProvisioner, () => {
       return this.mqttService
     })
   }

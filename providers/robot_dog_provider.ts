@@ -1,6 +1,8 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { RobotDogRepository } from '#dogs/domain/contracts/robot-dog.repository'
 import { RobotDogRepositoryImplementation } from '#dogs/infrastructure/database/repositories/robot-dog.repository.implementation'
+import { RobotDogSerialNumberGenerator } from '#dogs/domain/contracts/robot-dog-serial-number-generator'
+import { RobotDogSerialNumberGeneratorImplementation } from '#dogs/infrastructure/database/robot-dog-serial-number-generator.implementation'
 
 export default class RobotDogProvider {
   constructor(protected app: ApplicationService) {}
@@ -11,6 +13,9 @@ export default class RobotDogProvider {
   register() {
     this.app.container.bind(RobotDogRepository, () => {
       return this.app.container.make(RobotDogRepositoryImplementation)
+    })
+    this.app.container.bind(RobotDogSerialNumberGenerator, () => {
+      return this.app.container.make(RobotDogSerialNumberGeneratorImplementation)
     })
   }
 

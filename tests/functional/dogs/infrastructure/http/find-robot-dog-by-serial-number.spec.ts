@@ -17,13 +17,13 @@ test.group('GET /api/v1/dogs/by-serial/:serialNumber', (group) => {
       .post('/api/v1/dogs')
       .header('Authorization', auth.header)
       .json({
-        serialNumber: 'SN-BY-SERIAL-001',
         name: 'Rex',
       })
     createResponse.assertStatus(201)
     const dogId = createResponse.body().id
+    const serialNumber = createResponse.body().serialNumber
 
-    const response = await client.get('/api/v1/dogs/by-serial/SN-BY-SERIAL-001')
+    const response = await client.get(`/api/v1/dogs/by-serial/${serialNumber}`)
 
     response.assertStatus(200)
     assert.deepEqual(response.body(), { data: { id: dogId } })
@@ -41,12 +41,12 @@ test.group('GET /api/v1/dogs/by-serial/:serialNumber', (group) => {
   test('should not require authentication', async ({ client, cleanup }) => {
     const auth = await authenticateAs(cleanup, { role: UserRole.ADMIN })
 
-    await client.post('/api/v1/dogs').header('Authorization', auth.header).json({
-      serialNumber: 'SN-BY-SERIAL-002',
+    const createResponse = await client.post('/api/v1/dogs').header('Authorization', auth.header).json({
       name: 'Nova',
     })
+    const serialNumber = createResponse.body().serialNumber
 
-    const response = await client.get('/api/v1/dogs/by-serial/SN-BY-SERIAL-002')
+    const response = await client.get(`/api/v1/dogs/by-serial/${serialNumber}`)
 
     response.assertStatus(200)
   })
