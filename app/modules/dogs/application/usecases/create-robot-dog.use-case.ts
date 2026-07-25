@@ -3,33 +3,25 @@ import { RobotDog } from '#app/modules/dogs/domain/robot-dog.entity'
 import { CreateRobotDogDto } from '#app/modules/dogs/application/DTO/create-robot-dog.dto'
 import { CreateRobotDogResult } from '#app/modules/dogs/application/DTO/create-robot-dog-result.dto'
 import { inject } from '@adonisjs/core'
-import { RobotDogSerialNumberAlreadyExistsError } from '#dogs/domain/exceptions/robot-dog-serial-number-already-exists.error'
 import { MqttAccountProvisioningFailedError } from '#dogs/domain/exceptions/mqtt-account-provisioning-failed.error'
 import { MqttAccountProvisioner } from '#app/modules/robot-communication/domain/contracts/mqtt-account-provisioner'
 import { MqttAccountPassword } from '#app/modules/robot-communication/domain/value-objects/mqtt-account-password'
+import { RobotDogSerialNumberGenerator } from '#dogs/domain/contracts/robot-dog-serial-number-generator'
 import logger from '@adonisjs/core/services/logger'
 
 @inject()
 export class CreateRobotDogUseCase {
   constructor(
     private robotDogRepository: RobotDogRepository,
-    private mqttAccountProvisioner: MqttAccountProvisioner
+    private mqttAccountProvisioner: MqttAccountProvisioner,
+    private serialNumberGenerator: RobotDogSerialNumberGenerator
   ) {}
 
   async execute(dto: CreateRobotDogDto): Promise<CreateRobotDogResult> {
-    logger.info('CreateRobotDogUseCase started', {
-      serialNumber: dto.serialNumber,
-      name: dto.name,
-    })
+    logger.info('CreateRobotDogUseCase started', { name: dto.name })
 
-    const existing = await this.robotDogRepository.findBySerialNumber(dto.serialNumber)
-
-    if (existing) {
-      logger.warn('Serial number already exists', { serialNumber: dto.serialNumber })
-      throw new RobotDogSerialNumberAlreadyExistsError(dto.serialNumber)
-    }
-
-    const robotDog = RobotDog.create(dto.serialNumber, dto.name)
+    const serialNumber = await this.serialNumberGenerator.generate()
+    const robotDog = RobotDog.create(serialNumber, dto.name)
 
     // On persiste d'abord (source de vérité, réversible par un simple delete) puis on
     // provisionne le compte MQTT en dernier. Si le broker échoue/time-out, on annule la
@@ -44,7 +36,7 @@ export class CreateRobotDogUseCase {
       logger.error(
         {
           robotDogId: robotDog.id.value,
-          serialNumber: dto.serialNumber,
+          serialNumber: robotDog.serialNumber,
           reason: error instanceof Error ? error.message : String(error),
         },
         'CreateRobotDogUseCase: MQTT provisioning failed, robot dog creation rolled back'
