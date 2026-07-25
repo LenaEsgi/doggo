@@ -12,7 +12,9 @@
 
 **Les 16 tâches sont terminées, committées, revues clean sur la branche `feat/mission-report-pdf-worker` (non pushée).** Le workspace SDD (`.superpowers/sdd/2026-07-25-mission-report-pdf-worker/`) a été supprimé après la review finale clean — l'historique git est la référence désormais.
 
-Commits (du plus ancien au plus récent) : `97970f6`..`170bee2` (26 commits, voir `git log --oneline 97970f6~1..HEAD`).
+Commits (du plus ancien au plus récent) : `97970f6`..`a8a56e3` (27 commits, voir `git log --oneline 97970f6~1..HEAD`).
+
+**Relocalisation du worker (2026-07-25, après coup) :** le worker Rust vivait dans `backend/worker/` — un agent de continuation avait interprété "à la racine du repo" (l'intention du plan) comme la racine du dépôt git `backend`, seul vrai dépôt git existant à ce moment (`doggo/` racine n'est pas un dépôt git). Sur demande de l'utilisateur, l'historique a été extrait via `git subtree split --prefix=worker`, puis migré vers `doggo/worker/` en tant que **nouveau dépôt git séparé** (branche `dev`, même convention que `backend`/`frontend`), aux côtés de `backend/`, `frontend/`, `Dog-Simulator/`. `docker-compose.yml` (commit `a8a56e3`) pointe désormais vers `../worker`.
 
 **Review finale de branche (eec20a1..52db13e) et fix wave (52db13e..170bee2) :** la review finale a trouvé 3 Critical + plusieurs Important/Minor. Sur décision utilisateur, seuls les 3 Critical + 1 Important (`failure_reason` varchar(255) → text) ont été corrigés dans un unique fix wave, plus un 5ᵉ bug trouvé indépendamment par le contrôleur (`npx tsc --noEmit` cassé project-wide suite à l'ajout de `findById` en Task 5, corrigé sur `FakeMissionRunRepository`). Re-review du fix wave : clean, tout ADDRESSED, aucune régression Critical/Important.
 
