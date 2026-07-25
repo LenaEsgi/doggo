@@ -27,7 +27,7 @@ test.group('POST /api/v1/missions/:id/schedules', (group) => {
     const dog = await RobotDogModel.create({
       id: randomUUID(),
       serialNumber: 'SN-CREATE-SCHED-001',
-      key: 'CreateSchedDogKey001',
+      key: 'CreateSchedDogKey1',
       name: 'PatrolDog',
       state: RobotDogState.IDLE,
       batteryLevel: 90,
@@ -72,7 +72,7 @@ test.group('POST /api/v1/missions/:id/schedules', (group) => {
     const dog = await RobotDogModel.create({
       id: randomUUID(),
       serialNumber: 'SN-CREATE-SCHED-002',
-      key: 'CreateSchedDogKey002',
+      key: 'CreateSchedDogKey2',
       name: 'PatrolDog',
       state: RobotDogState.IDLE,
       batteryLevel: 90,
@@ -110,7 +110,7 @@ test.group('POST /api/v1/missions/:id/schedules', (group) => {
     const dog = await RobotDogModel.create({
       id: randomUUID(),
       serialNumber: 'SN-CREATE-SCHED-003',
-      key: 'CreateSchedDogKey003',
+      key: 'CreateSchedDogKey3',
       name: 'PatrolDog',
       state: RobotDogState.IDLE,
       batteryLevel: 90,
