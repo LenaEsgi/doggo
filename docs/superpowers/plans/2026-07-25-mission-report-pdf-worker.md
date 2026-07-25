@@ -10,10 +10,20 @@
 
 ## État d'avancement (2026-07-25, à lire par tout agent qui reprend ce plan)
 
-**Tasks 1 à 15 : terminées, committées, revues clean sur la branche `feat/mission-report-pdf-worker` (non pushée).**
-Historique complet dans `.superpowers/sdd/2026-07-25-mission-report-pdf-worker/progress.md` (ledger SDD — commits exacts, rounds de fix, findings parqués). Briefs/rapports/diffs de chaque tâche dans le même dossier (`task-N-brief.md`, `task-N-report.md`, `review-*.diff`).
+**Les 16 tâches sont terminées, committées, revues clean sur la branche `feat/mission-report-pdf-worker` (non pushée).** Le workspace SDD (`.superpowers/sdd/2026-07-25-mission-report-pdf-worker/`) a été supprimé après la review finale clean — l'historique git est la référence désormais.
 
-Commits (du plus ancien au plus récent) : `97970f6`..`71029b9` (21 commits, voir `git log --oneline 97970f6~1..HEAD`).
+Commits (du plus ancien au plus récent) : `97970f6`..`170bee2` (26 commits, voir `git log --oneline 97970f6~1..HEAD`).
+
+**Review finale de branche (eec20a1..52db13e) et fix wave (52db13e..170bee2) :** la review finale a trouvé 3 Critical + plusieurs Important/Minor. Sur décision utilisateur, seuls les 3 Critical + 1 Important (`failure_reason` varchar(255) → text) ont été corrigés dans un unique fix wave, plus un 5ᵉ bug trouvé indépendamment par le contrôleur (`npx tsc --noEmit` cassé project-wide suite à l'ajout de `findById` en Task 5, corrigé sur `FakeMissionRunRepository`). Re-review du fix wave : clean, tout ADDRESSED, aucune régression Critical/Important.
+
+**Dette documentée, non corrigée dans cette branche (décision utilisateur, périmètre du fix wave limité) :**
+- Pas de réconciliation pour les rapports bloqués en PENDING (plusieurs chemins possibles : publish qui échoue, sendToQueue sans confirm channel, JSON invalide côté worker, publish_response qui échoue après retries).
+- Un panic dans le rendu PDF (Rust) plante le process avant d'ack le message → boucle de crash possible sur le même message.
+- Le service `worker` dans `docker-compose.yml` n'est pas optionnel (`profiles:`) et `GCS_BUCKET_NAME` y est codé en dur au lieu d'être interpolé depuis `.env`.
+- Aucun test de contrat pin le format JSON exact des deux côtés de la queue (Node↔Rust).
+- Le consumer de réponses ne valide pas le shape du message reçu avant de l'utiliser.
+
+Ces points restent dans les Issues de la review finale (texte perdu avec la suppression du workspace, mais résumé ci-dessus) — à traiter dans une tâche/branche séparée si besoin.
 
 **Décisions humaines actées pendant l'exécution (à respecter, ne pas relitiger) :**
 - Task 7 : cast `run.status as 'SUCCESS'|'FAILED'` (builder.ts) gardé tel quel — les Global Constraints garantissent déjà que le trigger ne fire que pour SUCCESS/FAILED.
@@ -23,11 +33,11 @@ Commits (du plus ancien au plus récent) : `97970f6`..`71029b9` (21 commits, voi
 - Task 12 : police DejaVu Sans récupérée depuis l'archive de release officielle (l'URL raw/master du plan est en 404) — même projet upstream, fichier vérifié valide. Test de génération PDF gardé tel quel (vérifie juste les magic bytes `%PDF`, pas le contenu réel) — décision utilisateur, pas de renforcement.
 - Task 15 (boucle principale du worker) : `publish_response` enveloppé dans `retry::with_backoff` (au lieu d'un simple log-and-ack) pour ne pas perdre silencieusement la garantie "toujours répondre" ; `delivery.ack`/`nack` ne font plus planter tout le process sur un échec transitoire (log-and-continue au lieu de `?`). Gardés tels quels (décision utilisateur) : le cas JSON invalide ne publie jamais de réponse (impossible de corréler sans missionRunId), et `RETRY_DELAYS = [5s, 30s]` reste 2 constantes codées en dur (pas une vraie formule exponentielle).
 
-**Task 16 (Ops — GCP + docker-compose) : NON DÉMARRÉE.** Décision actée avec l'utilisateur : cette tâche se scinde en deux parties de nature différente.
-- **Partie agent (à faire en SDD normal, Steps 4/5/7 du plan)** : `worker/.gitignore` (`config/*.json`), ajout du service `worker` à `docker-compose.yml` (Step 5), documentation dans `deploy/` décrivant la procédure GCP à suivre manuellement (pas de script `gcloud`, cohérent avec le reste du projet).
-- **Partie utilisateur, obligatoirement manuelle (Steps 1-3 et 6 du plan)** : création du bucket GCS réel (`doggo-mission-reports`, projet `doggo-502614`) et des 2 service-accounts IAM (écriture Worker / lecture-signature Backend) via la console GCP, génération des clés JSON — ce sont des changements sur de l'infra cloud réelle et des credentials de sécurité, qu'un agent ne doit pas exécuter lui-même. Puis le round-trip final (`docker compose up -d --build`, déclencher une mission réelle, vérifier `docker compose logs worker`) nécessite ces credentials réels et doit être vérifié par l'utilisateur.
+**Task 16 (Ops — GCP + docker-compose) : partie agent terminée.** `worker/.gitignore`, service `worker` dans `docker-compose.yml`, et `deploy/mission-report-worker/README.md` (procédure GCP manuelle) sont faits et committés.
 
-**Pour reprendre :** lancer le skill `superpowers:subagent-driven-development` sur ce plan, le ledger fera sauter directement à la Task 16 (Tasks 1-15 marquées `complete`). Faire uniquement la partie agent de la Task 16 (fichiers locaux), puis demander à l'utilisateur de faire la partie GCP console avant de clore la tâche et le plan.
+**Il reste uniquement la partie humaine, obligatoire, non faisable par un agent (Steps 1-3 et 6 du plan) :** création du bucket GCS réel (`doggo-mission-reports`, projet `doggo-502614`) et des 2 service-accounts IAM (écriture Worker / lecture-signature Backend) via la console GCP, génération des clés JSON — ce sont des changements sur de l'infra cloud réelle et des credentials de sécurité. Puis le round-trip final (`docker compose up -d --build`, déclencher une mission réelle, vérifier `docker compose logs worker`) nécessite ces credentials réels et doit être vérifié par l'utilisateur. Voir `deploy/mission-report-worker/README.md` pour la procédure exacte.
+
+**Le plan est terminé côté agent.** Toutes les tâches (1-16) sont faites, revues, et la review finale de branche est clean après fix wave. Il ne reste que la vérification manuelle GCP ci-dessus avant que la feature soit pleinement opérationnelle en environnement réel.
 
 ---
 
