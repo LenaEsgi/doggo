@@ -9,6 +9,8 @@ import { MissionScheduleFiringRepository } from '#app/modules/missions/domain/co
 import { MissionScheduleFiringRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-schedule-firing.repository.implementation'
 import { MissionReportRepository } from '#app/modules/missions/domain/contracts/mission-report.repository'
 import { MissionReportRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-report.repository.implementation'
+import { MissionReportRequestPublisher } from '#app/modules/missions/domain/contracts/mission-report-request-publisher'
+import { RabbitMqMissionReportRequestPublisher } from '#app/modules/missions/infrastructure/queue/rabbitmq-mission-report-request-publisher'
 import { RobotDogGateway } from '#app/modules/missions/application/contracts/robot-dog.gateway'
 import { RobotDogGatewayImplementation } from '#app/modules/missions/infrastructure/gateways/robot-dog.gateway.implementation'
 import { UserGateway } from '#app/modules/missions/application/contracts/user.gateway'
@@ -39,6 +41,10 @@ export default class MissionProvider {
 
     this.app.container.bind(MissionReportRepository, () => {
       return this.app.container.make(MissionReportRepositoryImplementation)
+    })
+
+    this.app.container.bind(MissionReportRequestPublisher, () => {
+      return new RabbitMqMissionReportRequestPublisher()
     })
 
     this.app.container.bind(RobotDogGateway, () => {
