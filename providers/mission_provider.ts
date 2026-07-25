@@ -1,4 +1,5 @@
 import type { ApplicationService } from '@adonisjs/core/types'
+import logger from '@adonisjs/core/services/logger'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission.repository.implementation'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
@@ -71,10 +72,22 @@ export default class MissionProvider {
    */
   async ready() {
     if (this.app.getEnvironment() === 'web') {
-      const { startMissionReportResponseConsumer } = await import(
-        '#app/modules/missions/infrastructure/queue/rabbitmq-mission-report-response.consumer'
-      )
-      await startMissionReportResponseConsumer()
+      // A failed report must never fail the mission's business processing - and by the
+      // same principle, RabbitMQ being absent/unreachable must never crash the whole
+      // backend at boot. Provider ready() hooks are awaited sequentially with no
+      // per-provider isolation, so an unhandled rejection here would propagate out of
+      // app.start() and take down the entire process.
+      try {
+        const { startMissionReportResponseConsumer } = await import(
+          '#app/modules/missions/infrastructure/queue/rabbitmq-mission-report-response.consumer'
+        )
+        await startMissionReportResponseConsumer()
+      } catch (error) {
+        logger.error(
+          { err: error },
+          'MissionProvider: échec du démarrage du consumer RabbitMQ (mission-report), le sous-système de rapport PDF est désactivé'
+        )
+      }
     }
   }
 
