@@ -1,8 +1,10 @@
 import type { Channel, ConsumeMessage } from 'amqplib'
 import app from '@adonisjs/core/services/app'
 import logger from '@adonisjs/core/services/logger'
-import env from '#start/env'
-import { RabbitMqConnection } from '#app/modules/share/infrastructure/queue/rabbitmq-connection'
+import {
+  buildRabbitMqConfigFromEnv,
+  RabbitMqConnection,
+} from '#app/modules/share/infrastructure/queue/rabbitmq-connection'
 import {
   HandleMissionReportResponseUseCase,
   type MissionReportResponsePayload,
@@ -11,13 +13,7 @@ import {
 export const MISSION_REPORT_RESPONSES_QUEUE = 'mission-report.responses'
 
 export async function startMissionReportResponseConsumer(): Promise<void> {
-  const channel: Channel = await RabbitMqConnection.getChannel({
-    hostname: env.get('RABBITMQ_HOST'),
-    port: env.get('RABBITMQ_PORT'),
-    username: env.get('RABBITMQ_USERNAME'),
-    password: env.get('RABBITMQ_PASSWORD'),
-    vhost: env.get('RABBITMQ_VHOST'),
-  })
+  const channel: Channel = await RabbitMqConnection.getChannel(buildRabbitMqConfigFromEnv())
 
   await channel.assertQueue(MISSION_REPORT_RESPONSES_QUEUE, { durable: true })
 

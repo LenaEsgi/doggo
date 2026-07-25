@@ -1,5 +1,6 @@
 import amqplib, { type Channel, type ChannelModel } from 'amqplib'
 import logger from '@adonisjs/core/services/logger'
+import env from '#start/env'
 
 export type RabbitMqConfig = {
   hostname: string
@@ -7,6 +8,36 @@ export type RabbitMqConfig = {
   username: string
   password?: string
   vhost?: string
+}
+
+/**
+ * Builds a RabbitMqConfig from the RABBITMQ_* env vars.
+ *
+ * RABBITMQ_HOST/PORT/USERNAME are optional at the schema level (no broker is
+ * provisioned yet in some environments, e.g. the current Cloud Run production
+ * deployment). Rather than passing `undefined` into amqplib.connect() - which
+ * would produce a confusing low-level connection error - fail fast here with a
+ * clear message. Callers (the request publisher, the response consumer) already
+ * soft-fail around this call (try/catch), so this throw is safe.
+ */
+export function buildRabbitMqConfigFromEnv(): RabbitMqConfig {
+  const hostname = env.get('RABBITMQ_HOST')
+  const port = env.get('RABBITMQ_PORT')
+  const username = env.get('RABBITMQ_USERNAME')
+
+  if (!hostname || !port || !username) {
+    throw new Error(
+      "RabbitMQ n'est pas configuré (RABBITMQ_HOST/RABBITMQ_PORT/RABBITMQ_USERNAME manquant(s))"
+    )
+  }
+
+  return {
+    hostname,
+    port,
+    username,
+    password: env.get('RABBITMQ_PASSWORD'),
+    vhost: env.get('RABBITMQ_VHOST'),
+  }
 }
 
 export class RabbitMqConnection {

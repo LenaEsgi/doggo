@@ -1,5 +1,6 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import logger from '@adonisjs/core/services/logger'
+import env from '#start/env'
 import { MissionRepository } from '#app/modules/missions/domain/contracts/mission.repository'
 import { MissionRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission.repository.implementation'
 import { MissionRunRepository } from '#app/modules/missions/domain/contracts/mission-run.repository'
@@ -72,6 +73,16 @@ export default class MissionProvider {
    */
   async ready() {
     if (this.app.getEnvironment() === 'web') {
+      // No RabbitMQ broker is provisioned yet in some environments (e.g. the current
+      // Cloud Run production deployment). Rather than attempting a connection that's
+      // guaranteed to fail, skip starting the consumer entirely and say so clearly.
+      if (!env.get('RABBITMQ_HOST')) {
+        logger.info(
+          'MissionProvider: RabbitMQ non configuré, le sous-système de rapport PDF est désactivé'
+        )
+        return
+      }
+
       // A failed report must never fail the mission's business processing - and by the
       // same principle, RabbitMQ being absent/unreachable must never crash the whole
       // backend at boot. Provider ready() hooks are awaited sequentially with no

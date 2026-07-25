@@ -70,10 +70,14 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   | Variables for configuring RabbitMQ (mission report queue)
   |----------------------------------------------------------
+  | Optional: no RabbitMQ broker is provisioned yet in some environments
+  | (e.g. the current Cloud Run production deployment). When absent, the
+  | mission-report PDF subsystem is disabled at boot instead of crashing
+  | (see MissionProvider.ready()).
   */
-  RABBITMQ_HOST: Env.schema.string({ format: 'host' }),
-  RABBITMQ_PORT: Env.schema.number(),
-  RABBITMQ_USERNAME: Env.schema.string(),
+  RABBITMQ_HOST: Env.schema.string.optional({ format: 'host' }),
+  RABBITMQ_PORT: Env.schema.number.optional(),
+  RABBITMQ_USERNAME: Env.schema.string.optional(),
   RABBITMQ_PASSWORD: Env.schema.string.optional(),
   RABBITMQ_VHOST: Env.schema.string.optional(),
 
