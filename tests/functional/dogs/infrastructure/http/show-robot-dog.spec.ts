@@ -14,18 +14,19 @@ test.group('GET /api/v1/dogs/:id', (group) => {
       .post('/api/v1/dogs')
       .header('Authorization', auth.header)
       .json({
-        serialNumber: 'SN-SHOW-001',
         name: 'Rex',
       })
     createResponse.assertStatus(201)
     const dogId = createResponse.body().id
+    const serialNumber = createResponse.body().serialNumber
 
     const response = await client.get(`/api/v1/dogs/${dogId}`).header('Authorization', auth.header)
     response.assertStatus(200)
 
     const body = response.body()
     assert.equal(body.id, dogId)
-    assert.equal(body.serialNumber, 'SN-SHOW-001')
+    assert.match(serialNumber, /^SN-\d{6}$/)
+    assert.equal(body.serialNumber, serialNumber)
     assert.equal(body.name, 'Rex')
     assert.equal(body.batteryLevel, 100)
     assert.isString(body.key)
