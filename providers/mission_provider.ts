@@ -69,7 +69,14 @@ export default class MissionProvider {
   /**
    * The process has been started
    */
-  async ready() {}
+  async ready() {
+    if (this.app.getEnvironment() === 'web') {
+      const { startMissionReportResponseConsumer } = await import(
+        '#app/modules/missions/infrastructure/queue/rabbitmq-mission-report-response.consumer'
+      )
+      await startMissionReportResponseConsumer()
+    }
+  }
 
   /**
    * Preparing to shutdown the app

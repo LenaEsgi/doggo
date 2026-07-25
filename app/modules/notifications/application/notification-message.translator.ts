@@ -18,6 +18,8 @@ const MESSAGE_KEYS: Record<NotificationType, string> = {
   'mission.interrupted': 'notifications.mission.interrupted',
   'mission.assigned_to_dog': 'notifications.mission.assigned_to_dog',
   'mission.removed_from_dog': 'notifications.mission.removed_from_dog',
+  'mission.report_ready': 'notifications.mission.report_ready',
+  'mission.report_failed': 'notifications.mission.report_failed',
 }
 
 const START_FAILURE_REASON_KEYS: Record<string, string> = {
