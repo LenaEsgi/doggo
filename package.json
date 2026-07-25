@@ -69,6 +69,7 @@
     "@adonisjs/lucid": "22.0.0",
     "@adonisjs/mail": "10.2.1",
     "@adonisjs/transmit": "3.0.1",
+    "@google-cloud/storage": "^7.21.0",
     "@vinejs/vine": "4.3.0",
     "adonis-autoswagger": "3.73.0",
     "amqplib": "^2.0.1",
