@@ -35,6 +35,13 @@ async function handleMessage(channel: Channel, message: ConsumeMessage): Promise
     channel.ack(message)
   } catch (error) {
     logger.error({ err: error }, 'MissionReportResponseConsumer: échec de traitement, message rejeté')
-    channel.nack(message, false, false)
+    try {
+      channel.nack(message, false, false)
+    } catch (nackError) {
+      logger.error(
+        { err: nackError },
+        'MissionReportResponseConsumer: échec du nack (canal/connexion probablement fermé)'
+      )
+    }
   }
 }
