@@ -15,6 +15,7 @@ transmit.registerRoutes((route) => {
 import './routes/swagger.js'
 import '../app/modules/auth/infrastructure/http/routes.v1.js'
 import '../app/modules/users/infrastructure/http/routes.v1.js'
+import '../app/modules/users/infrastructure/http/routes.v2.js'
 import '../app/modules/dogs/infrastructure/http/routes.v1.js'
 import '../app/modules/missions/infrastructure/http/routes.v1.js'
 import '../app/modules/actions/infrastructure/http/routes.v1.js'

@@ -25,12 +25,14 @@ export type ScannedRoutes = {
     'list_user_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'adopt_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'abandon_user_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'me_user_v_2': { paramsTuple?: []; params?: {} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'list_user_robot_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_robot_dog': { paramsTuple?: []; params?: {} }
     'destroy_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'find_robot_dog_by_serial_number': { paramsTuple: [ParamValue]; params: {'serialNumber': ParamValue} }
     'create_mission': { paramsTuple?: []; params?: {} }
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
@@ -54,11 +56,15 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_notifications': { paramsTuple?: []; params?: {} }
     'mark_notifications_read': { paramsTuple?: []; params?: {} }
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'start_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'end_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_robot_diagnostics': { paramsTuple?: []; params?: {} }
     'get_backoffice_stats': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'subscribe': { paramsTuple?: []; params?: {} }
@@ -70,9 +76,11 @@ export type ScannedRoutes = {
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_user_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'me_user_v_2': { paramsTuple?: []; params?: {} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'list_user_robot_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'find_robot_dog_by_serial_number': { paramsTuple: [ParamValue]; params: {'serialNumber': ParamValue} }
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -82,6 +90,7 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_notifications': { paramsTuple?: []; params?: {} }
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_robot_diagnostics': { paramsTuple?: []; params?: {} }
     'get_backoffice_stats': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
   }
@@ -91,9 +100,11 @@ export type ScannedRoutes = {
     'list_robot_dog_owners': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_user_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'me_user_v_2': { paramsTuple?: []; params?: {} }
     'index_robot_dog': { paramsTuple?: []; params?: {} }
     'list_user_robot_dogs': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'show_robot_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'find_robot_dog_by_serial_number': { paramsTuple: [ParamValue]; params: {'serialNumber': ParamValue} }
     'index_all_missions': { paramsTuple?: []; params?: {} }
     'index_my_missions': { paramsTuple?: []; params?: {} }
     'show_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -103,6 +114,7 @@ export type ScannedRoutes = {
     'show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'list_notifications': { paramsTuple?: []; params?: {} }
     'get_active_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'list_robot_diagnostics': { paramsTuple?: []; params?: {} }
     'get_backoffice_stats': { paramsTuple?: []; params?: {} }
     'event_stream': { paramsTuple?: []; params?: {} }
   }
@@ -127,6 +139,7 @@ export type ScannedRoutes = {
     'assign_to_dog': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'create_action': { paramsTuple?: []; params?: {} }
     'start_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'start_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
   }
@@ -140,11 +153,13 @@ export type ScannedRoutes = {
     'remove_from_dog': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'missionId': ParamValue} }
     'destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stop_mission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'end_session': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PATCH: {
     'update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'toggle_mission_schedule': { paramsTuple: [ParamValue,ParamValue]; params: {'missionId': ParamValue,'scheduleId': ParamValue} }
     'update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'mark_notifications_read': { paramsTuple?: []; params?: {} }
   }
   PUT: {
