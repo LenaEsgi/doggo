@@ -50,8 +50,44 @@ services:
       timeout: 3s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: robot_dog_rabbitmq
+    restart: unless-stopped
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: doggo
+      RABBITMQ_DEFAULT_PASS: doggo_password
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build: ../worker
+    container_name: robot_dog_mission_report_worker
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: doggo
+      RABBITMQ_PASSWORD: doggo_password
+      GCS_BUCKET_NAME: doggo-mission-reports
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/gcs-worker-key.json
+    volumes:
+      - ./worker-secrets/gcs-worker-key.json:/secrets/gcs-worker-key.json:ro
+
 volumes:
   postgres_data:
   mosquitto_data:
   mosquitto_logs:
   redis_data:
+  rabbitmq_data:

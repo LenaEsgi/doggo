@@ -43,6 +43,12 @@ export class FakeMissionRunRepository implements MissionRunRepository {
     return this.findActiveRunByRobotDog(robotDogId)
   }
 
+  async findById(missionRunId: string): Promise<MissionRun | null> {
+    // No status filter, unlike the findActive* methods above - mirrors
+    // MissionRunRepositoryImplementation.findById which looks up by id alone.
+    return this.runs.find((r) => r.id.value === missionRunId) ?? null
+  }
+
   async hasActiveRunForMission(missionId: string): Promise<boolean> {
     return this.runs.some(
       (r) => r.missionId.value === missionId && ACTIVE_STATUSES.includes(r.status)

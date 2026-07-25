@@ -33,6 +33,10 @@ export default await Env.create(new URL('../', import.meta.url), {
   FIREBASE_SERVICE_ACCOUNT_KEYS: Env.schema.string.optional(),
   SEED_ARTHUR_FIREBASE_UID: Env.schema.string.optional(),
 
+  GCS_BUCKET_NAME: Env.schema.string.optional(),
+  GCS_SERVICE_ACCOUNT_KEY: Env.schema.string.optional(),
+  GCS_ENDPOINT: Env.schema.string.optional(),
+
   RESEND_API_KEY: Env.schema.string(),
 
   /*
@@ -62,6 +66,21 @@ export default await Env.create(new URL('../', import.meta.url), {
   REDIS_HOST: Env.schema.string({ format: 'host' }),
   REDIS_PORT: Env.schema.number(),
   REDIS_PASSWORD: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring RabbitMQ (mission report queue)
+  |----------------------------------------------------------
+  | Optional: no RabbitMQ broker is provisioned yet in some environments
+  | (e.g. the current Cloud Run production deployment). When absent, the
+  | mission-report PDF subsystem is disabled at boot instead of crashing
+  | (see MissionProvider.ready()).
+  */
+  RABBITMQ_HOST: Env.schema.string.optional({ format: 'host' }),
+  RABBITMQ_PORT: Env.schema.number.optional(),
+  RABBITMQ_USERNAME: Env.schema.string.optional(),
+  RABBITMQ_PASSWORD: Env.schema.string.optional(),
+  RABBITMQ_VHOST: Env.schema.string.optional(),
 
   /*
   |----------------------------------------------------------

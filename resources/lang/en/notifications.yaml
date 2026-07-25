@@ -16,6 +16,8 @@ mission:
   interrupted: "{mission} was interrupted on robot dog {dog}: {reasonText}"
   assigned_to_dog: "{mission} was assigned to robot dog {dog}"
   removed_from_dog: "{mission} was removed from robot dog {dog}"
+  report_ready: "{mission}'s report is ready to download"
+  report_failed: "{mission}'s report generation failed"
 
 reasons:
   robot_offline: "robot offline"

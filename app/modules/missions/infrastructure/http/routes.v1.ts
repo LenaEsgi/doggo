@@ -44,6 +44,9 @@ const ToggleMissionScheduleController = () =>
 const DestroyMissionScheduleController = () =>
   import('#app/modules/missions/infrastructure/http/controllers/destroy-mission-schedule.controller')
 
+const DownloadMissionReportController = () =>
+  import('#app/modules/missions/infrastructure/http/controllers/download-mission-report.controller')
+
 router
   .group(() => {
     router.post('/', [CreateMissionController])
@@ -76,4 +79,11 @@ router
     router.delete('/dogs/:id/missions/:missionId', [RemoveFromDogController])
   })
   .prefix('/api/v1')
+  .use(middleware.firebaseAuth())
+
+router
+  .group(() => {
+    router.get('/:id/report', [DownloadMissionReportController])
+  })
+  .prefix('/api/v1/mission-runs')
   .use(middleware.firebaseAuth())

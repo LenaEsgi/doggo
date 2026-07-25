@@ -53,7 +53,7 @@ export class HandleRobotMissionUpdateUseCase {
         }
       }
 
-      return { runStatus: run.status, transitioned, terminal: run.isTerminal }
+      return { runStatus: run.status, transitioned, terminal: run.isTerminal, runId: run.id.value }
     })
 
     if (!outcome) return
@@ -92,7 +92,13 @@ export class HandleRobotMissionUpdateUseCase {
     ) {
       const mission = await this.missionRepository.findById(MissionId.fromString(update.missionId))
       if (mission) {
-        void MissionCompletedEvent.dispatch(update.missionId, mission.name, dogId, outcome.runStatus)
+        void MissionCompletedEvent.dispatch(
+          update.missionId,
+          mission.name,
+          outcome.runId,
+          dogId,
+          outcome.runStatus
+        )
       }
     }
   }

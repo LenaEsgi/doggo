@@ -97,4 +97,9 @@ export default class MissionPolicy extends BasePolicy {
     )
     return ownershipChecks.some(Boolean)
   }
+
+  async downloadReport(user: User, robotDogId: string): Promise<AuthorizerResponse> {
+    if (user.role === UserRole.ADMIN) return true
+    return this.ownershipRepository.isOwner(user.id, robotDogId)
+  }
 }

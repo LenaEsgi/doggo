@@ -26,6 +26,8 @@ export type NotificationType =
   | 'mission.interrupted'
   | 'mission.assigned_to_dog'
   | 'mission.removed_from_dog'
+  | 'mission.report_ready'
+  | 'mission.report_failed'
 
 const AUDIT_LOCALE: UserLocale = 'fr'
 

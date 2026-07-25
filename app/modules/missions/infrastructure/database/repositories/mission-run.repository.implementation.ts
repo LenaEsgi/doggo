@@ -80,6 +80,15 @@ export class MissionRunRepositoryImplementation implements MissionRunRepository 
     return row !== null
   }
 
+  async findById(missionRunId: string): Promise<MissionRun | null> {
+    const row = await MissionRunModel.query()
+      .where('id', missionRunId)
+      .preload('runSteps')
+      .first()
+
+    return row ? this.toDomain(row) : null
+  }
+
   async save(run: MissionRun, tx?: Tx): Promise<void> {
     const write = async (trx: TransactionClientContract) => {
       await MissionRunModel.updateOrCreate(
