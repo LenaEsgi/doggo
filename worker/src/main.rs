@@ -42,7 +42,11 @@ async fn main() -> anyhow::Result<()> {
             Ok(request) => request,
             Err(err) => {
                 eprintln!("message de requête invalide, rejeté sans requeue: {err}");
-                delivery.nack(BasicNackOptions { requeue: false, ..Default::default() }).await?;
+                if let Err(nack_err) =
+                    delivery.nack(BasicNackOptions { requeue: false, ..Default::default() }).await
+                {
+                    eprintln!("échec du nack pour un message invalide: {nack_err}");
+                }
                 continue;
             }
         };
@@ -50,11 +54,23 @@ async fn main() -> anyhow::Result<()> {
         let response = process_request(&config, &request).await;
         let body = serde_json::to_vec(&response)?;
 
-        if let Err(err) = amqp::publish_response(&channel, &body).await {
-            eprintln!("échec de publication de la réponse pour {}: {err}", request.mission_run_id);
+        let publish_result = retry::with_backoff(&RETRY_DELAYS, || {
+            let channel = channel.clone();
+            let body = body.clone();
+            async move { amqp::publish_response(&channel, &body).await.map_err(anyhow::Error::from) }
+        })
+        .await;
+
+        if let Err(err) = publish_result {
+            eprintln!(
+                "échec de publication de la réponse pour {} après retries: {err}",
+                request.mission_run_id
+            );
         }
 
-        delivery.ack(BasicAckOptions::default()).await?;
+        if let Err(ack_err) = delivery.ack(BasicAckOptions::default()).await {
+            eprintln!("échec de l'ack pour {}: {ack_err}", request.mission_run_id);
+        }
     }
 
     Ok(())
