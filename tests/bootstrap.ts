@@ -6,6 +6,10 @@ import { pluginAdonisJS } from '@japa/plugin-adonisjs'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { MqttAccountProvisioner } from '#app/modules/robot-communication/domain/contracts/mqtt-account-provisioner'
 import { FakeMqttAccountProvisioner } from '#tests/unit/fakes/fake-mqtt-account-provisioner'
+import { MissionTimeoutQueue } from '#app/modules/missions/domain/contracts/mission-timeout-queue'
+import { FakeMissionTimeoutQueue } from '#tests/unit/fakes/fake-mission-timeout-queue'
+import { MissionScheduleDispatchQueue } from '#app/modules/missions/domain/contracts/mission-schedule-dispatch-queue'
+import { FakeMissionScheduleDispatchQueue } from '#tests/unit/fakes/fake-mission-schedule-dispatch-queue'
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -43,6 +47,18 @@ export const configureSuite: Config['configureSuite'] = (suite) => {
         // connected broker here. Swap in a fake so functional tests exercise
         // the real HTTP/use-case flow without depending on a live MQTT broker.
         app.container.swap(MqttAccountProvisioner, () => new FakeMqttAccountProvisioner())
+
+        // queue_provider always binds the real BullMQ-backed queues (its Redis
+        // workers are gated to "web", but the queues themselves are not). Swap
+        // them for in-memory fakes so functional tests never open a real Redis
+        // connection — an unclosed BullMQ connection keeps the process alive
+        // forever if Redis is ever unreachable (e.g. CI, or a dropped local
+        // connection), since ioredis retries with no limit by default.
+        app.container.swap(MissionTimeoutQueue, () => new FakeMissionTimeoutQueue())
+        app.container.swap(
+          MissionScheduleDispatchQueue,
+          () => new FakeMissionScheduleDispatchQueue()
+        )
       })
   }
 }
