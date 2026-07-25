@@ -21,7 +21,10 @@ export default class extends BaseSchema {
         .onDelete('CASCADE')
       table.string('status').notNullable()
       table.string('gcs_object_path').nullable()
-      table.string('failure_reason').nullable()
+      // text (not varchar(255)): the Rust worker sets this from anyhow::Error chains
+      // (GCS/HTTP errors, context chains), which can exceed 255 chars. A DB error here
+      // would nack the AMQP message and permanently discard it (report stuck PENDING).
+      table.text('failure_reason').nullable()
       table.timestamp('requested_at').notNullable()
       table.timestamp('completed_at').nullable()
 

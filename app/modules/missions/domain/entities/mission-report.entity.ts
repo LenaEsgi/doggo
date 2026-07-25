@@ -1,6 +1,11 @@
 import { MissionReportId } from '#app/modules/missions/domain/value-objects/mission-report-id'
 import { MissionReportStatus } from '#app/modules/missions/domain/enums/mission-report-status'
 
+// Defense in depth: the `failure_reason` column is `text` (unbounded), but the Rust
+// worker builds this string from anyhow::Error context chains (GCS/HTTP errors etc.)
+// which could in theory grow unreasonably large. Truncate to keep stored data sane.
+const MAX_FAILURE_REASON_LENGTH = 2000
+
 export default class MissionReport {
   private constructor(
     private readonly _id: MissionReportId,
@@ -56,7 +61,7 @@ export default class MissionReport {
 
   markFailed(reason: string): void {
     this._status = MissionReportStatus.FAILED
-    this._failureReason = reason
+    this._failureReason = reason.slice(0, MAX_FAILURE_REASON_LENGTH)
     this._completedAt = new Date()
   }
 

@@ -33,4 +33,14 @@ test.group('MissionReport entity', () => {
     assert.equal(report.failureReason, 'gcs upload timeout')
     assert.isNotNull(report.completedAt)
   })
+
+  test('markFailed() tronque une raison trop longue à 2000 caractères', ({ assert }) => {
+    const report = MissionReport.create('run-1', 'dog-1')
+    const veryLongReason = 'x'.repeat(5000)
+
+    report.markFailed(veryLongReason)
+
+    assert.equal(report.failureReason?.length, 2000)
+    assert.equal(report.failureReason, 'x'.repeat(2000))
+  })
 })
