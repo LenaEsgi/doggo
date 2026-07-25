@@ -1,6 +1,7 @@
 mod config;
 mod model;
 mod pdf;
+mod retry;
 mod storage;
 
 fn main() {
