@@ -65,6 +65,17 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
+  | Variables for configuring RabbitMQ (mission report queue)
+  |----------------------------------------------------------
+  */
+  RABBITMQ_HOST: Env.schema.string({ format: 'host' }),
+  RABBITMQ_PORT: Env.schema.number(),
+  RABBITMQ_USERNAME: Env.schema.string(),
+  RABBITMQ_PASSWORD: Env.schema.string.optional(),
+  RABBITMQ_VHOST: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
   | Variables for configuring robot liveness thresholds
   |----------------------------------------------------------
   */
