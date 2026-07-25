@@ -2,7 +2,7 @@
 
 Rien à versionner ici : ce module n'a pas de script `gcloud`, tout se fait à la main dans la console GCP, comme pour le `broker`. Ce document décrit la procédure à suivre une seule fois (projet `doggo-502614`, région `europe-west1`) pour préparer le bucket et les deux service-accounts dont dépendent le Worker (écriture) et le Backend (lecture + signature d'URL).
 
-Fichiers **versionnés** : `docker-compose.yml` (service `worker`), `worker/.gitignore`.
+Fichiers **versionnés** : `docker-compose.yml` (service `worker`, build context `../worker`). Le code du Worker lui-même (avec son propre `.gitignore`) vit dans son propre dépôt git à la racine du projet (`doggo/worker/`), séparé de ce dépôt backend.
 **Générés à la main / téléchargés depuis la console** (jamais commités, déjà gitignorés) : les clés JSON des deux service-accounts (`worker-secrets/gcs-worker-key.json` en local, et le contenu brut collé dans `GCS_SERVICE_ACCOUNT_KEY` pour le Backend).
 
 ## 1. Créer le bucket GCS
