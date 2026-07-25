@@ -14,3 +14,6 @@ google-cloud-storage = "1.16"
 bytes = "1"
 anyhow = "1"
 thiserror = "1"
+
+[dev-dependencies]
+amq-protocol-uri = "10.6.2"
