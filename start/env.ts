@@ -35,6 +35,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   GCS_BUCKET_NAME: Env.schema.string.optional(),
   GCS_SERVICE_ACCOUNT_KEY: Env.schema.string.optional(),
+  GCS_ENDPOINT: Env.schema.string.optional(),
 
   RESEND_API_KEY: Env.schema.string(),
 

@@ -1,4 +1,5 @@
 import { inject } from '@adonisjs/core'
+import { generateKeyPairSync } from 'node:crypto'
 import { Storage } from '@google-cloud/storage'
 import env from '#start/env'
 import { MissionReportRepository } from '#app/modules/missions/domain/contracts/mission-report.repository'
@@ -43,6 +44,9 @@ export class GetMissionReportDownloadUrlUseCase {
   }
 
   private buildStorageClient(): Storage {
+    const endpoint = env.get('GCS_ENDPOINT')
+    if (endpoint) return this.buildLocalEmulatorClient(endpoint)
+
     const raw = env.get('GCS_SERVICE_ACCOUNT_KEY')
     if (!raw) return new Storage()
 
@@ -52,5 +56,28 @@ export class GetMissionReportDownloadUrlUseCase {
       client_email: string
     }
     return new Storage({ projectId: credentials.project_id, credentials })
+  }
+
+  /**
+   * Local storage emulator (e.g. fake-gcs-server), for testing without a real
+   * GCP account. V4 URL signing is computed locally from a private key and
+   * never validated by Google — the emulator doesn't validate it either — so
+   * a throwaway key generated fresh for this call is enough.
+   */
+  private buildLocalEmulatorClient(endpoint: string): Storage {
+    const { privateKey } = generateKeyPairSync('rsa', {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: 'spki', format: 'pem' },
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+    })
+
+    return new Storage({
+      apiEndpoint: endpoint,
+      projectId: 'local-test',
+      credentials: {
+        client_email: 'local-test@local-test.iam.gserviceaccount.com',
+        private_key: privateKey,
+      },
+    })
   }
 }
