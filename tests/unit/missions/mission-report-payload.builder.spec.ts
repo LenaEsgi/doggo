@@ -66,7 +66,6 @@ test.group('MissionReportPayloadBuilder', () => {
       findByCode: noop,
       index: noop,
       save: noop,
-      delete: noop,
     }
 
     const builder = new MissionReportPayloadBuilder(
