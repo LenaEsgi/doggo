@@ -7,6 +7,7 @@ import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/co
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
 import { type PaginatedResult } from '#app/modules/share/DTO/paginated-result.dto'
+import { assertExistsOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class ListUserRobotDogsUseCase {
@@ -22,11 +23,7 @@ export class ListUserRobotDogsUseCase {
   ): Promise<PaginatedResult<RobotDogReferenceDto>> {
     logger.info({ userId }, 'ListUserRobotDogsUseCase started')
 
-    const userExists = await this.userGateway.existsById(userId)
-    if (!userExists) {
-      logger.warn({ userId }, 'User not found in ListUserRobotDogsUseCase')
-      throw new InvalidUserNotFoundError(userId)
-    }
+    await assertExistsOrThrow(() => this.userGateway.existsById(userId), InvalidUserNotFoundError, userId)
 
     const { data: robotDogIds, meta } = await this.ownershipReadRepository.findActiveDogIdsByUserId(
       userId,

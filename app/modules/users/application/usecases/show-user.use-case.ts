@@ -4,6 +4,7 @@ import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/co
 import type { UserWithDogsSummaryDto } from '#users/application/dto/user-with-dogs-summary.dto'
 import { UserReadRepository } from '#users/domain/contracts/user.read.repository'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
+import { findOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class ShowUserUseCase {
@@ -14,12 +15,7 @@ export class ShowUserUseCase {
 
   async execute(id: string): Promise<UserWithDogsSummaryDto> {
     logger.info({ userId: id }, 'ShowUserUseCase started')
-    const user = await this.userRepository.findById(id)
-
-    if (!user) {
-      logger.warn({ userId: id }, 'User not found in ShowUserUseCase')
-      throw new InvalidUserNotFoundError(id)
-    }
+    const user = await findOrThrow(() => this.userRepository.findById(id), InvalidUserNotFoundError, id)
 
     logger.info({ userId: id }, 'ShowUserUseCase completed successfully')
     const dogsCountByUserId = await this.ownershipReadRepository.countActiveDogsByUserIds([id])

@@ -8,6 +8,5 @@ export class InvalidMissionStepOrderError extends DomainError {
         : 'MissionStep order is invalid'
 
     super(message)
-    this.name = 'InvalidMissionStepOrderException'
   }
 }

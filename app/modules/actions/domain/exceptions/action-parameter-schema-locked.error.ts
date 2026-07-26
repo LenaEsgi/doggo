@@ -8,6 +8,5 @@ export class ActionParameterSchemaLockedError extends DomainError {
     super(
       'Action with id ' + id + ' is already used by a mission step, its parameterSchema cannot be changed'
     )
-    this.name = 'ActionParameterSchemaLockedError'
   }
 }

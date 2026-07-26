@@ -6,6 +6,7 @@ import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import type { RobotDogWithOwnersSummaryDto } from '#dogs/application/DTO/robot-dog-with-owners-summary.dto'
+import { findOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class ShowRobotDogUseCase {
@@ -19,12 +20,11 @@ export class ShowRobotDogUseCase {
 
     const id = RobotDogId.fromString(dto.id)
 
-    const robotDog = await this.robotDogRepository.findById(id)
-
-    if (!robotDog) {
-      logger.warn({ robotDogId: dto.id }, 'RobotDog not found in ShowRobotDogUseCase')
-      throw new RobotDogNotFoundError(dto.id)
-    }
+    const robotDog = await findOrThrow(
+      () => this.robotDogRepository.findById(id),
+      RobotDogNotFoundError,
+      dto.id
+    )
 
     logger.info({ robotDogId: dto.id }, 'ShowRobotDogUseCase completed successfully')
 

@@ -6,6 +6,5 @@ export class ActionNotAvailableError extends DomainError {
 
   constructor(id: string) {
     super('Action with id ' + id + ' is not available')
-    this.name = 'ActionNotAvailableError'
   }
 }

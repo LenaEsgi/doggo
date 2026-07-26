@@ -68,6 +68,29 @@ test.group('NotificationMessageTranslator', () => {
     )
   })
 
+  test('mission.start_failed mappe FIRMWARE_INCOMPATIBLE en fr et en (pas de fallback robot_busy)', ({
+    assert,
+  }) => {
+    const translator = new NotificationMessageTranslator()
+
+    assert.equal(
+      translator.translate(
+        'mission.start_failed',
+        { missionName: 'Patrouille', robotDogName: 'Rex', reason: 'FIRMWARE_INCOMPATIBLE' },
+        'fr'
+      ),
+      "Patrouille n'a pas pu démarrer sur le robot Rex : le firmware du robot n'est pas compatible avec cette mission"
+    )
+    assert.equal(
+      translator.translate(
+        'mission.start_failed',
+        { missionName: 'Patrouille', robotDogName: 'Rex', reason: 'FIRMWARE_INCOMPATIBLE' },
+        'en'
+      ),
+      "Patrouille could not start on robot dog Rex: the robot's firmware is not compatible with this mission"
+    )
+  })
+
   test('traduit chaque type de notification sans lever', ({ assert }) => {
     const translator = new NotificationMessageTranslator()
     const types = [

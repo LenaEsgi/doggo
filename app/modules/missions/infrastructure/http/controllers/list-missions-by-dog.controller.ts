@@ -1,5 +1,5 @@
 import { HttpContext } from '@adonisjs/core/http'
-import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { parsePaginationParams } from '#app/modules/share/utils/parse-pagination-params'
 import MissionTransformer from '#app/modules/missions/infrastructure/http/transformers/mission.transformer'
 import { inject } from '@adonisjs/core'
 import { ListMissionsByDogUseCase } from '#app/modules/missions/application/usecases/list-missions-by-dog.use-case'
@@ -11,10 +11,7 @@ export default class ListMissionsByDogController {
   async handle({ request, serialize, response, params, bouncer }: HttpContext) {
     await bouncer.with('MissionPolicy').authorize('listByDog', params.id)
 
-    const pagination: PaginationDto = {
-      page: Number(request.input('page', 1)),
-      limit: Number(request.input('limit', 20)),
-    }
+    const pagination = parsePaginationParams(request)
     const dogId = params.id
 
     const result = await this.listMissionsByDogUseCase.execute(dogId, pagination)

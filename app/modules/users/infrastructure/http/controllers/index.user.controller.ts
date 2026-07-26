@@ -3,7 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { IndexUserUseCase } from '#users/application/usecases/index-user.use-case'
 import UserTransformer from '#users/infrastructure/http/transformers/user.transformer'
 import { UserRole } from '#users/domain/enums/user.role'
-import { type PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { parsePaginationParams } from '#app/modules/share/utils/parse-pagination-params'
 
 @inject()
 export default class IndexUserController {
@@ -30,11 +30,7 @@ export default class IndexUserController {
       })
     }
 
-    const params: PaginationDto = {
-      page: Number(request.input('page', 1)),
-      limit: Number(request.input('limit', 25)),
-      search,
-    }
+    const params = { ...parsePaginationParams(request, { defaultLimit: 25 }), search }
 
     const { data: users, meta } = await this.useCase.execute(params)
 

@@ -50,8 +50,4 @@ export class FakeActionRepository implements ActionRepository {
       this.actions.push(action)
     }
   }
-
-  async delete(id: ActionId): Promise<void> {
-    this.actions = this.actions.filter((a) => a.id.value !== id.value)
-  }
 }

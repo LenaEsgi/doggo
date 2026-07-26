@@ -135,13 +135,6 @@ export default class Action {
     this._isActive = false
   }
 
-  public updateMinFirmwareVersion(version: string | null): void {
-    if (version !== null && !isValidSemver(version)) {
-      throw new InvalidFirmwareVersionError(version)
-    }
-    this._minFirmwareVersion = version
-  }
-
   /**
    * Valide que paramsJson respecte le schema de cette action.
    * Si l'action n'a pas de schema, tout JSON valide est accepté.

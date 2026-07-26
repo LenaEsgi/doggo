@@ -10,6 +10,7 @@ import { MissionScheduleNotFoundError } from '#app/modules/missions/domain/excep
 import { MissionNotFoundError } from '#app/modules/missions/domain/exceptions/mission-not-found.error'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { IncompatibleRobotActionsError } from '#app/modules/missions/domain/exceptions/incompatible-robot-actions.error'
+import { findOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class ToggleMissionScheduleUseCase {
@@ -24,26 +25,28 @@ export class ToggleMissionScheduleUseCase {
     logger.info('ToggleMissionScheduleUseCase started', { dto })
 
     const scheduleId = MissionScheduleId.fromString(dto.id)
-    const schedule = await this.missionScheduleRepository.findById(scheduleId)
-
-    if (!schedule) {
-      throw new MissionScheduleNotFoundError(dto.id)
-    }
+    const schedule = await findOrThrow(
+      () => this.missionScheduleRepository.findById(scheduleId),
+      MissionScheduleNotFoundError,
+      dto.id
+    )
 
     if (schedule.missionId.value !== dto.missionId) {
       throw new MissionScheduleNotFoundError(dto.id)
     }
 
     if (dto.enabled) {
-      const mission = await this.missionRepository.findById(schedule.missionId)
-      if (!mission) {
-        throw new MissionNotFoundError(dto.missionId)
-      }
+      const mission = await findOrThrow(
+        () => this.missionRepository.findById(schedule.missionId),
+        MissionNotFoundError,
+        dto.missionId
+      )
 
-      const dog = await this.dogGateway.findBy(schedule.robotDogId)
-      if (!dog) {
-        throw new RobotDogNotFoundError(schedule.robotDogId.value)
-      }
+      const dog = await findOrThrow(
+        () => this.dogGateway.findBy(schedule.robotDogId),
+        RobotDogNotFoundError,
+        schedule.robotDogId.value
+      )
 
       const incompatibleActions = await this.compatibilityService.findIncompatibleActions(
         mission.getStepsInOrder().map((step) => step.actionId),

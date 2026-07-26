@@ -4,6 +4,7 @@ import ActionTransformer from '#app/modules/actions/infrastructure/http/transfor
 import { type IndexActionOptions } from '#app/modules/actions/domain/contracts/action.repository'
 import { IndexActionUseCase } from '#app/modules/actions/application/usecases/index-action.use-case'
 import { UserRole } from '#users/domain/enums/user.role'
+import { parsePaginationParams } from '#app/modules/share/utils/parse-pagination-params'
 
 @inject()
 export default class IndexActionController {
@@ -15,8 +16,7 @@ export default class IndexActionController {
     const isAdmin = authenticatedUser.role === UserRole.ADMIN
 
     const params: IndexActionOptions = {
-      page: Number(request.input('page', 1)),
-      limit: Number(request.input('limit', 20)),
+      ...parsePaginationParams(request),
       includeInactive: isAdmin && request.input('includeInactive') === 'true',
     }
 

@@ -6,6 +6,7 @@ import {
   type NotificationTab,
 } from '#app/modules/notifications/domain/contracts/notification.repository'
 import { NotificationTransformer } from '#app/modules/notifications/infrastructure/http/transformers/notification.transformer'
+import { parsePaginationParams } from '#app/modules/share/utils/parse-pagination-params'
 
 @inject()
 export default class ListNotificationsController {
@@ -17,12 +18,7 @@ export default class ListNotificationsController {
     const rawTab = request.input('tab', 'all')
     const tab: NotificationTab = rawTab === 'unread' ? 'unread' : 'all'
 
-    const params: FindNotificationsParams = {
-      page: Number(request.input('page', 1)),
-      limit: Number(request.input('limit', 20)),
-      tab,
-      search: request.input('search') || undefined,
-    }
+    const params: FindNotificationsParams = { ...parsePaginationParams(request), tab }
 
     const result = await this.repo.findByUser(authenticatedUser.id, params)
 

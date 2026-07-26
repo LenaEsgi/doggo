@@ -4,6 +4,7 @@ import { RobotDogId } from '#app/modules/dogs/domain/value-objects/robot-dog-id'
 import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot-dog-not-found.error'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
+import { findOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class UpdateRobotDogUseCase {
@@ -13,12 +14,11 @@ export class UpdateRobotDogUseCase {
     logger.info({ robotDogId: dto.id, newName: dto.name }, 'UpdateRobotDogUseCase started')
 
     const id = RobotDogId.fromString(dto.id)
-    const robotDog = await this.robotDogRepository.findById(id)
-
-    if (!robotDog) {
-      logger.warn({ robotDogId: dto.id }, 'RobotDog not found in UpdateRobotDogUseCase')
-      throw new RobotDogNotFoundError(dto.id)
-    }
+    const robotDog = await findOrThrow(
+      () => this.robotDogRepository.findById(id),
+      RobotDogNotFoundError,
+      dto.id
+    )
 
     robotDog.updateName(dto.name)
     await this.robotDogRepository.save(robotDog)

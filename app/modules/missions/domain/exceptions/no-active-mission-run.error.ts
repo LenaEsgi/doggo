@@ -5,6 +5,5 @@ export class NoActiveMissionRunError extends DomainError {
 
   constructor(public readonly robotDogId: string) {
     super(`Robot dog ${robotDogId} has no active mission run`, { robotDogId })
-    this.name = 'NoActiveMissionRunError'
   }
 }

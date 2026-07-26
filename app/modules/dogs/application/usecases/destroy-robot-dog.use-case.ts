@@ -5,6 +5,7 @@ import { RobotDogNotFoundError } from '#app/modules/dogs/domain/exceptions/robot
 import { MqttAccountProvisioner } from '#app/modules/robot-communication/domain/contracts/mqtt-account-provisioner'
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
+import { findOrThrow } from '#app/modules/share/utils/find-or-throw'
 
 @inject()
 export class DestroyRobotDogUseCase {
@@ -18,12 +19,7 @@ export class DestroyRobotDogUseCase {
 
     const id = RobotDogId.fromString(dto.id)
 
-    const robotDog = await this.robotDogRepository.findById(id)
-
-    if (!robotDog) {
-      logger.warn({ robotDogId: dto.id }, 'RobotDog not found')
-      throw new RobotDogNotFoundError(dto.id)
-    }
+    await findOrThrow(() => this.robotDogRepository.findById(id), RobotDogNotFoundError, dto.id)
 
     // Révoque le compte MQTT AVANT de supprimer la ligne DB : si la révocation échoue, on
     // n'efface pas le robot, sinon ses identifiants MQTT resteraient valides sur le broker

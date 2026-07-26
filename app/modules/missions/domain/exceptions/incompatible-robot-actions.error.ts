@@ -15,6 +15,5 @@ export class IncompatibleRobotActionsError extends DomainError {
       `Robot firmware ${robotFirmwareVersion} does not support: ${actions.map((a) => a.name).join(', ')}`,
       { robotFirmwareVersion, actions }
     )
-    this.name = 'IncompatibleRobotActionsError'
   }
 }

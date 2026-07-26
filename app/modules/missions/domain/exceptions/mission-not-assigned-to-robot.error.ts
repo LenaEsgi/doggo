@@ -11,6 +11,5 @@ export class MissionNotAssignedToRobotError extends DomainError {
       missionId,
       robotDogId,
     })
-    this.name = 'MissionNotAssignedToRobotError'
   }
 }

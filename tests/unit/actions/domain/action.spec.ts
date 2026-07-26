@@ -183,29 +183,11 @@ test.group('Unit | Actions | ActionEntity', () => {
     assert.equal(action.minFirmwareVersion, '2.0.0')
   })
 
-  test('should update minFirmwareVersion', ({ assert }) => {
-    const action = Action.create('BARK', 'Aboyer', 'bark', null)
-
-    action.updateMinFirmwareVersion('2.0.0')
-
-    assert.equal(action.minFirmwareVersion, '2.0.0')
-  })
-
-  test('should clear minFirmwareVersion when updated with null', ({ assert }) => {
-    const action = Action.create('BARK', 'Aboyer', 'bark', null, null, '2.0.0')
-
-    action.updateMinFirmwareVersion(null)
-
-    assert.isNull(action.minFirmwareVersion)
-  })
-
-  test('should throw InvalidFirmwareVersionError for a malformed minFirmwareVersion', ({
+  test('should throw InvalidFirmwareVersionError for a malformed minFirmwareVersion at creation', ({
     assert,
   }) => {
-    const action = Action.create('BARK', 'Aboyer', 'bark', null)
-
     assert.throws(() => {
-      action.updateMinFirmwareVersion('not-a-version')
+      Action.create('BARK', 'Aboyer', 'bark', null, null, 'not-a-version')
     }, InvalidFirmwareVersionError)
   })
 })

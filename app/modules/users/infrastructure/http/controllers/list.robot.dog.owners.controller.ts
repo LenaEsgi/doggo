@@ -3,7 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { ListRobotDogOwnersUseCase } from '#app/modules/users/ownerships/application/usecases/list-robot-dog-owners.use-case'
 import UserTransformer from '#users/infrastructure/http/transformers/user.transformer'
 import { showUserParamValidator } from '#users/infrastructure/http/validators/show.user.validator'
-import { PaginationDto } from '#app/modules/share/DTO/pagination.dto'
+import { parsePaginationParams } from '#app/modules/share/utils/parse-pagination-params'
 import { UserRole } from '#users/domain/enums/user.role'
 
 @inject()
@@ -24,10 +24,7 @@ export default class ListRobotDogOwnersController {
 
     await bouncer.with('UserPolicy').authorize('listDogOwners', id)
 
-    const pagination: PaginationDto = {
-      page: Number(request.input('page', 1)),
-      limit: Number(request.input('limit', 20)),
-    }
+    const pagination = parsePaginationParams(request)
 
     logger.info({ robotDogId: id }, 'ListRobotDogOwnersController called')
     const users = await this.useCase.execute(id, pagination)

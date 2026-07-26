@@ -41,18 +41,6 @@ export default class MissionPolicy extends BasePolicy {
     return this.missionRepository.isOwner(user.id, missionId)
   }
 
-  async addStep(user: User, missionId: string): Promise<AuthorizerResponse> {
-    return this.missionRepository.isOwner(user.id, missionId)
-  }
-
-  async removeStep(user: User, missionId: string): Promise<AuthorizerResponse> {
-    return this.missionRepository.isOwner(user.id, missionId)
-  }
-
-  async moveStep(user: User, missionId: string): Promise<AuthorizerResponse> {
-    return this.missionRepository.isOwner(user.id, missionId)
-  }
-
   async syncSteps(user: User, missionId: string): Promise<AuthorizerResponse> {
     return this.missionRepository.isOwner(user.id, missionId)
   }

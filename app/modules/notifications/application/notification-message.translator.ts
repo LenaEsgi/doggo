@@ -28,6 +28,7 @@ const START_FAILURE_REASON_KEYS: Record<string, string> = {
   ROBOT_BUSY: 'notifications.reasons.robot_busy',
   BATTERY_TOO_LOW: 'notifications.reasons.battery_too_low',
   TIMEOUT: 'notifications.reasons.timeout',
+  FIRMWARE_INCOMPATIBLE: 'notifications.reasons.firmware_incompatible',
 }
 
 export class NotificationMessageTranslator {
