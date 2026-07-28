@@ -14,6 +14,7 @@ import { RobotDog } from '#dogs/domain/robot-dog.entity'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { ActiveOwnershipNotFoundError } from '#app/modules/users/ownerships/domain/exceptions/active-ownership-not-found.error'
 import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
+import { InvalidRobotDogKeyError } from '#dogs/domain/exceptions/invalid-robot-dog-key.error'
 
 class FakeUserReadRepository extends UserReadRepository {
   constructor(private readonly users: User[]) {
@@ -63,10 +64,65 @@ test.group('User ownership use cases', () => {
       ownershipRepository,
       ownershipRepository
     )
-    await useCase.execute(user.id, dog.serialNumber)
+    await useCase.execute(user.id, dog.serialNumber, dog.key.value)
 
     const { data: dogIds } = await ownershipRepository.findActiveDogIdsByUserId(user.id)
     assert.deepEqual(dogIds, [dog.id.value])
+  })
+
+  test('AdoptDogUseCase throws when the key does not match the robot', async ({ assert }) => {
+    const user = User.rehydrate(
+      'u1',
+      'firebase-u1',
+      'john@example.com',
+      'John',
+      'Doe',
+      UserRole.USER
+    )
+    const dog = RobotDog.create('SN-002', 'Fido', 80)
+    const userRepository = new FakeUserReadRepository([user])
+    const dogRepository = new FakeRobotDogRepository()
+    const ownershipRepository = new FakeOwnershipRepository()
+
+    await dogRepository.save(dog)
+
+    const useCase = new AdoptRobotDogUseCase(
+      new UserOwnershipGatewayImplementation(userRepository),
+      new RobotDogOwnershipGatewayImplementation(dogRepository),
+      ownershipRepository,
+      ownershipRepository
+    )
+
+    await assert.rejects(
+      () => useCase.execute(user.id, dog.serialNumber, 'WRONGWRONGWRONGWR'),
+      InvalidRobotDogKeyError
+    )
+  })
+
+  test('AdoptDogUseCase throws when the key is malformed', async ({ assert }) => {
+    const user = User.rehydrate(
+      'u1',
+      'firebase-u1',
+      'john@example.com',
+      'John',
+      'Doe',
+      UserRole.USER
+    )
+    const dog = RobotDog.create('SN-003', 'Milo', 80)
+    const userRepository = new FakeUserReadRepository([user])
+    const dogRepository = new FakeRobotDogRepository()
+    const ownershipRepository = new FakeOwnershipRepository()
+
+    await dogRepository.save(dog)
+
+    const useCase = new AdoptRobotDogUseCase(
+      new UserOwnershipGatewayImplementation(userRepository),
+      new RobotDogOwnershipGatewayImplementation(dogRepository),
+      ownershipRepository,
+      ownershipRepository
+    )
+
+    await assert.rejects(() => useCase.execute(user.id, dog.serialNumber, 'short'), InvalidRobotDogKeyError)
   })
 
   test('AdoptDogUseCase throws when user does not exist', async ({ assert }) => {
@@ -83,7 +139,8 @@ test.group('User ownership use cases', () => {
       () =>
         useCase.execute(
           '7b27cc5b-e591-48f2-85ba-f29f96eb9971',
-          '56a39d4d-b05d-42fb-a402-6782fc66dc3d'
+          '56a39d4d-b05d-42fb-a402-6782fc66dc3d',
+          '000000000000000000'
         ),
       InvalidUserNotFoundError
     )
@@ -212,7 +269,7 @@ test.group('User ownership use cases', () => {
     )
 
     await assert.rejects(
-      () => useCase.execute(user.id, '56a39d4d-b05d-42fb-a402-6782fc66dc3d'),
+      () => useCase.execute(user.id, '56a39d4d-b05d-42fb-a402-6782fc66dc3d', '000000000000000000'),
       RobotDogNotFoundError
     )
   })
@@ -244,7 +301,7 @@ test.group('User ownership use cases', () => {
     )
 
     await assert.rejects(
-      () => useCase.execute(user.id, dog.serialNumber),
+      () => useCase.execute(user.id, dog.serialNumber, dog.key.value),
       OwnershipAlreadyExistsError
     )
   })

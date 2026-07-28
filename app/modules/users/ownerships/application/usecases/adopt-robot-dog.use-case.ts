@@ -6,6 +6,8 @@ import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/co
 import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
 import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
+import { InvalidRobotDogKeyError } from '#dogs/domain/exceptions/invalid-robot-dog-key.error'
+import { RobotDogKey } from '#dogs/domain/value-objects/robot-dog-key'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 import OwnershipAssignedEvent from '#users/ownerships/domain/events/ownership-assigned.event'
 
@@ -18,7 +20,7 @@ export class AdoptRobotDogUseCase {
     private readonly ownershipWriteRepository: OwnershipWriteRepository
   ) {}
 
-  async execute(userId: string, serialNumber: string): Promise<void> {
+  async execute(userId: string, serialNumber: string, key: string): Promise<void> {
     logger.info({ userId, serialNumber }, 'AdoptRobotDogUseCase started')
 
     const userExists = await this.userGateway.existsById(userId)
@@ -31,6 +33,19 @@ export class AdoptRobotDogUseCase {
     if (!robotDog) {
       logger.warn({ userId, serialNumber }, 'RobotDog not found in AdoptRobotDogUseCase')
       throw new RobotDogNotFoundError(serialNumber)
+    }
+
+    let providedKey: RobotDogKey
+    try {
+      providedKey = RobotDogKey.fromString(key)
+    } catch {
+      logger.warn({ userId, serialNumber }, 'Malformed robot dog key in AdoptRobotDogUseCase')
+      throw new InvalidRobotDogKeyError()
+    }
+
+    if (!robotDog.key.equals(providedKey)) {
+      logger.warn({ userId, serialNumber }, 'Robot dog key mismatch in AdoptRobotDogUseCase')
+      throw new InvalidRobotDogKeyError()
     }
 
     const alreadyOwner = await this.ownershipReadRepository.isOwner(userId, robotDog.id.value)
