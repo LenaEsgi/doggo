@@ -9,6 +9,7 @@ export const manageUserDogsParamsValidator = vine.create(
 export const manageUserDogsBodyValidator = vine.create(
   vine.object({
     serialNumber: vine.string().trim(),
+    key: vine.string().trim(),
   })
 )
 

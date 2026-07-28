@@ -17,10 +17,10 @@ export default class AdoptUserDogController {
 
     await bouncer.with('UserPolicy').authorize('adopt', id)
 
-    const { serialNumber } = await request.validateUsing(manageUserDogsBodyValidator)
+    const { serialNumber, key } = await request.validateUsing(manageUserDogsBodyValidator)
 
     logger.info({ userId: id, serialNumber }, 'AdoptUserDogController called')
-    await this.useCase.execute(id, serialNumber)
+    await this.useCase.execute(id, serialNumber, key)
     logger.info({ userId: id, serialNumber }, 'AdoptUserDogController completed successfully')
 
     response.ok({
