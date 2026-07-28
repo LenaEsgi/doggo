@@ -72,15 +72,15 @@ test.group('StartSessionCommandUseCase', (group) => {
     assert.equal(saved!.state, RobotDogState.IN_SESSION)
   })
 
-  test('publie DogStateChangedEvent avec le nouvel état IN_SESSION', async ({ assert }) => {
+  test('publie DogStateChangedEvent avec le nouvel état IN_SESSION', async () => {
     const dog = RobotDog.create('SN-001', 'Rex', 80)
     await fakeRepo.save(dog)
 
     await useCase.execute(dog.id.value)
 
-    events.assertEmitted(DogStateChangedEvent)
-    const [emitted] = events.pulled(DogStateChangedEvent)
-    assert.equal(emitted.dogId, dog.id.value)
-    assert.equal(emitted.state, RobotDogState.IN_SESSION)
+    events.assertEmitted(
+      DogStateChangedEvent,
+      ({ data }) => data.dogId === dog.id.value && data.state === RobotDogState.IN_SESSION
+    )
   })
 })
