@@ -4,6 +4,12 @@ import env from '#start/env'
 
 const LOCALHOST_ORIGIN = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/
 
+// URL Firebase Hosting par défaut du projet — reste active en parallèle du
+// domaine personnalisé (Firebase ne la désactive jamais), donc toujours
+// autorisée en plus de FRONTEND_URL pendant/après la migration vers le
+// domaine personnalisé.
+const FIREBASE_DEFAULT_ORIGIN = 'https://doggo-63933.web.app'
+
 /**
  * https://docs.adonisjs.com/guides/security/cors
  *
@@ -15,7 +21,7 @@ const corsConfig = defineConfig({
   enabled: true,
   origin: app.inDev
     ? (requestOrigin: string) => LOCALHOST_ORIGIN.test(requestOrigin)
-    : [env.get('FRONTEND_URL')],
+    : [env.get('FRONTEND_URL'), FIREBASE_DEFAULT_ORIGIN],
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
   headers: true,
   exposeHeaders: [],
