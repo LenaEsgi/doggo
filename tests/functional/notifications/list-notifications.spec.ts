@@ -1,10 +1,10 @@
 import { test } from '@japa/runner'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import NotificationModel from '#app/modules/notifications/infrastructure/database/models/notification.model'
 
 test.group('GET /api/v1/notifications', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('traduit le message en francais quand la locale de l\'utilisateur est fr', async ({
     client,

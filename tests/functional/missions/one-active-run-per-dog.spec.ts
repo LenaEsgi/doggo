@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { MissionRunRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-run.repository.implementation'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
 import { InvalidMissionAlreadyRunningError } from '#app/modules/missions/domain/exceptions/invalid-mission-already-running.error'
@@ -13,7 +13,7 @@ import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 
 test.group('mission_runs unique active constraint', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('a second active run for the same dog is rejected', async ({ assert }) => {
     const repo = new MissionRunRepositoryImplementation()

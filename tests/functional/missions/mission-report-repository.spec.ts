@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import MissionRunModel from '#app/modules/missions/infrastructure/database/models/mission-run'
@@ -13,7 +13,7 @@ import MissionReport from '#app/modules/missions/domain/entities/mission-report.
 import { MissionReportRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-report.repository.implementation'
 
 test.group('MissionReportRepositoryImplementation', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('save() puis findByMissionRunId() retrouve un rapport READY', async ({ assert }) => {
     const dog = await RobotDogModel.create({

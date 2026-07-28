@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import OwnershipModel from '#users/ownerships/infrastructure/database/models/ownership'
@@ -13,7 +13,7 @@ import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 
 test.group('GET /api/v1/missions/:id/schedules', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('returns a real JSON array wrapped under "data", not the raw transformer object', async ({
     client,

@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import UserModel from '#users/infrastructure/database/models/user'
@@ -12,7 +12,7 @@ import { MissionId } from '#app/modules/missions/domain/value-objects/mission-id
 import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 
 test.group('MissionScheduleRepositoryImplementation', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('round-trips days of week through the native postgres array column', async ({ assert }) => {
     const repo = new MissionScheduleRepositoryImplementation()

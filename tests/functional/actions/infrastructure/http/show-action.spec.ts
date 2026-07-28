@@ -1,11 +1,11 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import ActionModel from '#app/modules/actions/infrastructure/database/models/action'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 
 test.group('GET /api/v1/actions/:id', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should return an action by id, including a deactivated one', async ({
     client,

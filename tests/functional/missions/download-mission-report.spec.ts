@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import MissionRunModel from '#app/modules/missions/infrastructure/database/models/mission-run'
@@ -13,7 +13,7 @@ import { authenticateAs } from '#tests/functional/helpers/auth'
 import OwnershipModel from '#app/modules/users/ownerships/infrastructure/database/models/ownership'
 
 test.group('GET /api/v1/mission-runs/:id/report', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test("retourne 403 si le rapport n'est pas encore prêt", async ({ client, cleanup }) => {
     const auth = await authenticateAs(cleanup, { firebaseUid: 'user-report-1' })

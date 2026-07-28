@@ -1,11 +1,11 @@
 import { test } from '@japa/runner'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 
 test.group('PUT /api/v1/dogs/:id', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should update robot dog name and return 204', async ({ client, assert, cleanup }) => {
     // update() allows ADMIN via RobotDogPolicy#before, or the owning USER

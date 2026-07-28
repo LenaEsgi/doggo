@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import db from '@adonisjs/lucid/services/db'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import MissionScheduleModel from '#app/modules/missions/infrastructure/database/models/mission-schedule'
@@ -13,7 +13,7 @@ import { MissionScheduleFiringRepositoryImplementation } from '#app/modules/miss
 import { MissionScheduleFiringOutcome } from '#app/modules/missions/domain/enums/mission-schedule-firing-outcome'
 
 test.group('MissionScheduleFiringRepositoryImplementation', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   async function createSchedule(): Promise<string> {
     const user = await UserModel.create({

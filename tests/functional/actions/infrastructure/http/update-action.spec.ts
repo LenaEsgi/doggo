@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import ActionModel from '#app/modules/actions/infrastructure/database/models/action'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import MissionStepModel from '#app/modules/missions/infrastructure/database/models/mission-step'
@@ -8,7 +8,7 @@ import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 
 test.group('PATCH /api/v1/actions/:id', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should update the code of an unused action', async ({ client, assert, cleanup }) => {
     const auth = await authenticateAs(cleanup, { role: UserRole.ADMIN })

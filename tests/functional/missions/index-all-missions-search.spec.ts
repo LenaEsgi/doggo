@@ -1,12 +1,12 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 
 test.group('GET /api/v1/missions (search)', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('filters missions by name when a search query param is provided', async ({
     client,

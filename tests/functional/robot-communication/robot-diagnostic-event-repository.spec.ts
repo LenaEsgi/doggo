@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { RobotDiagnosticEvent } from '#app/modules/robot-communication/domain/entities/robot-diagnostic-event.entity'
@@ -11,7 +11,7 @@ import { RobotErrorSeverity } from '#app/modules/robot-communication/domain/enum
 import { RobotDiagnosticEventRepositoryImplementation } from '#app/modules/robot-communication/infrastructure/database/repositories/robot-diagnostic-event.repository.implementation'
 
 test.group('RobotDiagnosticEventRepositoryImplementation', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   async function createDog(suffix: string): Promise<string> {
     const dog = await RobotDogModel.create({

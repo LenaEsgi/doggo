@@ -1,11 +1,11 @@
 import { test } from '@japa/runner'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 
 test.group('POST /api/v1/dogs', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should create a new robot dog with an auto-generated serial number', async ({
     client,

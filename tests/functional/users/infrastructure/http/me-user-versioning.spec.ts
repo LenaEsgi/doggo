@@ -1,9 +1,9 @@
 import { test } from '@japa/runner'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 
 test.group('GET /users/me API versioning', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('v1 keeps the legacy firstname/lastname contract', async ({ client, assert, cleanup }) => {
     const auth = await authenticateAs(cleanup)

@@ -1,12 +1,12 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import ActionModel from '#app/modules/actions/infrastructure/database/models/action'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 
 test.group('GET /api/v1/actions', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should exclude inactive actions by default', async ({ client, assert, cleanup }) => {
     const auth = await authenticateAs(cleanup, { role: UserRole.USER })

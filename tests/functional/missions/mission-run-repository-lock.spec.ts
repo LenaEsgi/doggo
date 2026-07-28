@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { MissionRunRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-run.repository.implementation'
 import { LucidUnitOfWork } from '#app/modules/share/infrastructure/database/lucid-unit-of-work'
 import MissionRun from '#app/modules/missions/domain/entities/mission-run.entity'
@@ -66,7 +66,7 @@ async function seedActiveRun() {
 }
 
 test.group('MissionRunRepositoryImplementation row lock (findActiveRunForUpdate)', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('a run failed inside uow.run() is persisted terminal and cannot be resurrected', async ({
     assert,

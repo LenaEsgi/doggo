@@ -2,7 +2,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import MissionRunModel from '#app/modules/missions/infrastructure/database/models/mission-run'
@@ -13,7 +13,7 @@ import { UserRole } from '#users/domain/enums/user.role'
 import { MissionRunRepositoryImplementation } from '#app/modules/missions/infrastructure/database/repositories/mission-run.repository.implementation'
 
 test.group('MissionRunRepositoryImplementation.findById', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('retrouve un run même terminal (SUCCESS), avec ses steps', async ({ assert }) => {
     const dog = await RobotDogModel.create({

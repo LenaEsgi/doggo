@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 import UserModel from '#users/infrastructure/database/models/user'
@@ -15,7 +15,7 @@ import { MissionRunRepositoryImplementation } from '#app/modules/missions/infras
 import NotificationModel from '#app/modules/notifications/infrastructure/database/models/notification.model'
 
 test.group('GET /api/v1/backoffice/stats', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should return 403 when authenticated as a non-admin user', async ({ client, cleanup }) => {
     const auth = await authenticateAs(cleanup, { role: UserRole.USER })

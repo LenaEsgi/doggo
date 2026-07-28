@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import ActionModel from '#app/modules/actions/infrastructure/database/models/action'
@@ -10,7 +10,7 @@ import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 
 test.group('PUT /api/v1/missions/:id/steps (firmware warning)', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('inclut firmwareWarnings dans la réponse quand un robot assigné devient incompatible', async ({
     client,

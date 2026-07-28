@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { RobotDogRepositoryImplementation } from '#dogs/infrastructure/database/repositories/robot-dog.repository.implementation'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
@@ -12,7 +12,7 @@ function uniqueKey(label: string): string {
 }
 
 test.group('RobotDogRepositoryImplementation findStale', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('returns only non-OFFLINE dogs whose lastHeartbeat is older than the threshold', async ({
     assert,

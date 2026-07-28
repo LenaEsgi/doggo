@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import MissionModel from '#app/modules/missions/infrastructure/database/models/mission'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
@@ -14,7 +14,7 @@ import { MissionScheduleId } from '#app/modules/missions/domain/value-objects/mi
 test.group(
   'DELETE /api/v1/missions/:missionId/schedules/:scheduleId cross-owner authorization',
   (group) => {
-    group.each.setup(() => testUtils.db().truncate())
+    group.each.setup(() => truncateDb())
 
     test('should return 404 when the schedule belongs to a different mission owned by another user', async ({
       client,

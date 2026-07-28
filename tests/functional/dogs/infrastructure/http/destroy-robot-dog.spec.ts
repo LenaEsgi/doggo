@@ -3,12 +3,12 @@ import { randomUUID } from 'node:crypto'
 import RobotDogModel from '#app/modules/dogs/infrastructure/database/models/robot-dog'
 import { RobotDogState } from '#dogs/domain/enums/robot-dog.state'
 import { DateTime } from 'luxon'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 
 test.group('DELETE /api/v1/dogs/:id', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should return 204 when robot dog is deleted', async ({ client, assert, cleanup }) => {
     // destroy() is admin-only in RobotDogPolicy

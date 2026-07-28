@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import testUtils from '@adonisjs/core/services/test_utils'
+import { truncateDb } from '#tests/functional/helpers/truncate'
 import { authenticateAs } from '#tests/functional/helpers/auth'
 import { UserRole } from '#users/domain/enums/user.role'
 import RobotDogModel from '#dogs/infrastructure/database/models/robot-dog'
@@ -10,7 +10,7 @@ import { RobotDiagnosticEvent } from '#app/modules/robot-communication/domain/en
 import { RobotBootReason } from '#app/modules/robot-communication/domain/enums/robot-boot-reason'
 
 test.group('GET /api/v1/backoffice/diagnostics', (group) => {
-  group.each.setup(() => testUtils.db().truncate())
+  group.each.setup(() => truncateDb())
 
   test('should return 403 when authenticated as a non-admin user', async ({ client, cleanup }) => {
     const auth = await authenticateAs(cleanup, { role: UserRole.USER })
