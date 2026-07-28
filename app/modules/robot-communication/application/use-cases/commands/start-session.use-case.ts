@@ -5,6 +5,7 @@ import { RobotDogId } from '#dogs/domain/value-objects/robot-dog-id'
 import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { RobotCommunicationService } from '#app/modules/robot-communication/domain/contracts/robot-communication.service'
 import { RobotCommand } from '#app/modules/robot-communication/domain/types/robot-command.type'
+import DogStateChangedEvent from '#dogs/domain/events/dog-state-changed.event'
 
 @inject()
 export class StartSessionCommandUseCase {
@@ -34,6 +35,7 @@ export class StartSessionCommandUseCase {
     }
 
     await this.dogRepository.save(dog)
+    void DogStateChangedEvent.dispatch(dogId, dog.state)
     logger.info({ dogId }, 'StartSessionCommandUseCase session started')
   }
 }

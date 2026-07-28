@@ -1,6 +1,7 @@
 import { test } from '@japa/runner'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
 import { ActionAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-already-exists.error'
+import { ActionSlugAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-slug-already-exists.error'
 import { ActionParameterSchemaLockedError } from '#app/modules/actions/domain/exceptions/action-parameter-schema-locked.error'
 import Action from '#app/modules/actions/domain/action.entity'
 import { FakeActionRepository } from '#tests/unit/fakes/fake-action-repository'
@@ -117,6 +118,38 @@ test.group('Unit | Actions | UpdateActionUseCase', () => {
 
     const updated = await fakeRepository.findById(action.id)
     assert.equal(updated?.code, 'SAME_CODE')
+  })
+
+  test('it should throw ActionSlugAlreadyExistsError when the new slug is used by another action', async ({
+    assert,
+  }) => {
+    const fakeRepository = new FakeActionRepository()
+    const action = Action.create('CODE_A', 'A', 'slug-a', null)
+    const other = Action.create('CODE_B', 'B', 'slug-b', null)
+    await fakeRepository.save(action)
+    await fakeRepository.save(other)
+
+    const useCase = new UpdateActionUseCase(fakeRepository, new FakeMissionStepUsageGateway())
+
+    await assert.rejects(
+      async () => await useCase.execute({ id: action.id.value, slug: 'slug-b' }),
+      ActionSlugAlreadyExistsError
+    )
+  })
+
+  test('it should not throw when the slug is updated to its own current value', async ({
+    assert,
+  }) => {
+    const fakeRepository = new FakeActionRepository()
+    const action = Action.create('CODE', 'Name', 'same-slug', null)
+    await fakeRepository.save(action)
+
+    const useCase = new UpdateActionUseCase(fakeRepository, new FakeMissionStepUsageGateway())
+
+    await useCase.execute({ id: action.id.value, slug: 'same-slug' })
+
+    const updated = await fakeRepository.findById(action.id)
+    assert.equal(updated?.slug, 'same-slug')
   })
 
   test('it should update parameterSchema when the action is not used by any mission step', async ({

@@ -6,6 +6,7 @@ import logger from '@adonisjs/core/services/logger'
 import { ActionId } from '#app/modules/actions/domain/value-objects/action-id'
 import { ActionNotFoundError } from '#app/modules/actions/domain/exceptions/action-not-found.error'
 import { ActionAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-already-exists.error'
+import { ActionSlugAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-slug-already-exists.error'
 import { ActionParameterSchemaLockedError } from '#app/modules/actions/domain/exceptions/action-parameter-schema-locked.error'
 import { MissionStepUsageGateway } from '#app/modules/actions/domain/contracts/mission-step-usage.gateway'
 
@@ -38,7 +39,14 @@ export class UpdateActionUseCase {
     }
 
     if (dto.name) action.updateName(dto.name)
-    if (dto.slug) action.updateSlug(dto.slug)
+
+    if (dto.slug && dto.slug !== action.slug) {
+      const existingSlug = await this.actionRepository.findBySlug(dto.slug)
+      if (existingSlug && existingSlug.id.value !== action.id.value) {
+        throw new ActionSlugAlreadyExistsError(dto.slug)
+      }
+      action.updateSlug(dto.slug)
+    }
 
     if (dto.description !== undefined) {
       action.updateDescription(dto.description)
