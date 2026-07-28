@@ -94,7 +94,7 @@ test.group('User ownership use cases', () => {
     )
 
     await assert.rejects(
-      () => useCase.execute(user.id, dog.serialNumber, 'WRONGWRONGWRONGWR'),
+      () => useCase.execute(user.id, dog.serialNumber, 'DIFFERENT_KEY_00001'),
       InvalidRobotDogKeyError
     )
   })
@@ -303,6 +303,38 @@ test.group('User ownership use cases', () => {
     await assert.rejects(
       () => useCase.execute(user.id, dog.serialNumber, dog.key.value),
       OwnershipAlreadyExistsError
+    )
+  })
+
+  test('AdoptDogUseCase key check happens before ownership check (anti-enumeration)', async ({ assert }) => {
+    const user = User.rehydrate(
+      'u1',
+      'firebase-u1',
+      'john@example.com',
+      'John',
+      'Doe',
+      UserRole.USER
+    )
+    const dog = RobotDog.create('SN-004', 'Scout', 80)
+    const userRepository = new FakeUserReadRepository([user])
+    const dogRepository = new FakeRobotDogRepository()
+    const ownershipRepository = new FakeOwnershipRepository(
+      { [user.id]: [dog.id.value] },
+      { [dog.id.value]: [user.id] }
+    )
+
+    await dogRepository.save(dog)
+
+    const useCase = new AdoptRobotDogUseCase(
+      new UserOwnershipGatewayImplementation(userRepository),
+      new RobotDogOwnershipGatewayImplementation(dogRepository),
+      ownershipRepository,
+      ownershipRepository
+    )
+
+    await assert.rejects(
+      () => useCase.execute(user.id, dog.serialNumber, 'WRONG_KEY_00000001'),
+      InvalidRobotDogKeyError
     )
   })
 })
