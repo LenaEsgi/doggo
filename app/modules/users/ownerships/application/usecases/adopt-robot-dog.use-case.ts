@@ -5,7 +5,6 @@ import { UserOwnershipGateway } from '#app/modules/users/ownerships/application/
 import { OwnershipReadRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.read.repository'
 import { OwnershipWriteRepository } from '#app/modules/users/ownerships/domain/contracts/ownership.write.repository'
 import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
-import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { InvalidRobotDogKeyError } from '#dogs/domain/exceptions/invalid-robot-dog-key.error'
 import { RobotDogKey } from '#dogs/domain/value-objects/robot-dog-key'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
@@ -31,8 +30,8 @@ export class AdoptRobotDogUseCase {
 
     const robotDog = await this.robotDogGateway.findBySerialNumber(serialNumber)
     if (!robotDog) {
-      logger.warn({ userId, serialNumber }, 'RobotDog not found in AdoptRobotDogUseCase')
-      throw new RobotDogNotFoundError(serialNumber)
+      logger.warn({ userId, serialNumber }, 'RobotDog not found for adoption (generic key error returned)')
+      throw new InvalidRobotDogKeyError()
     }
 
     let providedKey: RobotDogKey

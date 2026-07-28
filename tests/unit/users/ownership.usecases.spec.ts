@@ -11,7 +11,6 @@ import { User } from '#users/domain/user.entity'
 import { UserRole } from '#users/domain/enums/user.role'
 import { InvalidUserNotFoundError } from '#users/domain/exceptions/invalid-user-not-found.error'
 import { RobotDog } from '#dogs/domain/robot-dog.entity'
-import { RobotDogNotFoundError } from '#dogs/domain/exceptions/robot-dog-not-found.error'
 import { ActiveOwnershipNotFoundError } from '#app/modules/users/ownerships/domain/exceptions/active-ownership-not-found.error'
 import { OwnershipAlreadyExistsError } from '#app/modules/users/ownerships/domain/exceptions/ownership-already-exists.error'
 import { InvalidRobotDogKeyError } from '#dogs/domain/exceptions/invalid-robot-dog-key.error'
@@ -124,7 +123,10 @@ test.group('User ownership use cases', () => {
       ownershipRepository
     )
 
-    await assert.rejects(() => useCase.execute(user.id, dog.serialNumber, 'short'), InvalidRobotDogKeyError)
+    await assert.rejects(
+      () => useCase.execute(user.id, dog.serialNumber, 'short'),
+      InvalidRobotDogKeyError
+    )
   })
 
   test('AdoptDogUseCase throws when user does not exist', async ({ assert }) => {
@@ -272,7 +274,7 @@ test.group('User ownership use cases', () => {
 
     await assert.rejects(
       () => useCase.execute(user.id, '56a39d4d-b05d-42fb-a402-6782fc66dc3d', '000000000000000000'),
-      RobotDogNotFoundError
+      InvalidRobotDogKeyError
     )
   })
 
@@ -308,7 +310,9 @@ test.group('User ownership use cases', () => {
     )
   })
 
-  test('AdoptDogUseCase key check happens before ownership check (anti-enumeration)', async ({ assert }) => {
+  test('AdoptDogUseCase key check happens before ownership check (anti-enumeration)', async ({
+    assert,
+  }) => {
     const user = User.rehydrate(
       'u1',
       'firebase-u1',
