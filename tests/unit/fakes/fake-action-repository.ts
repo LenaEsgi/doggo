@@ -17,6 +17,10 @@ export class FakeActionRepository implements ActionRepository {
     return this.actions.find((a) => a.code === code) || null
   }
 
+  async findBySlug(slug: string): Promise<Action | null> {
+    return this.actions.find((a) => a.slug === slug) || null
+  }
+
   async index(options?: IndexActionOptions): Promise<PaginatedResult<Action>> {
     const page = options?.page || 1
     const limit = options?.limit || 10

@@ -33,6 +33,38 @@ test.group('PATCH /api/v1/actions/:id', (group) => {
     assert.equal(updated!.code, 'NEW_CODE')
   })
 
+  test('should return 409 when updating slug to one used by another action', async ({
+    client,
+    cleanup,
+  }) => {
+    const auth = await authenticateAs(cleanup, { role: UserRole.ADMIN })
+
+    await ActionModel.create({
+      id: randomUUID(),
+      code: 'TAKEN',
+      name: 'Taken',
+      slug: 'taken-slug',
+      description: null,
+      isActive: true,
+    })
+
+    const action = await ActionModel.create({
+      id: randomUUID(),
+      code: 'OTHER',
+      name: 'Other',
+      slug: 'other-slug',
+      description: null,
+      isActive: true,
+    })
+
+    const response = await client
+      .patch(`/api/v1/actions/${action.id}`)
+      .header('Authorization', auth.header)
+      .json({ slug: 'taken-slug' })
+
+    response.assertStatus(409)
+  })
+
   test('should return 409 when changing parameterSchema of an action already used by a mission step', async ({
     client,
     cleanup,

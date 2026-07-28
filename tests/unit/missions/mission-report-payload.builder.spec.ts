@@ -64,6 +64,7 @@ test.group('MissionReportPayloadBuilder', () => {
     const actionRepository: ActionRepository = {
       findById: async () => action,
       findByCode: noop,
+      findBySlug: noop,
       index: noop,
       save: noop,
     }

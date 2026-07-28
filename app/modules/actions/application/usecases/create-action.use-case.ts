@@ -3,6 +3,7 @@ import { CreateActionDto } from '#app/modules/actions/application/dto/create-act
 import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 import { ActionAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-already-exists.error'
+import { ActionSlugAlreadyExistsError } from '#app/modules/actions/domain/exceptions/action-slug-already-exists.error'
 import Action from '#app/modules/actions/domain/action.entity'
 
 @inject()
@@ -17,6 +18,13 @@ export class CreateActionUseCase {
     if (existing) {
       logger.warn({ code: dto.code }, 'Action creation failed: code already exists')
       throw new ActionAlreadyExistsError(dto.code)
+    }
+
+    const existingSlug = await this.actionRepository.findBySlug(dto.slug)
+
+    if (existingSlug) {
+      logger.warn({ slug: dto.slug }, 'Action creation failed: slug already exists')
+      throw new ActionSlugAlreadyExistsError(dto.slug)
     }
 
     const action = Action.create(

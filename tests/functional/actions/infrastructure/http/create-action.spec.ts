@@ -48,6 +48,26 @@ test.group('POST /api/v1/actions', (group) => {
     response.assertStatus(409)
   })
 
+  test('should return 409 when slug already exists', async ({ client, cleanup }) => {
+    const auth = await authenticateAs(cleanup, { role: UserRole.ADMIN })
+
+    await ActionModel.create({
+      id: randomUUID(),
+      code: 'JUMP',
+      name: 'Sauter',
+      slug: 'jump',
+      description: null,
+      isActive: true,
+    })
+
+    const response = await client
+      .post('/api/v1/actions')
+      .header('Authorization', auth.header)
+      .json({ code: 'OTHER', name: 'Autre', slug: 'jump' })
+
+    response.assertStatus(409)
+  })
+
   test('should return 403 when authenticated as a non-admin user', async ({ client, cleanup }) => {
     const auth = await authenticateAs(cleanup, { role: UserRole.USER })
 

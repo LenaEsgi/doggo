@@ -12,6 +12,8 @@ export abstract class ActionRepository {
 
   abstract findByCode(code: string): Promise<Action | null>
 
+  abstract findBySlug(slug: string): Promise<Action | null>
+
   abstract index(options?: IndexActionOptions): Promise<PaginatedResult<Action>>
 
   abstract save(action: Action): Promise<void>

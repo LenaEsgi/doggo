@@ -39,6 +39,21 @@ export class ActionRepositoryImplementation implements ActionRepository {
     )
   }
 
+  async findBySlug(slug: string): Promise<Action | null> {
+    const row = await ActionModel.query().where('slug', slug).first()
+    if (!row) return null
+    return Action.rehydrate(
+      row.id,
+      row.code,
+      row.name,
+      row.slug,
+      row.description,
+      row.parameterSchema ?? null,
+      row.isActive,
+      row.minFirmwareVersion ?? null
+    )
+  }
+
   async index(options?: IndexActionOptions): Promise<PaginatedResult<Action>> {
     const page = options?.page ?? 1
     const perPage = options?.limit ?? 10
