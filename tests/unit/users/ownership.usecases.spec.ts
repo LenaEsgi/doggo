@@ -93,8 +93,10 @@ test.group('User ownership use cases', () => {
       ownershipRepository
     )
 
+    const wrongKey = dog.key.value.slice(0, -1) + (dog.key.value.endsWith('A') ? 'B' : 'A')
+
     await assert.rejects(
-      () => useCase.execute(user.id, dog.serialNumber, 'DIFFERENT_KEY_00001'),
+      () => useCase.execute(user.id, dog.serialNumber, wrongKey),
       InvalidRobotDogKeyError
     )
   })
